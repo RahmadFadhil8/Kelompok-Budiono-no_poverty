@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:no_poverty/screens/home/home.dart';
 import 'package:no_poverty/screens/welcome/welcome_screen.dart';
 
 void main() {
@@ -16,7 +17,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const WelcomeScreen(),
+      debugShowCheckedModeBanner: false,
+      home: Home(),
     );
   }
 }
