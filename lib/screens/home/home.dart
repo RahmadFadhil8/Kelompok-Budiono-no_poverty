@@ -95,9 +95,73 @@ class _HomeState extends State<Home> {
                 CustomButton(child: Text("Lainnya"), onPress: (){}),
               ],
             ),
+            SizedBox(height: 16,),
             Column(
               children: [
-                JobCard()
+                CustomCard(
+                  padding: 16,
+                  onTapCard: () {
+                    
+                  },
+                  childContainer: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Title1(title: "Pembersihan Rumah", size: 16,),
+                          Container(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.green),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: SubTitle1(title: "Active", size: 12,color: Colors.green,),
+                          )
+                        ],
+                      ),
+                      SizedBox(height: 8,),
+                      Row(
+                        children: [
+                          Icon(Icons.location_on, size: 16, color: Colors.grey),
+                          SizedBox(width: 4),
+                          SubTitle1(title: "Surabaya", size: 13,color: Colors.grey,),
+                          SizedBox(width: 16),
+                          Icon(Icons.calendar_today, size: 16, color: Colors.grey),
+                          SizedBox(width: 4),
+                          SubTitle1(title: "2024-01-15", size: 13, color: Colors.grey,)
+                        ],
+                      ),
+
+                      SizedBox(height: 16,),
+
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Title1(title: "RP 150.000", size: 14, color: Colors.black,),
+                              SizedBox(width: 16),
+                              Icon(Icons.people, size: 16, color: Colors.grey),
+                              SizedBox(width: 4),
+                              SubTitle1(title: "8 Pelamar", size: 13,)
+                            ],
+                          ),
+                          OutlinedButton(
+                            style: OutlinedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20)),
+                              side: const BorderSide(color: Colors.grey),
+                            ),
+                            onPressed: () {},
+                            child: const Text("Detail"),
+                          )
+                        ],
+                      )
+                    ],
+                  )
+                ),
               ],
             ),
             SizedBox(height: 10,),
