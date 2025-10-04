@@ -12,6 +12,14 @@ class WelcomeScreen extends StatefulWidget {
 }
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
+  final List<Widget> screen = [
+    Text("Card 1"),
+    Text("Card 2"),
+    Text("Card 3"),
+  ];
+
+  int idx = 0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,7 +53,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
             CustomCard(
               widthContainer: 350,
-              childContainer: Center(heightFactor: 15, child: Text("Isi Card")),
+              childContainer: Center(heightFactor: 15, child: screen[idx]),
             ),
 
             const SizedBox(height: 20),
@@ -55,8 +63,16 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   CustomButton(
-                    backgroundColor: const Color.fromARGB(255, 211, 211, 211),
-                    foregroundColor: Colors.grey,
+                    backgroundColor: idx!=0?Colors.blue:Colors.grey,
+                    foregroundColor: idx!=0?Colors.white:Colors.grey,
+                    onPress:
+                        idx == 0
+                            ? null
+                            : () {
+                              setState(() {
+                                idx--;
+                              });
+                            },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -64,7 +80,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                         const Text("Kembali"),
                       ],
                     ),
-                    onPress: () {},
                   ),
                   CustomButton(
                     backgroundColor: Colors.blue,
@@ -72,11 +87,19 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text("Lanjut"),
+                        Text(idx+1 == screen.length ? "Mulai" : "Lanjut"),
                         const Icon(Icons.chevron_right),
                       ],
                     ),
-                    onPress: () {},
+                    onPress: () {
+                      setState(() {
+                        if (idx >= screen.length) {
+                          return;
+                        }
+
+                        idx++;
+                      });
+                    },
                   ),
                 ],
               ),
