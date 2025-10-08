@@ -1,14 +1,15 @@
+import 'package:no_poverty/models/user_model.dart';
 import 'package:sqflite/sqlite_api.dart';
-import 'package:no_poverty/Database/auth_database/database_Service.dart';
+import 'package:no_poverty/Database/user_database/user_database_Service.dart';
 
 class TableUser {
-  String TABLE = 'user';
+  String TABLE = 'users';
   String USERNAME = 'username';
   String EMAIL = 'email';
   String PHONE = 'nomorHp';
   String PASSWORD = 'password';
 
-  DatabaseService databaseService = DatabaseService();
+  UserDatabaseService databaseService = UserDatabaseService();
 
   Future<int> insertUser({
     required String username,
@@ -46,7 +47,7 @@ class TableUser {
     Database db = await databaseService.getDatabase();
 
     final existingUser = await db.query(
-      'users',
+      TABLE,
       where: 'email = ?',
       whereArgs: [email],
     );
@@ -57,9 +58,34 @@ class TableUser {
 
     return await db.insert('users', {
       'email': email,
-      'nomorHP': nomorHP,
+      'nomorHp': nomorHP,
       'username': username,
       'password': password,
     });
+  }
+
+  Future<UserModel> getCurrentUser(int id) async {
+    try {
+      Database db = await databaseService.getDatabase();
+      var res = await db.query(TABLE, where: 'id = ?', whereArgs: [id]);
+      return UserModel.fromJson(res[0]);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<List<UserModel>> getUsers() async {
+    try {
+      Database db = await databaseService.getDatabase();
+      var res = await db.query(TABLE);
+      final List<UserModel> datas =
+          res.map((e) {
+            return UserModel.fromJson(e);
+          }).toList();
+      print(datas[0].email);
+      return datas;
+    } catch (e) {
+      rethrow;
+    }
   }
 }
