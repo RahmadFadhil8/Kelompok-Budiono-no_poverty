@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:no_poverty/screens/auth/database_auth/user_database.dart';
+import 'package:no_poverty/Database/auth_database/user_database.dart';
 import 'login.dart';
 
 class RegisterScreen extends StatefulWidget {

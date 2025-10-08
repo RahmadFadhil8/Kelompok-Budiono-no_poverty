@@ -46,8 +46,8 @@ class MyApp extends StatelessWidget {
       home:
           // WelcomeScreen()
           // LoginScreen()
-          RegisterScreen(),
-          // AppWrapper(),
+          // RegisterScreen(),
+          AppWrapper(),
     );
   }
 }

@@ -1,5 +1,5 @@
-import 'package:no_poverty/screens/auth/database_auth/database_service.dart';
 import 'package:sqflite/sqlite_api.dart';
+import 'package:no_poverty/Database/auth_database/database_Service.dart';
 
 class TableUser {
   String TABLE = 'user';
