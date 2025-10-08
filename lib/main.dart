@@ -43,13 +43,11 @@ class MyApp extends StatelessWidget {
         ),
       ),
       debugShowCheckedModeBanner: false,
-      home: 
-      // WelcomeScreen(),
-      // LoginScreen()
-      RegisterScreen()
-
-// AppWrapper(),
-
+      home:
+          // WelcomeScreen()
+          // LoginScreen()
+          RegisterScreen(),
+          // AppWrapper(),
     );
   }
 }

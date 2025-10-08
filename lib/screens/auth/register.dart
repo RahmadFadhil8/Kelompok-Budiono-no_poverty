@@ -37,7 +37,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
     String confirmPassword = _confirmPasswordController.text.trim();
 
     // pengecekan
-    if (email.isEmpty || nomorHP.isEmpty || username.isEmpty || password.isEmpty) {
+    if (email.isEmpty ||
+        nomorHP.isEmpty ||
+        username.isEmpty ||
+        password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Row(
@@ -123,7 +126,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
 
     try {
-      int userId = await UserDatabase.instance.registerUser(
+      int userId = await TableUser().registerUser(
         email,
         nomorHP,
         username,
@@ -145,7 +148,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             behavior: SnackBarBehavior.floating,
           ),
         );
-        
+
         await Future.delayed(const Duration(seconds: 1));
         if (!mounted) return;
         Navigator.pushReplacement(
@@ -300,7 +303,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       const SizedBox(height: 18),
                       TextField(
-                        controller: _nomorHPControler,                        decoration: InputDecoration(
+                        controller: _nomorHPControler,
+                        decoration: InputDecoration(
                           hintText: "nomorHP",
                           prefixIcon: const Icon(Icons.phone),
                           border: OutlineInputBorder(
@@ -449,8 +453,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     vertical: 10,
                                   ),
                                 );
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(snackbar);
+                                ScaffoldMessenger.of(
+                                  context,
+                                ).showSnackBar(snackbar);
                               },
                               icon: Image.network(
                                 'https://cdn-icons-png.flaticon.com/128/281/281764.png',
@@ -492,8 +497,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     vertical: 10,
                                   ),
                                 );
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(snackbar);
+                                ScaffoldMessenger.of(
+                                  context,
+                                ).showSnackBar(snackbar);
                               },
                               icon: Image.network(
                                 'https://cdn-icons-png.flaticon.com/128/5968/5968764.png',
@@ -535,8 +541,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     vertical: 10,
                                   ),
                                 );
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(snackbar);
+                                ScaffoldMessenger.of(
+                                  context,
+                                ).showSnackBar(snackbar);
                               },
                               icon: Image.network(
                                 'https://cdn-icons-png.flaticon.com/128/0/747.png',
