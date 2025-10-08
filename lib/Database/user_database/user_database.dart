@@ -1,6 +1,6 @@
 import 'package:no_poverty/models/user_model.dart';
 import 'package:sqflite/sqlite_api.dart';
-import 'package:no_poverty/Database/user_database/user_database_Service.dart';
+import 'package:no_poverty/Database/database_Service.dart';
 
 class TableUser {
   String TABLE = 'users';
@@ -9,7 +9,7 @@ class TableUser {
   String PHONE = 'nomorHp';
   String PASSWORD = 'password';
 
-  UserDatabaseService databaseService = UserDatabaseService();
+  DatabaseService databaseService = DatabaseService();
 
   Future<int> insertUser({
     required String username,
