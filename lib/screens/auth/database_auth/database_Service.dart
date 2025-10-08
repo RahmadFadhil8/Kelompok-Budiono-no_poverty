@@ -1,3 +1,5 @@
+
+
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -25,8 +27,7 @@ Future<Database> initDatabase() async {
 }
 Future<void>onCreateDatabase(Database db, int version) async {
   await db.execute(
-    'CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL, email TEXT, nomorHP TEXT, password TEXT NOT NULL)'
-
+    'CREATE TABLE user (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL, email TEXT, nomorHp TEXT, password TEXT NOT NULL)'
   );
 }
 }

@@ -1,12 +1,10 @@
-
-import 'package:flutter/material.dart';
-
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:no_poverty/screens/auth/database_auth/user_database.dart';
+import 'package:no_poverty/screens/auth/register.dart';
 import 'package:no_poverty/screens/home/home.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -17,8 +15,6 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   bool EmailSelected = true;
-  @override
-  Widget build(BuildContext context) {
   bool isLoggedIn = false;
   bool _isObscure = true;
 
@@ -151,7 +147,14 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       Expanded(
                         child: GestureDetector(
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const RegisterScreen(),
+                              ),
+                            );
+                          },
                           child: Container(
                             alignment: Alignment.center,
                             child: const Text(
@@ -312,7 +315,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
                           const SizedBox(height: 18),
                           TextField(
-                            decoration: InputDecoration(
                             controller: _passwordController,
                             obscureText: _isObscure,
                             decoration: InputDecoration(
@@ -350,8 +352,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                 borderRadius: BorderRadius.circular(15),
                               ),
                             ),
-
-                            onPressed: () {},
                             onPressed: () {
                               loginUser();
                             },
@@ -364,114 +364,6 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                           ),
-                          const SizedBox(height: 10,),
-                          Row( 
-                            children: [
-                              Expanded(child: Divider(thickness: 1,)),
-                              Padding(padding: EdgeInsets.symmetric(horizontal: 8.0),
-                              child: Text("atau"),),
-                              Expanded(child: Divider(thickness: 1,)),
-                          ],),
-                          const SizedBox(height: 10,),
-                          Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Color(0xFFD6EBEE),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: IconButton(
-                          onPressed: () {
-                            final snackbar = SnackBar(
-                            content: Row( children: [
-                              Icon(Icons.notifications_active,color: const Color.fromARGB(255, 75, 74, 74),),
-                              SizedBox(width: 10,),
-                              Text("Sign up for Google coming soon!", style: TextStyle(color: Colors.black),),
-                            ]
-                            ),
-                            duration: Duration(seconds: 3),
-                            backgroundColor: Color(0xFFD6EBEE),
-                            behavior: SnackBarBehavior.floating,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                          ); ScaffoldMessenger.of(context).showSnackBar(snackbar);
-                          },
-                          icon: Image.network(
-                            'https://cdn-icons-png.flaticon.com/128/281/281764.png',
-                            width: 25,
-                            height: 25,
-                          ),
-                        ),
-                      ),
-
-                      SizedBox(width: 10),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Color(0xFFD6EBEE),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: IconButton(
-                          onPressed: () {
-                            final snackbar = SnackBar(
-                            content: Row( children: [
-                              Icon(Icons.notifications_active,color: const Color.fromARGB(255, 75, 74, 74),),
-                              SizedBox(width: 10,),
-                              Text("Sign up for Facebook coming soon!", style: TextStyle(color: Colors.black),),
-                            ]
-                            ),
-                            duration: Duration(seconds: 3),
-                            backgroundColor: Color(0xFFD6EBEE),
-                            behavior: SnackBarBehavior.floating,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                          ); ScaffoldMessenger.of(context).showSnackBar(snackbar);
-                          },
-                          icon: Image.network(
-                            'https://cdn-icons-png.flaticon.com/128/5968/5968764.png',
-                            width: 25,
-                            height: 25,
-                          ),
-                        ),
-                      ),
-
-                      SizedBox(width: 10),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Color(0xFFD6EBEE),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: IconButton(
-                          onPressed: () {
-                            final snackbar = SnackBar(
-                            content: Row( children: [
-                              Icon(Icons.notifications_active,color: const Color.fromARGB(255, 75, 74, 74),),
-                              SizedBox(width: 10,),
-                              Text("Sign up for Apple coming soon!", style: TextStyle(color: Colors.black),),
-                            ]
-                            ),
-                            duration: Duration(seconds: 3),
-                            backgroundColor: Color(0xFFD6EBEE),
-                            behavior: SnackBarBehavior.floating,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                          ); ScaffoldMessenger.of(context).showSnackBar(snackbar);
-                          },
-                          icon: Image.network(
-                            'https://cdn-icons-png.flaticon.com/128/0/747.png',
-                              width: 25,
-                              height: 25,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
                           const SizedBox(height: 10),
                           Row(
                             children: [
