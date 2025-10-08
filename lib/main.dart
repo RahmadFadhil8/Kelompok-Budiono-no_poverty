@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:no_poverty/screens/auth/login.dart';
+import 'package:no_poverty/screens/auth/register.dart';
+import 'package:no_poverty/screens/home/home.dart';
 import 'package:no_poverty/app_wrapper.dart';
 import 'package:no_poverty/screens/welcome/welcome_screen.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 void main() {
   sqfliteFfiInit();
-
   databaseFactory = databaseFactoryFfi;
   runApp(const MyApp());
 }
@@ -41,7 +43,13 @@ class MyApp extends StatelessWidget {
         ),
       ),
       debugShowCheckedModeBanner: false,
-      home: AppWrapper(),
+      home: 
+      // WelcomeScreen(),
+      // LoginScreen()
+      RegisterScreen()
+
+// AppWrapper(),
+
     );
   }
 }
