@@ -1,11 +1,9 @@
-
-
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
-class DatabaseService {
+class UserDatabaseService {
   static Database? database;
-  static String DB_NAME = "user.db";
+  static String DB_NAME = "users.db";
   static int DB_VERSION = 1;
 
   Future<Database> getDatabase() async {
@@ -27,7 +25,7 @@ Future<Database> initDatabase() async {
 }
 Future<void>onCreateDatabase(Database db, int version) async {
   await db.execute(
-    'CREATE TABLE user (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL, email TEXT, nomorHp TEXT, password TEXT NOT NULL)'
+    'CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL, email TEXT, nomorHp TEXT, password TEXT NOT NULL)'
   );
 }
 }

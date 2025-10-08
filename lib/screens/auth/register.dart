@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:no_poverty/screens/auth/database_auth/user_database.dart';
+import 'package:no_poverty/Database/user_database/user_database.dart';
 import 'login.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -74,22 +74,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
 
-    if (username.length < 3) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Row(
-            children: [
-              Icon(Icons.warning, color: Colors.white),
-              SizedBox(width: 10),
-              Text('Username minimal 3 karakter!'),
-            ],
-          ),
-          backgroundColor: Colors.red,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
-      return;
-    }
 
     if (password.length < 6) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -157,6 +141,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         );
       }
     } catch (e) {
+              print(e);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
