@@ -26,7 +26,6 @@ class TableUser {
     });
   }
 
-  //untuk baca user(login)
   Future<bool> checkUser(String input, String password, bool isEmail) async {
     Database db = await databaseService.getDatabase();
     List<Map<String, dynamic>> result = await db.query(
@@ -82,7 +81,6 @@ class TableUser {
           res.map((e) {
             return UserModel.fromJson(e);
           }).toList();
-      print(datas[0].email);
       return datas;
     } catch (e) {
       rethrow;
