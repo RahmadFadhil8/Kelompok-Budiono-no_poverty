@@ -36,16 +36,14 @@ class JobModel {
     );
   }
 
-  // Map<String, dynamic> toJson() => {
-  //       "id": id,
-  //       "userId": userId,
-  //       "title": title,
-  //       "description": description,
-  //       "salary": salary,
-  //       "location": location,
-  //       "date": date != null
-  //           ? "${date!.year.toString().padLeft(4, '0')}-${date!.month.toString().padLeft(2, '0')}-${date!.day.toString().padLeft(2, '0')}"
-  //           : null,
-  //       "isDone": isDone ? 1 : 0,
-  //     };
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "userId": userId,
+        "title": title,
+        "description": description,
+        "salary": salary,
+        "location": location,
+        "date": date,
+        "isDone": isDone ? 1 : 0,
+      };
 }
