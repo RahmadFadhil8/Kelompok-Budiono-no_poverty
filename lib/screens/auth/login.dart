@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:no_poverty/screens/auth/database_auth/user_database.dart';
 import 'package:no_poverty/screens/auth/register.dart';
-import 'package:no_poverty/screens/home/home.dart';
+import 'package:no_poverty/screens/main_bottom_navigation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -76,7 +76,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     if (isLoggedIn) {
-      return const Home();
+      return const MainBottomNavigation();
     }
     return Scaffold(
       backgroundColor: Colors.transparent,
