@@ -31,6 +31,38 @@ class DatabaseService {
     await db.execute(
       'CREATE TABLE jobs (id INTEGER PRIMARY KEY AUTOINCREMENT, userId INTEGER,title TEXT NOT NULL, description TEXT, salary TEXT, location TEXT, date TEXT,isDone INTEGER NOT NULL)',
     );
+
+    await db.insert('users', {
+      'username': 'andi123',
+      'email': 'andi@gmail.com',
+      'nomorHp': '081234567890',
+      'password': 'passAndi',
+    });
+    await db.insert('users', {
+      'username': 'budi99',
+      'email': 'budi@yahoo.com',
+      'nomorHp': '082345678901',
+      'password': 'passBudi',
+    });
+    await db.insert('users', {
+      'username': 'citra01',
+      'email': 'citra01@gmail.com',
+      'nomorHp': '083456789012',
+      'password': 'passCitra',
+    });
+    await db.insert('users', {
+      'username': 'dimasx',
+      'email': 'dimasx@outlook.com',
+      'nomorHp': '084567890123',
+      'password': 'passDimas',
+    });
+    await db.insert('users', {
+      'username': 'elina_dev',
+      'email': 'elina.dev@gmail.com',
+      'nomorHp': '085678901234',
+      'password': 'passElina',
+    });
+
     await db.insert('jobs', {
       'userId': 1,
       'title': 'Kasir Minimarket',
@@ -112,7 +144,7 @@ class DatabaseService {
     });
 
     await db.insert('jobs', {
-      'userId': 6,
+      'userId': 5,
       'title': 'Penjaga Toko',
       'description': 'Menjaga toko dan melayani pembeli.',
       'salary': '2600000',
