@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:no_poverty/Database/database_Service.dart';
 import 'package:no_poverty/screens/auth/login.dart';
 import 'package:no_poverty/screens/welcome/welcome_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -18,6 +19,7 @@ class _AppWrapperState extends State<AppWrapper> {
   void initState() {
     super.initState();
     _checkWelcomeStatus();
+    DatabaseService().getDatabase();
   }
 
   Future<void> _checkWelcomeStatus() async {
