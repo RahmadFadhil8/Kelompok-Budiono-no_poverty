@@ -6,6 +6,9 @@ import 'package:no_poverty/screens/auth/register.dart';
 import 'package:no_poverty/screens/main_bottom_navigation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../main_bottom_navigation.dart';
+
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
