@@ -1,9 +1,13 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:no_poverty/Database/user_database/user_database.dart';
+import 'package:no_poverty/screens/auth/database_auth/user_database.dart';
 import 'package:no_poverty/screens/auth/register.dart';
 import 'package:no_poverty/screens/main_bottom_navigation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../main_bottom_navigation.dart';
+
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -78,98 +82,14 @@ class _LoginScreenState extends State<LoginScreen> {
       return const MainBottomNavigation();
     }
     return Scaffold(
+      backgroundColor: Colors.transparent,
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF001B48), Color(0xFF018ABE)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
         child: Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(18),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const ListTile(
-                  leading: const Icon(
-                    Icons.storefront,
-                    size: 70,
-                    color: Colors.white,
-                  ),
-                  title: Text(
-                    "JobWaroeng",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 26,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  subtitle: Text(
-                    "Temukan Pekerjaan Harianmu",
-                    style: TextStyle(color: Colors.white, fontSize: 15),
-                  ),
-                ),
-                SizedBox(height: 40),
-                Container(
-                  width: 250,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(30),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withAlpha(300),
-                        blurRadius: 4,
-                        offset: Offset(0, 5),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF018ABE),
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          alignment: Alignment.center,
-                          child: const Text(
-                            "Login",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const RegisterScreen(),
-                              ),
-                            );
-                          },
-                          child: Container(
-                            alignment: Alignment.center,
-                            child: const Text(
-                              "Daftar",
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 35),
                 Container(
                   padding: const EdgeInsets.all(20),
                   width: 400,
@@ -193,13 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           borderRadius: BorderRadius.circular(18),
                           boxShadow:
                               EmailSelected
-                                  ? [
-                                    BoxShadow(
-                                      color: Colors.black.withAlpha(300),
-                                      blurRadius: 3,
-                                    ),
-                                  ]
-                                  : null,
+                                  ? [BoxShadow(color: Colors.black.withAlpha(300), blurRadius: 3,),] : null,
                         ),
 
                         //tombol Email dan telepon
@@ -219,21 +133,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                 child: Container(
                                   decoration: BoxDecoration(
                                     color:
-                                        EmailSelected
-                                            ? Colors.white
-                                            : Colors.transparent,
+                                        EmailSelected? Colors.white : Colors.transparent,
                                     borderRadius: BorderRadius.circular(18),
-                                    boxShadow:
-                                        EmailSelected
-                                            ? [
-                                              BoxShadow(
-                                                color: Colors.black.withAlpha(
-                                                  300,
-                                                ),
-                                                blurRadius: 3,
-                                              ),
-                                            ]
-                                            : null,
+                                    boxShadow: EmailSelected? [ BoxShadow(color: Colors.black.withAlpha(300),blurRadius: 3)]: null,
                                   ),
                                   alignment: Alignment.center,
                                   child: Row(
@@ -261,21 +163,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                 child: Container(
                                   decoration: BoxDecoration(
                                     color:
-                                        !EmailSelected
-                                            ? Colors.white
-                                            : Colors.transparent,
+                                        !EmailSelected ? Colors.white : Colors.transparent,
                                     borderRadius: BorderRadius.circular(18),
-                                    boxShadow:
-                                        !EmailSelected
-                                            ? [
-                                              BoxShadow(
-                                                color: Colors.black.withAlpha(
-                                                  300,
-                                                ),
-                                                blurRadius: 3,
-                                              ),
-                                            ]
-                                            : null,
+                                    boxShadow: !EmailSelected ? [ BoxShadow(color: Colors.black.withAlpha(300), blurRadius: 3,)] : null,
                                   ),
                                   alignment: Alignment.center,
                                   child: Row(
@@ -324,9 +214,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   });
                                 },
                                 icon: Icon(
-                                  _isObscure
-                                      ? Icons.visibility_off
-                                      : Icons.visibility,
+                                  _isObscure ? Icons.visibility_off : Icons.visibility,
                                   color: Color(0xFF808080),
                                 ),
                               ),
@@ -354,8 +242,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             onPressed: () {
                               loginUser();
                             },
-                            child: const Text(
-                              "Login",
+                            child: const Text("Login",
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
@@ -390,12 +277,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                         children: [
                                           Icon(
                                             Icons.notifications_active,
-                                            color: const Color.fromARGB(
-                                              255,
-                                              75,
-                                              74,
-                                              74,
-                                            ),
+                                            color: const Color.fromARGB(255,75,74,74,),
                                           ),
                                           SizedBox(width: 10),
                                           Text(
@@ -442,12 +324,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                         children: [
                                           Icon(
                                             Icons.notifications_active,
-                                            color: const Color.fromARGB(
-                                              255,
-                                              75,
-                                              74,
-                                              74,
-                                            ),
+                                           color: const Color.fromARGB(255,75,74,74,),
                                           ),
                                           SizedBox(width: 10),
                                           Text(
@@ -494,20 +371,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                         children: [
                                           Icon(
                                             Icons.notifications_active,
-                                            color: const Color.fromARGB(
-                                              255,
-                                              75,
-                                              74,
-                                              74,
-                                            ),
+                                            color: const Color.fromARGB(255,75,74,74,),
                                           ),
                                           SizedBox(width: 10),
-                                          Text(
-                                            "Sign up for Apple coming soon!",
-                                            style: TextStyle(
-                                              color: Colors.black,
-                                            ),
-                                          ),
+                                          Text("Sign up for Apple coming soon!",style: TextStyle(color: Colors.black,),),
                                         ],
                                       ),
                                       duration: Duration(seconds: 3),

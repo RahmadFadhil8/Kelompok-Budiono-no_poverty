@@ -43,7 +43,7 @@ class _AppWrapperState extends State<AppWrapper> {
     }
 
     if (isSeeWelcome == true) {
-      return const LoginScreen();
+      return const AuthScreen();
     }
 
     return const WelcomeScreen();
