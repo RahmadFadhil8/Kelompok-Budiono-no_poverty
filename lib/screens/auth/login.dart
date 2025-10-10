@@ -50,12 +50,14 @@ class _LoginScreenState extends State<LoginScreen> {
       );
       return;
     }
-    bool success = await tableUser.checkUser(input, password, isEmail);
 
-    if (success) {
+    int? userId = await tableUser.checkUser(input, password, isEmail);
+
+    if (userId != null) {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setBool('isLoggedIn', true);
       await prefs.setString('userInput', input);
+      await prefs.setInt('userId', userId);
       await prefs.setBool('isEmail', isEmail);
 
       setState(() {

@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:no_poverty/Database/database_Service.dart';
+import 'package:no_poverty/screens/home/list_Helper.dart';
+import 'package:no_poverty/screens/home/list_ketegori.dart';
 import 'package:no_poverty/widgets/custom_Button.dart';
 import 'package:no_poverty/widgets/custom_Listtile.dart';
 import 'package:no_poverty/widgets/custom_card.dart';
 import 'package:no_poverty/widgets/sub_title1.dart';
 import 'package:no_poverty/widgets/title1.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -13,6 +19,36 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  String? username;
+  
+  @override
+  void initState() {
+    super.initState();
+    loadusername();
+  }
+  // fungsi untuk mengambil nama sesuai id yang login
+  Future<void> loadusername() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt("userId");
+
+    if(userId != null) {
+      final dbpath = await getDatabasesPath();
+      final path = join(dbpath, DatabaseService.DB_NAME);
+      final db = await openDatabase(path);
+
+      final List<Map<String, dynamic>> result = await db.query(
+        "users",
+        where: "id = ?",
+        whereArgs: [userId],
+      );
+      if (result.isNotEmpty) {
+        setState(() {
+          username = result.first['username'];
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,7 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SubTitle1(title: "Selamat Datang"),
-                Title1(title: "Wonhee"),
+                Title1(title: username ?? "Loading...."),
               ],
             ),
           ],
@@ -95,45 +131,8 @@ class _HomeScreenState extends State<HomeScreen> {
             SizedBox(height: 10),
             Row(children: [Text("Kategori Populer")]),
             SizedBox(height: 10),
-            Row(
-              children: [
-                CustomButton(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 2,
-                      vertical: 4,
-                    ),
-                    child: Column(
-                      children: [
-                        SizedBox(height: 2),
-                        Icon(Icons.home),
-                        Title1(title: "Claening", color: Colors.white),
-                      ],
-                    ),
-                  ),
-                  onPress: () {},
-                ),
-                SizedBox(width: 10),
-
-                // tambahan
-                CustomButton(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 2,
-                      vertical: 4,
-                    ),
-                    child: Column(
-                      children: [
-                        SizedBox(height: 2),
-                        Icon(Icons.home),
-                        Title1(title: "Claening", color: Colors.white),
-                      ],
-                    ),
-                  ),
-                  onPress: () {},
-                ),
-              ],
-            ),
+            KategotiList(),
+            
 
             // judul Job Aktif
             SizedBox(height: 10),
@@ -228,7 +227,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               side: const BorderSide(color: Colors.grey),
                             ),
                             onPressed: () {},
-                            child: const Text("Detail"),
+                            child: const Text("Detail", style: TextStyle(color: Colors.black),),
                           ),
                         ],
                       ),
@@ -250,44 +249,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
             // Helper
             SizedBox(height: 12),
-            Column(
-              children: [
-                CustomListile(
-                  tileColor: Colors.white,
-                  leading: CircleAvatar(
-                    radius: 20,
-                    backgroundImage: NetworkImage("https://picsum.photos/id/237/200/300")
-                  ),
-                  title: "Budi",
-                  subtitle: Row(
-                    children: [
-                      SubTitle1(title: "Cleaning", size: 14),
-                      SizedBox(width: 10),
-                      Icon(Icons.star, size: 14, color: Colors.yellow),
-                      SizedBox(width: 4),
-                      SubTitle1(title: "4.9", size: 14),
-                      SizedBox(width: 10),
-                      Icon(
-                        Icons.location_on_outlined,
-                        size: 16,
-                        color: Colors.grey,
-                      ),
-                      SizedBox(width: 4),
-                      SubTitle1(title: "2.5 Km", size: 14),
-                    ],
-                  ),
-                  trailing: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text("Rp 50.000/jam"),
-                      SizedBox(height: 5),
-                      CustomButton(child: Text("hire"), onPress: () {}),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 16),
-              ],
-            ),
+            Expanded(child: const ListHelper())
           ],
         ),
       ),
