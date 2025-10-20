@@ -90,7 +90,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Stack(
-                          alignment: AlignmentGeometry.center,
+                          alignment: Alignment.center,
                           children: [
                             CircleAvatar(
                               radius: 34,
