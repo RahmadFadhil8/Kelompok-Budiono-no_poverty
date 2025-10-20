@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:no_poverty/Database/job_database/job_database.dart';
-import 'package:no_poverty/models/job_model.dart';
 import 'package:no_poverty/widgets/custom_card.dart';
 import 'package:no_poverty/widgets/sub_title1.dart';
 import 'package:no_poverty/widgets/title1.dart';

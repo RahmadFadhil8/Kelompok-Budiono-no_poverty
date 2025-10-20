@@ -1,3 +1,4 @@
+import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:flutter/material.dart';
 import 'package:no_poverty/widgets/custom_Button.dart';
 import 'package:no_poverty/widgets/custom_Listtile.dart';
@@ -13,23 +14,39 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  bool isWorkMode = false;
   @override
   Widget build(BuildContext context) {
+    print("isWorkMode");
     return Scaffold(
       appBar: AppBar(
         title: Row(
           children: [
-            CircleAvatar(
-              radius: 20,
-              backgroundImage: NetworkImage("https://picsum.photos/id/237/200/300")
-            ),
-            SizedBox(width: 10),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SubTitle1(title: "Selamat Datang"),
-                Title1(title: "Wonhee"),
-              ],
+            AnimatedToggleSwitch<bool>.dual(
+              current: isWorkMode,
+              first: false,
+              second: true,
+              spacing: 50,
+              style: const ToggleStyle(
+                borderColor: Color.fromARGB(31, 155, 155, 155),
+              ),
+              borderWidth: 5.0,
+              height: 55,
+              onChanged: (value) => setState(() => isWorkMode = value),
+              styleBuilder:
+                  (value) => ToggleStyle(
+                    indicatorColor: value ? Colors.green : Colors.blue,
+                  ),
+              iconBuilder:
+                  (value) =>
+                      value
+                          ? const Icon(Icons.engineering, color: Colors.white,size: 32)
+                          : const Icon(Icons.business_center, color: Colors.white, size: 32,),
+              textBuilder:
+                  (value) =>
+                      value
+                          ? const Center(child: Text('Work'))
+                          : const Center(child: Text('Hire')),
             ),
           ],
         ),
@@ -256,7 +273,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   tileColor: Colors.white,
                   leading: CircleAvatar(
                     radius: 20,
-                    backgroundImage: NetworkImage("https://picsum.photos/id/237/200/300")
+                    backgroundImage: NetworkImage(
+                      "https://picsum.photos/id/237/200/300",
+                    ),
                   ),
                   title: "Budi",
                   subtitle: Row(

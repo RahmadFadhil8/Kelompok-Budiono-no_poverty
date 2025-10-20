@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:no_poverty/app_wrapper.dart';
+import 'package:no_poverty/screens/chatbot/chat_bot_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -36,8 +37,9 @@ class MyApp extends StatelessWidget {
         ),
       ),
       debugShowCheckedModeBanner: false,
-      home:
-          AppWrapper(),
+      home: 
+      ChatBotScreen()
+          // AppWrapper(),
     );
   }
 }
