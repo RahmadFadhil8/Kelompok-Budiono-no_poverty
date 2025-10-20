@@ -26,7 +26,7 @@ class TableUser {
     });
   }
 
-  Future<bool> checkUser(String input, String password, bool isEmail) async {
+  Future<int?> checkUser(String input, String password, bool isEmail) async {
     Database db = await databaseService.getDatabase();
     List<Map<String, dynamic>> result = await db.query(
       TABLE,
@@ -34,7 +34,10 @@ class TableUser {
           isEmail ? 'email = ? AND password =?' : 'nomorHp = ? AND password =?',
       whereArgs: [input, password],
     );
-    return result.isNotEmpty;
+    if (result.isNotEmpty) {
+      return result.first['id'];
+    }
+    return null;
   }
 
   Future<int> registerUser(
