@@ -1,3 +1,4 @@
+import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:flutter/material.dart';
 import 'package:no_poverty/Database/database_Service.dart';
 import 'package:no_poverty/screens/home/list_Helper.dart';
@@ -19,6 +20,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  bool isWorkMode = false;
   String? username;
   
   @override
@@ -51,21 +53,36 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print("isWorkMode");
     return Scaffold(
       appBar: AppBar(
         title: Row(
           children: [
-            CircleAvatar(
-              radius: 20,
-              backgroundImage: NetworkImage("https://picsum.photos/id/237/200/300")
-            ),
-            SizedBox(width: 10),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SubTitle1(title: "Selamat Datang"),
-                Title1(title: username ?? "Loading...."),
-              ],
+            AnimatedToggleSwitch<bool>.dual(
+              current: isWorkMode,
+              first: false,
+              second: true,
+              spacing: 50,
+              style: const ToggleStyle(
+                borderColor: Color.fromARGB(31, 155, 155, 155),
+              ),
+              borderWidth: 5.0,
+              height: 55,
+              onChanged: (value) => setState(() => isWorkMode = value),
+              styleBuilder:
+                  (value) => ToggleStyle(
+                    indicatorColor: value ? Colors.green : Colors.blue,
+                  ),
+              iconBuilder:
+                  (value) =>
+                      value
+                          ? const Icon(Icons.engineering, color: Colors.white,size: 32)
+                          : const Icon(Icons.business_center, color: Colors.white, size: 32,),
+              textBuilder:
+                  (value) =>
+                      value
+                          ? const Center(child: Text('Work'))
+                          : const Center(child: Text('Hire')),
             ),
           ],
         ),
@@ -249,6 +266,46 @@ class _HomeScreenState extends State<HomeScreen> {
 
             // Helper
             SizedBox(height: 12),
+            Column(
+              children: [
+                CustomListile(
+                  tileColor: Colors.white,
+                  leading: CircleAvatar(
+                    radius: 20,
+                    backgroundImage: NetworkImage(
+                      "https://picsum.photos/id/237/200/300",
+                    ),
+                  ),
+                  title: "Budi",
+                  subtitle: Row(
+                    children: [
+                      SubTitle1(title: "Cleaning", size: 14),
+                      SizedBox(width: 10),
+                      Icon(Icons.star, size: 14, color: Colors.yellow),
+                      SizedBox(width: 4),
+                      SubTitle1(title: "4.9", size: 14),
+                      SizedBox(width: 10),
+                      Icon(
+                        Icons.location_on_outlined,
+                        size: 16,
+                        color: Colors.grey,
+                      ),
+                      SizedBox(width: 4),
+                      SubTitle1(title: "2.5 Km", size: 14),
+                    ],
+                  ),
+                  trailing: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text("Rp 50.000/jam"),
+                      SizedBox(height: 5),
+                      CustomButton(child: Text("hire"), onPress: () {}),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 16),
+              ],
+            ),
             Expanded(child: const ListHelper())
           ],
         ),

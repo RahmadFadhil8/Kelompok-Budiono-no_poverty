@@ -10,12 +10,16 @@ class MainBottomNavigation extends StatefulWidget {
 }
 
 class _MainBottomNavigationState extends State<MainBottomNavigation> {
-  final List <Widget> _screens = [HomeScreen(), SearchScreen()];
+  final List<Widget> _screens = [HomeScreen(), SearchScreen()];
   int _selectedScreen = 0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: _screens[_selectedScreen],
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
+        child: Icon(Icons.chat),
+      ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         selectedItemColor: Colors.blue,
