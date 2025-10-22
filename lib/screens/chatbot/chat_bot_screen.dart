@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:no_poverty/models/message_model.dart';
+import 'package:no_poverty/provider/chatbot_provider.dart';
 import 'package:no_poverty/services/gemini_api_services.dart';
+import 'package:provider/provider.dart';
 
 class ChatBotScreen extends StatefulWidget {
   const ChatBotScreen({super.key});
@@ -11,57 +13,13 @@ class ChatBotScreen extends StatefulWidget {
 }
 
 class _ChatBotScreenState extends State<ChatBotScreen> {
-  final messages = [
-    MessageModel(
-      text:
-          "Halo! Saya RBA Assistant, asisten virtual Anda. Bagaimana saya bisa membantu Anda hari ini?",
-      isMe: false,
-    ),
-    MessageModel(text: "Bagaimana cara membuat job?", isMe: true),
-    MessageModel(
-      text: '''
-Untuk membuat job, ikuti langkah berikut:
-
-1. Klik tombol **"Buat Job"** di halaman beranda
-2. Pilih kategori pekerjaan
-3. Isi detail pekerjaan (judul, deskripsi, lokasi)
-4. Tentukan budget dan jadwal
-
-_Apakah ada yang perlu saya bantu lebih lanjut?_
-''',
-      isMe: false,
-    ),
-    MessageModel(
-      text: '''
-Untuk membuat job, ikuti langkah berikut:
-
-1. Klik tombol **"Buat Job"** di halaman beranda
-2. Pilih kategori pekerjaan
-3. Isi detail pekerjaan (judul, deskripsi, lokasi)
-4. Tentukan budget dan jadwal
-
-_Apakah ada yang perlu saya bantu lebih lanjut?_
-''',
-      isMe: true,
-    ),
-    MessageModel(text: '''Untuk membuat job''', isMe: false),
-  ];
-
-  @override
-  void initState() {
-    getAi();
-    // TODO: implement initState
-    super.initState();
-  }
-
-  Future<void> getAi() async {
-    print("jalankan");
-    await GeminiApiServices().getAIResponse("halo");
-    print("selesai");
-  }
+  TextEditingController _msgCtr = TextEditingController();
+  String? msgInpt;
 
   @override
   Widget build(BuildContext context) {
+    final chatProvider = Provider.of<ChatbotProvider>(context);
+    final messages = chatProvider.message;
     return Scaffold(
       appBar: AppBar(
         title: Text("RBA Assistant"),
@@ -78,7 +36,7 @@ _Apakah ada yang perlu saya bantu lebih lanjut?_
           return Align(
             alignment: msg.isMe ? Alignment.centerRight : Alignment.centerLeft,
             child: ConstrainedBox(
-              constraints: BoxConstraints(maxWidth: 400),
+              constraints: BoxConstraints(maxWidth: 500),
               child: Container(
                 margin: const EdgeInsets.symmetric(vertical: 5),
                 padding: const EdgeInsets.all(10),
@@ -114,6 +72,12 @@ _Apakah ada yang perlu saya bantu lebih lanjut?_
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: TextField(
+            controller: _msgCtr,
+            onChanged: (value) {
+              setState(() {
+                msgInpt = value;
+              });
+            },
             decoration: InputDecoration(
               hintText: 'Ketik pesan...',
               border: OutlineInputBorder(
@@ -121,7 +85,16 @@ _Apakah ada yang perlu saya bantu lebih lanjut?_
               ),
               suffixIcon: CircleAvatar(
                 backgroundColor: Colors.blue,
-                child: Icon(Icons.send, color: Colors.white),
+                child: IconButton(
+                  onPressed: () {
+                    chatProvider.saveChatFromMe(msgInpt!);
+                    setState(() {
+                      _msgCtr = TextEditingController();
+                    });
+                    chatProvider.getMsgAI(msgInpt!);
+                  },
+                  icon: Icon(Icons.send, color: Colors.white),
+                ),
               ),
             ),
           ),

@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:no_poverty/app_wrapper.dart';
+import 'package:no_poverty/provider/chatbot_provider.dart';
 import 'package:no_poverty/screens/chatbot/chat_bot_screen.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(ChangeNotifierProvider(
+  create: (_) => ChatbotProvider(),
+  child: const MyApp(),
+));
+
 }
 
 class MyApp extends StatelessWidget {
