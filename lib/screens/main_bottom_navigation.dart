@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import 'package:no_poverty/screens/chatbot/chat_bot_screen.dart';
 import 'package:no_poverty/screens/home/home_screen.dart';
 import 'package:no_poverty/screens/search/search_screen.dart';
 
@@ -17,9 +19,16 @@ class _MainBottomNavigationState extends State<MainBottomNavigation> {
     return Scaffold(
       body: _screens[_selectedScreen],
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: Icon(Icons.chat),
+        backgroundColor: Colors.blue,
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const ChatBotScreen()),
+          );
+        },
+        child: const Icon(Icons.smart_toy_outlined, color: Colors.white, size: 34,),
       ),
+
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         selectedItemColor: Colors.blue,

@@ -30,6 +30,14 @@ class GeminiApiServices {
         },
         body: jsonEncode(payload),
       );
+
+      if (res.statusCode == 503) {
+        return MessageModel(
+          text: "The model is overloaded. Please try again later",
+          isMe: false,
+        );
+      }
+
       var data = jsonDecode(res.body);
       print(data);
       var resMsg = MessageModel(
