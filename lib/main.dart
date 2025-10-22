@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:no_poverty/app_wrapper.dart';
 import 'package:no_poverty/provider/chatbot_provider.dart';
+import 'package:no_poverty/screens/auth/login.dart';
 import 'package:no_poverty/screens/chatbot/chat_bot_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -44,7 +45,7 @@ class MyApp extends StatelessWidget {
       ),
       debugShowCheckedModeBanner: false,
       home: 
-      ChatBotScreen()
+      LoginScreen()
           // AppWrapper(),
     );
   }

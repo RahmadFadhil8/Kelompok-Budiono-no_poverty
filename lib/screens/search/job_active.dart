@@ -21,16 +21,13 @@ class _JobActiveState extends State<JobActive> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
-
           if (snapshot.hasError) {
             return Center(child: Text(snapshot.error.toString()));
           }
-
-          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          final datas = snapshot.data ?? [];
+          if (datas.isEmpty) {
             return const Center(child: Text('Belum ada data job.'));
           }
-
-          final datas = snapshot.data!;
 
           return ListView.builder(
             padding: const EdgeInsets.all(10),
@@ -45,8 +42,6 @@ class _JobActiveState extends State<JobActive> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           ClipRRect(
                             borderRadius: BorderRadius.circular(8),
@@ -64,24 +59,21 @@ class _JobActiveState extends State<JobActive> {
                             ),
                           ),
                           const SizedBox(width: 14),
-                          Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Title1(title: job.username),
-                                SubTitle1(title: job.title),
-                                SubTitle1(title: job.date),
-                                SubTitle1(title: job.location),
-                              ],
-                            ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Title1(title: job.username ?? ''),
+                              SubTitle1(title: job.title ?? ''),
+                              SubTitle1(title: job.date ?? ''),
+                              SubTitle1(title: job.location ?? ''),
+                            ],
                           ),
                         ],
                       ),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          Title1(title: job.salary, color: Colors.blue),
+                          Title1(title: job.salary?.toString() ?? '0', color: Colors.blue),
                           const SizedBox(height: 5),
                           CustomCard(
                             cardColor: Colors.blue,

@@ -16,57 +16,56 @@ class _ListHelperState extends State<ListHelper> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: FutureBuilder(
-        future: JobDatabase().getJobs(), 
+        future: JobDatabase().getJobs(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return CircularProgressIndicator();
+            return const Center(child: CircularProgressIndicator());
           }
           if (snapshot.hasError) {
             return Center(child: Text(snapshot.error.toString()));
           }
-          final data = snapshot.data!;
+          final data = snapshot.data ?? [];
           return ListView.builder(
             itemCount: data.length,
-            itemBuilder: (context, index){
+            itemBuilder: (context, index) {
               final jobs = data[index];
+
               return Column(
-              children: [
-                CustomListile(
-                  tileColor: Colors.white,
-                  leading: CircleAvatar(
-                    radius: 20,
-                    backgroundImage: NetworkImage('https://picsum.photos/seed/${jobs.id}/120/120')
-                  ),
-                  title: jobs.username,
-                  subtitle: Row(
-                    children: [
-                      SubTitle1(title: jobs.title, size: 14),
-                      SizedBox(width: 10),
-                      Icon(
-                        Icons.location_on_outlined,
-                        size: 16,
-                        color: Colors.grey,
+                children: [
+                  CustomListile(
+                    tileColor: Colors.white,
+                    leading: CircleAvatar(
+                      radius: 20,
+                      backgroundImage: NetworkImage(
+                        'https://picsum.photos/seed/${jobs.id}/120/120',
                       ),
-                      SizedBox(width: 4),
-                      SubTitle1(title: jobs.location, size: 14),
-                    ],
+                    ),
+                    title: jobs.username ?? '', // fix nullable
+                    subtitle: Row(
+                      children: [
+                        SubTitle1(title: jobs.title ?? '', size: 14),
+                        const SizedBox(width: 10),
+                        const Icon(Icons.location_on_outlined, size: 16, color: Colors.grey),
+                        const SizedBox(width: 4),
+                        SubTitle1(title: jobs.location ?? '', size: 14),
+                      ],
+                    ),
+                    trailing: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text("${jobs.salary?.toString() ?? '0'}/jam"), // numeric ke string
+                        const SizedBox(height: 5),
+                        CustomButton(child: const Text("hire"), onPress: () {}),
+                      ],
+                    ),
                   ),
-                  trailing: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text("${jobs.salary}/jam"),
-                      SizedBox(height: 5),
-                      CustomButton(child: Text("hire"), onPress: () {}),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 16),
-              ],
-            );
-            }
+                  const SizedBox(height: 16),
+                ],
+              );
+            },
           );
-        }
-      )
+        },
+      ),
     );
   }
 }
