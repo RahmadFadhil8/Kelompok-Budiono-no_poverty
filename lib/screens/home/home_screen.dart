@@ -1,6 +1,7 @@
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:flutter/material.dart';
 import 'package:no_poverty/Database/database_Service.dart';
+import 'package:no_poverty/provider/chatbot_provider.dart';
 import 'package:no_poverty/screens/home/list_Helper.dart';
 import 'package:no_poverty/screens/home/list_ketegori.dart';
 import 'package:no_poverty/widgets/custom_Button.dart';
@@ -8,6 +9,7 @@ import 'package:no_poverty/widgets/custom_Listtile.dart';
 import 'package:no_poverty/widgets/custom_card.dart';
 import 'package:no_poverty/widgets/sub_title1.dart';
 import 'package:no_poverty/widgets/title1.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
@@ -22,18 +24,89 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   bool isWorkMode = false;
   String? username;
-  
+
   @override
   void initState() {
     super.initState();
     loadusername();
   }
+
+  void _sendMessage(ChatbotProvider chatProvider) {
+    chatProvider.getMsgAI(
+      """Kamu adalah asisten AI resmi dari aplikasi bernama JobWaroeng, sebuah platform digital berbasis mobile dan website yang berfungsi sebagai penghubung antara pencari kerja paruh waktu (part-time) dengan pemberi kerja.
+Tugasmu adalah menjawab semua pertanyaan atau memberikan informasi dengan konteks seolah kamu adalah bagian dari tim JobWaroeng.
+
+Deskripsi Singkat:
+JobWaroeng adalah aplikasi yang mempermudah masyarakat, mahasiswa, dan pelaku usaha (terutama UMKM) untuk mencari atau menawarkan pekerjaan paruh waktu dengan cepat, aman, dan efisien.
+Konsepnya mirip Gojek, tetapi untuk dunia kerja part-time: semua proses mulai dari pencarian kerja, negosiasi harga, pembayaran, hingga penyelesaian pekerjaan dilakukan di dalam aplikasi.
+
+Visi:
+Menjadi platform utama di Indonesia yang menghubungkan pekerja part-time dan pemberi kerja secara cepat, aman, dan efisien, serta mendukung ekonomi digital yang inklusif dan berkelanjutan.
+
+Fitur-Fitur Utama:
+
+Pencarian kerja terintegrasi berdasarkan kategori (event, jasa rumah tangga, servis, promosi, dan lain-lain).
+
+Sistem pencocokan otomatis berdasarkan keahlian, pengalaman, dan lokasi.
+
+Negosiasi harga langsung dalam aplikasi melalui chat.
+
+Pembayaran dan e-wallet terintegrasi dengan sistem saldo pengguna.
+
+Verifikasi identitas (KTP dan selfie) untuk keamanan.
+
+Rating dan ulasan untuk menjaga kredibilitas pekerja maupun pemberi kerja.
+
+Notifikasi real-time untuk update pekerjaan, pembayaran, dan chat.
+
+Mode kerja aktif, jadwal pekerjaan, serta tampilan profil dan performa pekerja.
+
+Fitur premium dan iklan berbayar bagi pemberi kerja.
+
+Customer service 24 jam.
+
+Keunggulan Kompetitif:
+
+Semua proses transaksi dilakukan dalam satu aplikasi (end-to-end).
+
+Fokus pada pekerjaan fisik/lapangan dan part-time, bukan freelance online.
+
+Didukung oleh komunitas mahasiswa dan UMKM.
+
+Sistem mirip Gojek: cepat, aman, dan transparan.
+
+Teknologi utama: Flutter (frontend) dan Firebase (backend).
+
+Target Pengguna:
+
+Mahasiswa dan masyarakat umum yang mencari penghasilan tambahan.
+
+UMKM, toko lokal, dan individu yang membutuhkan tenaga kerja sementara.
+
+Pemberi kerja yang membutuhkan solusi cepat dan fleksibel.
+
+Gaya Respon:
+
+Gunakan gaya informal profesional: ramah seperti teman, tetapi tetap jelas dan informatif.
+
+Jika pengguna bertanya hal teknis tentang aplikasi, jelaskan berdasarkan konteks JobWaroeng.
+
+Jika pertanyaan tidak relevan dengan konteks, jawab dengan sopan dan arahkan kembali ke topik aplikasi.
+
+Jika pengguna meminta ide, fitur, atau saran, berikan jawaban kreatif yang tetap sejalan dengan visi JobWaroeng.
+
+Mulai sekarang, setiap jawaban yang kamu berikan harus mempertimbangkan semua konteks di atas. 
+jika kamu mengerti jawab : Halo, Ada yang bisa saya bantu?
+""",
+    );
+  }
+
   // fungsi untuk mengambil nama sesuai id yang login
   Future<void> loadusername() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final userId = prefs.getInt("userId");
 
-    if(userId != null) {
+    if (userId != null) {
       final dbpath = await getDatabasesPath();
       final path = join(dbpath, DatabaseService.DB_NAME);
       final db = await openDatabase(path);
@@ -53,6 +126,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final chatProvider = Provider.of<ChatbotProvider>(context);
+    _sendMessage(chatProvider);
     print("isWorkMode");
     return Scaffold(
       appBar: AppBar(
@@ -76,8 +151,16 @@ class _HomeScreenState extends State<HomeScreen> {
               iconBuilder:
                   (value) =>
                       value
-                          ? const Icon(Icons.engineering, color: Colors.white,size: 32)
-                          : const Icon(Icons.business_center, color: Colors.white, size: 32,),
+                          ? const Icon(
+                            Icons.engineering,
+                            color: Colors.white,
+                            size: 32,
+                          )
+                          : const Icon(
+                            Icons.business_center,
+                            color: Colors.white,
+                            size: 32,
+                          ),
               textBuilder:
                   (value) =>
                       value
@@ -149,7 +232,6 @@ class _HomeScreenState extends State<HomeScreen> {
             Row(children: [Text("Kategori Populer")]),
             SizedBox(height: 10),
             KategotiList(),
-            
 
             // judul Job Aktif
             SizedBox(height: 10),
@@ -244,7 +326,10 @@ class _HomeScreenState extends State<HomeScreen> {
                               side: const BorderSide(color: Colors.grey),
                             ),
                             onPressed: () {},
-                            child: const Text("Detail", style: TextStyle(color: Colors.black),),
+                            child: const Text(
+                              "Detail",
+                              style: TextStyle(color: Colors.black),
+                            ),
                           ),
                         ],
                       ),
@@ -306,7 +391,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 SizedBox(height: 16),
               ],
             ),
-            Expanded(child: const ListHelper())
+            Expanded(child: const ListHelper()),
           ],
         ),
       ),

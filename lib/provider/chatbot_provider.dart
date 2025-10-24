@@ -3,7 +3,7 @@ import 'package:no_poverty/models/message_model.dart';
 import 'package:no_poverty/services/gemini_api_services.dart';
 
 class ChatbotProvider with ChangeNotifier {
-  List<MessageModel> _messages = [
+  final List<MessageModel> _messages = [
     MessageModel(text: "Halo! Ada yang bisa saya bantu?", isMe: false),
   ];
 
@@ -11,12 +11,13 @@ class ChatbotProvider with ChangeNotifier {
 
   Future<void> getMsgAI(String msg) async {
     try {
-      saveChatFromMe(msg);
       _messages.add(MessageModel(text: "Sedang mengetik...", isMe: false));
-      notifyListeners();
+      print("send msg from google gemini");
+      print("waiting response from google gemini");
       var res = await GeminiApiServices().getAIResponse(msg);
       _messages.removeLast();
       _messages.add(res);
+      print("success get response from gemini");
       notifyListeners();
     } catch (e) {
       if (_messages.isNotEmpty && _messages.last.text == "Sedang mengetik...") {

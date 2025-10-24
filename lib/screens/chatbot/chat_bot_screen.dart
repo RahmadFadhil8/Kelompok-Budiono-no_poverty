@@ -36,6 +36,7 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
 
   void _sendMessage(ChatbotProvider chatProvider) {
     if (msgInpt == null || msgInpt!.trim().isEmpty) return;
+      chatProvider.saveChatFromMe(msgInpt!.trim());
     chatProvider.getMsgAI(msgInpt!.trim());
     _msgCtr.clear();
     msgInpt = '';
@@ -52,106 +53,111 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
       ),
-
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16),
+      body:Column(
+  children: [
+    Expanded(
+      child: SingleChildScrollView(
         controller: _scrollController,
-        itemCount: messages.length,
-        itemBuilder: (context, index) {
-          final msg = messages[index];
-
-          return Align(
-            alignment: msg.isMe ? Alignment.centerRight : Alignment.centerLeft,
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 500),
-              child: Container(
-                margin: const EdgeInsets.symmetric(vertical: 5),
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: msg.isMe ? Colors.blue[300] : Colors.grey[300],
-                  borderRadius: BorderRadius.only(
-                    topLeft: const Radius.circular(12),
-                    topRight: const Radius.circular(12),
-                    bottomLeft:
-                        msg.isMe
+        physics: const BouncingScrollPhysics(),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: messages.map((msg) {
+              return Align(
+                alignment: msg.isMe ? Alignment.centerRight : Alignment.centerLeft,
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 500),
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(vertical: 5),
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: msg.isMe ? Colors.blue[300] : Colors.grey[300],
+                      borderRadius: BorderRadius.only(
+                        topLeft: const Radius.circular(12),
+                        topRight: const Radius.circular(12),
+                        bottomLeft: msg.isMe
                             ? const Radius.circular(12)
                             : const Radius.circular(0),
-                    bottomRight:
-                        msg.isMe
+                        bottomRight: msg.isMe
                             ? const Radius.circular(0)
                             : const Radius.circular(12),
+                      ),
+                    ),
+                    child: MarkdownBody(
+                      data: msg.text,
+                      styleSheet: MarkdownStyleSheet(
+                        p: const TextStyle(fontSize: 16, height: 1.5),
+                        listBullet: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
                   ),
                 ),
-                child: MarkdownBody(
-                  data: msg.text,
-                  styleSheet: MarkdownStyleSheet(
-                    p: const TextStyle(fontSize: 16, height: 1.5),
-                    listBullet: const TextStyle(fontWeight: FontWeight.bold),
+              );
+            }).toList(),
+          ),
+        ),
+      ),
+    ),
+    SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        child: Row(
+          children: [
+            Expanded(
+              child: TextField(
+                controller: _msgCtr,
+                cursorColor: Colors.blueAccent,
+                cursorWidth: 2.2,
+                cursorRadius: const Radius.circular(2),
+                onChanged: (value) {
+                  setState(() {
+                    msgInpt = value;
+                  });
+                },
+                onSubmitted: (_) => _sendMessage(chatProvider),
+                decoration: InputDecoration(
+                  hintText: 'Ketik pesan...',
+                  hintStyle: TextStyle(color: Colors.grey[600]),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    borderSide: BorderSide(color: Colors.grey.shade300),
+                  ),
+                  focusedBorder: const OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(20)),
+                    borderSide: BorderSide(color: Colors.blue, width: 1.5),
                   ),
                 ),
               ),
             ),
-          );
-        },
-      ),
-
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          child: Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: _msgCtr,
-                  cursorColor: Colors.blueAccent,
-                  cursorWidth: 2.2,
-                  cursorRadius: const Radius.circular(2),
-                  onChanged: (value) {
-                    setState(() {
-                      msgInpt = value;
-                    });
-                  },
-                  onSubmitted: (_) => _sendMessage(chatProvider),
-                  decoration: InputDecoration(
-                    hintText: 'Ketik pesan...',
-                    hintStyle: TextStyle(color: Colors.grey[600]),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20),
-                      borderSide: BorderSide(color: Colors.grey.shade300),
-                    ),
-                    focusedBorder: const OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(20)),
-                      borderSide: BorderSide(color: Colors.blue, width: 1.5),
-                    ),
-                  ),
-                ),
+            const SizedBox(width: 8),
+            CircleAvatar(
+              radius: 24,
+              backgroundColor: (msgInpt != null && msgInpt!.trim().isNotEmpty)
+                  ? Colors.blue
+                  : Colors.grey,
+              child: IconButton(
+                icon: const Icon(Icons.send, color: Colors.white),
+                onPressed: (msgInpt != null && msgInpt!.trim().isNotEmpty)
+                    ? () => _sendMessage(chatProvider)
+                    : null,
               ),
-              const SizedBox(width: 8),
-              CircleAvatar(
-                radius: 24,
-                backgroundColor:
-                    (msgInpt != null && msgInpt!.trim().isNotEmpty)
-                        ? Colors.blue
-                        : Colors.grey,
-                child: IconButton(
-                  icon: const Icon(Icons.send, color: Colors.white),
-                  onPressed:
-                      (msgInpt != null && msgInpt!.trim().isNotEmpty)
-                          ? () => _sendMessage(chatProvider)
-                          : null,
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
+    ),
+  ],
+),
+resizeToAvoidBottomInset: true,
+
     );
   }
 }
