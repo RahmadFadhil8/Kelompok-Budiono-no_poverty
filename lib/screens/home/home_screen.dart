@@ -1,6 +1,7 @@
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:flutter/material.dart';
 import 'package:no_poverty/Database/database_Service.dart';
+import 'package:no_poverty/screens/add_job/add_job.dart';
 import 'package:no_poverty/screens/home/list_Helper.dart';
 import 'package:no_poverty/screens/home/list_ketegori.dart';
 import 'package:no_poverty/widgets/custom_Button.dart';
@@ -120,7 +121,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                     ),
-                    onPress: () {},
+                    onPress: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => addJob()));
+                    },
                   ),
                 ),
                 SizedBox(width: 10),
@@ -157,7 +160,7 @@ class _HomeScreenState extends State<HomeScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text("Job Akif"),
-                TextButton(onPressed: () {}, child: Text("Lainnya >")),
+                TextButton(onPressed: () {}, child: Text("Lainnya >", style: TextStyle(color: Colors.black),)),
               ],
             ),
 
@@ -266,46 +269,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
             // Helper
             SizedBox(height: 12),
-            Column(
-              children: [
-                CustomListile(
-                  tileColor: Colors.white,
-                  leading: CircleAvatar(
-                    radius: 20,
-                    backgroundImage: NetworkImage(
-                      "https://picsum.photos/id/237/200/300",
-                    ),
-                  ),
-                  title: "Budi",
-                  subtitle: Row(
-                    children: [
-                      SubTitle1(title: "Cleaning", size: 14),
-                      SizedBox(width: 10),
-                      Icon(Icons.star, size: 14, color: Colors.yellow),
-                      SizedBox(width: 4),
-                      SubTitle1(title: "4.9", size: 14),
-                      SizedBox(width: 10),
-                      Icon(
-                        Icons.location_on_outlined,
-                        size: 16,
-                        color: Colors.grey,
-                      ),
-                      SizedBox(width: 4),
-                      SubTitle1(title: "2.5 Km", size: 14),
-                    ],
-                  ),
-                  trailing: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text("Rp 50.000/jam"),
-                      SizedBox(height: 5),
-                      CustomButton(child: Text("hire"), onPress: () {}),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 16),
-              ],
-            ),
             Expanded(child: const ListHelper())
           ],
         ),
