@@ -5,9 +5,10 @@ import 'package:no_poverty/screens/auth/login.dart';
 import 'package:provider/provider.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
-void main() {
-  sqfliteFfiInit();
-  databaseFactory = databaseFactoryFfi;
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await ChatbotProvider().initialMsgAI();
+
 
   runApp(ChangeNotifierProvider(
   create: (_) => ChatbotProvider(),
@@ -15,6 +16,8 @@ void main() {
 ));
 
 }
+
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -47,8 +50,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
       debugShowCheckedModeBanner: false,
-      home: 
-          LoginScreen(),
+      home: AppWrapper(),
     );
   }
 }
