@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:no_poverty/Database/database_Service.dart';
 import 'package:no_poverty/screens/auth/login.dart';
-import 'package:no_poverty/screens/home/home.dart';
 import 'package:no_poverty/screens/welcome/welcome_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -13,34 +13,39 @@ class AppWrapper extends StatefulWidget {
 
 class _AppWrapperState extends State<AppWrapper> {
   bool? isSeeWelcome;
-  SharedPreferences? prefs;
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    print("object");
-    
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-    checkLoginStatus();
-  });
+    _checkWelcomeStatus();
+    DatabaseService().getDatabase();
   }
 
+  Future<void> _checkWelcomeStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    final seen = prefs.getBool('isSeeWelcome') ?? false;
 
+    print("isWelcomeSee: $seen");
 
-  Future<void> checkLoginStatus() async {
-      prefs = await SharedPreferences.getInstance();
-      print( await prefs?.getBool('isSeeWelcome'));
-      print("test");
-        isSeeWelcome = prefs?.getBool('isSeeWelcome');
-    
+    setState(() {
+      isSeeWelcome = seen;
+      isLoading = false; 
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (isSeeWelcome == null) {
-      return WelcomeScreen();
+    if (isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
     }
 
-    return isSeeWelcome! ? Home() : LoginScreen();
+    if (isSeeWelcome == true) {
+      return const LoginScreen();
+    }
+
+    return const WelcomeScreen();
   }
 }

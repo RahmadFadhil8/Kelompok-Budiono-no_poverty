@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:no_poverty/screens/auth/database_auth/user_database.dart';
+import 'package:no_poverty/Database/user_database/user_database.dart';
 import 'login.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -37,7 +37,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
     String confirmPassword = _confirmPasswordController.text.trim();
 
     // pengecekan
-    if (email.isEmpty || nomorHP.isEmpty || username.isEmpty || password.isEmpty) {
+    if (email.isEmpty ||
+        nomorHP.isEmpty ||
+        username.isEmpty ||
+        password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Row(
@@ -71,22 +74,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
 
-    if (username.length < 3) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Row(
-            children: [
-              Icon(Icons.warning, color: Colors.white),
-              SizedBox(width: 10),
-              Text('Username minimal 3 karakter!'),
-            ],
-          ),
-          backgroundColor: Colors.red,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
-      return;
-    }
 
     if (password.length < 6) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -123,7 +110,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
 
     try {
-      int userId = await UserDatabase.instance.registerUser(
+      int userId = await TableUser().registerUser(
         email,
         nomorHP,
         username,
@@ -145,7 +132,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             behavior: SnackBarBehavior.floating,
           ),
         );
-        
+
         await Future.delayed(const Duration(seconds: 1));
         if (!mounted) return;
         Navigator.pushReplacement(
@@ -154,6 +141,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         );
       }
     } catch (e) {
+              print(e);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -300,7 +288,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       const SizedBox(height: 18),
                       TextField(
-                        controller: _nomorHPControler,                        decoration: InputDecoration(
+                        controller: _nomorHPControler,
+                        decoration: InputDecoration(
                           hintText: "nomorHP",
                           prefixIcon: const Icon(Icons.phone),
                           border: OutlineInputBorder(
@@ -449,8 +438,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     vertical: 10,
                                   ),
                                 );
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(snackbar);
+                                ScaffoldMessenger.of(
+                                  context,
+                                ).showSnackBar(snackbar);
                               },
                               icon: Image.network(
                                 'https://cdn-icons-png.flaticon.com/128/281/281764.png',
@@ -492,8 +482,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     vertical: 10,
                                   ),
                                 );
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(snackbar);
+                                ScaffoldMessenger.of(
+                                  context,
+                                ).showSnackBar(snackbar);
                               },
                               icon: Image.network(
                                 'https://cdn-icons-png.flaticon.com/128/5968/5968764.png',
@@ -535,8 +526,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     vertical: 10,
                                   ),
                                 );
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(snackbar);
+                                ScaffoldMessenger.of(
+                                  context,
+                                ).showSnackBar(snackbar);
                               },
                               icon: Image.network(
                                 'https://cdn-icons-png.flaticon.com/128/0/747.png',

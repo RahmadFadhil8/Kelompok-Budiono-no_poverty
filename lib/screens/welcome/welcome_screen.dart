@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:no_poverty/screens/home/home.dart';
+import 'package:no_poverty/screens/auth/login.dart';
 import 'package:no_poverty/widgets/custom_Button.dart';
 import 'package:no_poverty/widgets/custom_card.dart';
 import 'package:no_poverty/widgets/sub_title1.dart';
@@ -37,13 +37,13 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       SharedPreferences prefs = await SharedPreferences.getInstance();
 
       await prefs.setBool("isSeeWelcome", true);
-
+      await prefs.reload();
       print("Sampai sini aman");
       if (!mounted) return;
       print("Sampai sini aman juga");
       Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) => const Home()),
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
         (Route<dynamic> route) => false,
       );
     } catch (e) {
@@ -90,7 +90,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Stack(
-                          alignment: AlignmentGeometry.center,
+                          alignment: Alignment.center,
                           children: [
                             CircleAvatar(
                               radius: 34,
