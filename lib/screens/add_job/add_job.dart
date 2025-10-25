@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:no_poverty/screens/add_job/form_addjob.dart';
 import 'package:no_poverty/widgets/title1.dart';
 
 class addJob extends StatefulWidget {
@@ -16,12 +17,9 @@ class _addJobState extends State<addJob> {
         title: Title1(title: "Tambah Pekerjaan"),
         centerTitle: true,
       ),
-      body: Column(
-        children: [
-          TextField(
-            
-          )
-        ],
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 12),
+        child: FormaddJob()
       ),
     );
   }

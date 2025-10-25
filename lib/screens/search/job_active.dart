@@ -1,22 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:no_poverty/Database/job_database/job_database.dart';
+import 'package:no_poverty/services/user_api_services.dart';
 import 'package:no_poverty/widgets/custom_card.dart';
 import 'package:no_poverty/widgets/sub_title1.dart';
 import 'package:no_poverty/widgets/title1.dart';
 
 class JobActive extends StatefulWidget {
-  const JobActive({super.key});
+  final String searchQuery;
+
+  const JobActive({super.key, required this.searchQuery});
 
   @override
   State<JobActive> createState() => _JobActiveState();
 }
 
 class _JobActiveState extends State<JobActive> {
+  UserAPIServices users = UserAPIServices();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: FutureBuilder(
-        future: JobDatabase().getJobs(),
+        future: users.getAll(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -32,11 +36,23 @@ class _JobActiveState extends State<JobActive> {
 
           final datas = snapshot.data!;
 
+          final filterData = datas.where((job) {
+            final query = widget.searchQuery.toLowerCase();
+            return job.nama.toLowerCase().contains(query) ||
+            job.username.toLowerCase().contains(query) ||
+            job.lokasi.toLowerCase().contains(query);
+            }
+          ).toList();
+
+          if (filterData.isEmpty) {
+          return const Center(child: Text('Tidak ada hasil yang cocok.'));
+        }
+
           return ListView.builder(
             padding: const EdgeInsets.all(10),
-            itemCount: datas.length,
+            itemCount: filterData.length,
             itemBuilder: (context, index) {
-              final job = datas[index];
+              final job = filterData[index];
 
               return Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -70,9 +86,9 @@ class _JobActiveState extends State<JobActive> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Title1(title: job.username),
-                                SubTitle1(title: job.title),
-                                SubTitle1(title: job.date),
-                                SubTitle1(title: job.location),
+                                SubTitle1(title: job.nama),
+                                SubTitle1(title: job.pekerjaan),
+                                SubTitle1(title: job.lokasi),
                               ],
                             ),
                           ),

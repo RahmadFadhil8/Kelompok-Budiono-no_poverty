@@ -9,6 +9,18 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
+  final TextEditingController Searchmode = TextEditingController();
+  String searchQuery = '';
+  @override
+  void initState() {
+    super.initState();
+    Searchmode.addListener(() {
+      setState(() {
+        searchQuery = Searchmode.text;
+      });
+    },);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,6 +37,7 @@ class _SearchScreenState extends State<SearchScreen> {
           ),
           child: TextField(
             textAlign: TextAlign.start,
+            controller: Searchmode,
             decoration: InputDecoration(
               hintText: 'Cari pekerjaan atau layanan...',
               hintStyle: const TextStyle(color: Colors.grey, fontSize: 14, ),
@@ -35,7 +48,7 @@ class _SearchScreenState extends State<SearchScreen> {
           ),
         ),
       ),
-      body: const JobActive(),
+      body: JobActive(searchQuery: searchQuery),
     );
   }
 }

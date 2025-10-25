@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:no_poverty/Database/job_database/job_database.dart';
+import 'package:no_poverty/services/user_api_services.dart';
 import 'package:no_poverty/widgets/custom_Button.dart';
 import 'package:no_poverty/widgets/custom_Listtile.dart';
 import 'package:no_poverty/widgets/sub_title1.dart';
@@ -12,11 +13,12 @@ class ListHelper extends StatefulWidget {
 }
 
 class _ListHelperState extends State<ListHelper> {
+  UserAPIServices users = UserAPIServices();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: FutureBuilder(
-        future: JobDatabase().getJobs(), 
+        future: users.getAll(), 
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return CircularProgressIndicator();
@@ -40,7 +42,7 @@ class _ListHelperState extends State<ListHelper> {
                   title: jobs.username,
                   subtitle: Row(
                     children: [
-                      SubTitle1(title: jobs.title, size: 14),
+                      SubTitle1(title: jobs.pekerjaan, size: 14),
                       SizedBox(width: 10),
                       Icon(
                         Icons.location_on_outlined,
@@ -48,7 +50,7 @@ class _ListHelperState extends State<ListHelper> {
                         color: Colors.grey,
                       ),
                       SizedBox(width: 4),
-                      SubTitle1(title: jobs.location, size: 14),
+                      SubTitle1(title: jobs.lokasi, size: 14),
                     ],
                   ),
                   trailing: Column(
