@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:no_poverty/app_wrapper.dart';
 import 'package:no_poverty/provider/chatbot_provider.dart';
+import 'package:no_poverty/screens/auth/login.dart';
 import 'package:provider/provider.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 void main() {
+  sqfliteFfiInit();
+  databaseFactory = databaseFactoryFfi;
+
   runApp(ChangeNotifierProvider(
   create: (_) => ChatbotProvider(),
   child: const MyApp(),
@@ -43,7 +48,7 @@ class MyApp extends StatelessWidget {
       ),
       debugShowCheckedModeBanner: false,
       home: 
-          AppWrapper(),
+          LoginScreen(),
     );
   }
 }

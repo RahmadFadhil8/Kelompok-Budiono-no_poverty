@@ -7,7 +7,7 @@ class UserModel {
         required this.password,
     });
 
-    final int id;
+    final String id;
     final String email;
     final String nomorHp;
     final String username;
