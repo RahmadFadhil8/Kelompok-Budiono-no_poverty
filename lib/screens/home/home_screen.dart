@@ -127,9 +127,6 @@ jika kamu mengerti jawab : Halo, Ada yang bisa saya bantu?
 
   @override
   Widget build(BuildContext context) {
-    final chatProvider = Provider.of<ChatbotProvider>(context);
-    _sendMessage(chatProvider);
-    print("isWorkMode");
     return Scaffold(
       appBar: AppBar(
         title: Row(
