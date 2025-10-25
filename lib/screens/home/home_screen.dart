@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:no_poverty/Database/database_Service.dart';
 import 'package:no_poverty/screens/home/list_Helper.dart';
 import 'package:no_poverty/screens/home/list_ketegori.dart';
+import 'package:no_poverty/screens/job/job_aktif.dart';
+import 'package:no_poverty/screens/search/job_active.dart';
 import 'package:no_poverty/widgets/custom_Button.dart';
 import 'package:no_poverty/widgets/custom_Listtile.dart';
 import 'package:no_poverty/widgets/custom_card.dart';
@@ -154,12 +156,34 @@ class _HomeScreenState extends State<HomeScreen> {
             // judul Job Aktif
             SizedBox(height: 10),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text("Job Akif"),
-                TextButton(onPressed: () {}, child: Text("Lainnya >")),
-              ],
-            ),
+  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  children: [
+    const Text(
+      "Job Aktif",
+      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+    ),
+    ElevatedButton(
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ActiveJobsScreen()),
+        );
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.blue,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+      ),
+      child: const Text(
+        "Lihat Semua",
+        style: TextStyle(color: Colors.white, fontSize: 14),
+      ),
+    ),
+  ],
+),
+
 
             // CardJob
             SizedBox(height: 16),
