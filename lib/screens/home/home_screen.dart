@@ -2,6 +2,7 @@ import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:flutter/material.dart';
 import 'package:no_poverty/Database/database_Service.dart';
 import 'package:no_poverty/provider/chatbot_provider.dart';
+import 'package:no_poverty/screens/add_job/add_job.dart';
 import 'package:no_poverty/screens/home/list_Helper.dart';
 import 'package:no_poverty/screens/home/list_ketegori.dart';
 import 'package:no_poverty/widgets/custom_Button.dart';
@@ -203,7 +204,9 @@ jika kamu mengerti jawab : Halo, Ada yang bisa saya bantu?
                         ],
                       ),
                     ),
-                    onPress: () {},
+                    onPress: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => addJob()));
+                    },
                   ),
                 ),
                 SizedBox(width: 10),
@@ -239,7 +242,7 @@ jika kamu mengerti jawab : Halo, Ada yang bisa saya bantu?
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text("Job Akif"),
-                TextButton(onPressed: () {}, child: Text("Lainnya >")),
+                TextButton(onPressed: () {}, child: Text("Lainnya >", style: TextStyle(color: Colors.black),)),
               ],
             ),
 
@@ -351,6 +354,7 @@ jika kamu mengerti jawab : Halo, Ada yang bisa saya bantu?
 
             // Helper
             SizedBox(height: 12),
+<<<<<<< HEAD
             Column(
               children: [
                 CustomListile(
@@ -392,6 +396,9 @@ jika kamu mengerti jawab : Halo, Ada yang bisa saya bantu?
               ],
             ),
             Expanded(child: const ListHelper()),
+=======
+            Expanded(child: const ListHelper())
+>>>>>>> fadhil
           ],
         ),
       ),
