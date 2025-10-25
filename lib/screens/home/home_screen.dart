@@ -354,51 +354,7 @@ jika kamu mengerti jawab : Halo, Ada yang bisa saya bantu?
 
             // Helper
             SizedBox(height: 12),
-<<<<<<< HEAD
-            Column(
-              children: [
-                CustomListile(
-                  tileColor: Colors.white,
-                  leading: CircleAvatar(
-                    radius: 20,
-                    backgroundImage: NetworkImage(
-                      "https://picsum.photos/id/237/200/300",
-                    ),
-                  ),
-                  title: "Budi",
-                  subtitle: Row(
-                    children: [
-                      SubTitle1(title: "Cleaning", size: 14),
-                      SizedBox(width: 10),
-                      Icon(Icons.star, size: 14, color: Colors.yellow),
-                      SizedBox(width: 4),
-                      SubTitle1(title: "4.9", size: 14),
-                      SizedBox(width: 10),
-                      Icon(
-                        Icons.location_on_outlined,
-                        size: 16,
-                        color: Colors.grey,
-                      ),
-                      SizedBox(width: 4),
-                      SubTitle1(title: "2.5 Km", size: 14),
-                    ],
-                  ),
-                  trailing: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text("Rp 50.000/jam"),
-                      SizedBox(height: 5),
-                      CustomButton(child: Text("hire"), onPress: () {}),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 16),
-              ],
-            ),
-            Expanded(child: const ListHelper()),
-=======
             Expanded(child: const ListHelper())
->>>>>>> fadhil
           ],
         ),
       ),
