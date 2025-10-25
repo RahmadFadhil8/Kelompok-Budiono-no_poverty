@@ -53,7 +53,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print("isWorkMode");
     return Scaffold(
       appBar: AppBar(
         title: Row(

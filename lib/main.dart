@@ -3,13 +3,19 @@ import 'package:no_poverty/app_wrapper.dart';
 import 'package:no_poverty/provider/chatbot_provider.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await ChatbotProvider().initialMsgAI();
+
+
   runApp(ChangeNotifierProvider(
   create: (_) => ChatbotProvider(),
   child: const MyApp(),
 ));
 
 }
+
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -42,8 +48,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
       debugShowCheckedModeBanner: false,
-      home: 
-          AppWrapper(),
+      home: AppWrapper(),
     );
   }
 }

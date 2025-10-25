@@ -36,6 +36,7 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
 
   void _sendMessage(ChatbotProvider chatProvider) {
     if (msgInpt == null || msgInpt!.trim().isEmpty) return;
+    chatProvider.saveChatFromMe(msgInpt!.trim());
     chatProvider.getMsgAI(msgInpt!.trim());
     _msgCtr.clear();
     msgInpt = '';
