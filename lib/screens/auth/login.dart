@@ -4,6 +4,7 @@ import 'package:no_poverty/services/user_api_services.dart';
 import 'package:no_poverty/Database/user_database/user_database.dart';
 import 'package:no_poverty/screens/auth/register.dart';
 import 'package:no_poverty/screens/main_bottom_navigation.dart';
+import 'package:no_poverty/services/user_api_services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -17,6 +18,8 @@ class _LoginScreenState extends State<LoginScreen> {
   bool EmailSelected = true;
   bool isLoggedIn = false;
   bool _isObscure = true;
+
+  UserApiService users = UserApiService(); 
 
   final TextEditingController _userController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -51,7 +54,6 @@ class _LoginScreenState extends State<LoginScreen> {
     );
     return;
   }
-
   try {
     final user = await userApiService.loginUser(
       email: input,

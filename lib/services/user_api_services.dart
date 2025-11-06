@@ -5,6 +5,19 @@ import 'package:no_poverty/models/user_model.dart';
 class UserApiService {
   final String baseUrl = "http://localhost:5000/users"; // ganti sesuai IP/device
 
+  Future <List<UserModel>> getAll () async {
+    try {
+      final res = await http.get(
+        Uri.parse(baseUrl),
+        headers: {'Content-Type': 'application/json'}
+      );
+      final data = jsonDecode(res.body);
+      return data is List ? data.map((item) {return UserModel.fromJson(item);}).toList() : [];
+    } catch (e) {
+      print("error saat ambil data user: ${e}");
+      return [];
+    }
+  }
   // 🔹 Register user
   Future<UserModel> registerUser({
     required String email,
@@ -34,6 +47,32 @@ class UserApiService {
     } else {
       final data = jsonDecode(res.body);
       throw Exception(data['message'] ?? 'Registrasi gagal');
+    }
+  }
+
+  Future <UserModel> getByid (String id) async{
+    try {
+      final res = await http.get(
+        Uri.parse("http://localhost:5000/users/${id}"),
+        headers: {'Content-Type': 'application/json'},
+      );
+      final data = jsonDecode(res.body);
+      print("Data user dari API: $data");
+      return UserModel.fromJson(data); 
+    } catch (e) {
+      print("eror saat ambil data user: ${e}");
+      return UserModel(
+        id: "", 
+        email: "", 
+        nomorHp: "", 
+        username: "", 
+        password: "", 
+        nama: "", 
+        fotoKTP: "", 
+        lokasi: "", 
+        pekerjaan: "", 
+        salary: ""
+      );
     }
   }
 
