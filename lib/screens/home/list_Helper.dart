@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:no_poverty/Database/job_database/job_database.dart';
+import 'package:no_poverty/screens/home/datailHelper.dart';
 import 'package:no_poverty/services/user_api_services.dart';
 import 'package:no_poverty/widgets/custom_Button.dart';
 import 'package:no_poverty/widgets/custom_Listtile.dart';
 import 'package:no_poverty/widgets/sub_title1.dart';
+
 
 class ListHelper extends StatefulWidget {
   const ListHelper({super.key});
@@ -14,6 +16,7 @@ class ListHelper extends StatefulWidget {
 
 class _ListHelperState extends State<ListHelper> {
   UserAPIServices users = UserAPIServices();
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,7 +61,9 @@ class _ListHelperState extends State<ListHelper> {
                     children: [
                       Text("${jobs.salary}/jam"),
                       SizedBox(height: 5),
-                      CustomButton(child: Text("hire"), onPress: () {}),
+                      CustomButton(child: Text("Detail"), onPress: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => DetailHelper(Userid: jobs.id)));
+                      }),
                     ],
                   ),
                 ),

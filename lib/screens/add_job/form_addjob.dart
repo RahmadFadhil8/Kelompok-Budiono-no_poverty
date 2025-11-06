@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:no_poverty/Database/database_Service.dart';
 import 'package:no_poverty/services/job_api_services.dart';
 import 'package:no_poverty/widgets/custom_Button.dart';
 import 'package:no_poverty/widgets/title1.dart';
+import 'package:path/path.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sqflite/sqflite.dart';
 
 class FormaddJob extends StatefulWidget {
   const FormaddJob({super.key});
@@ -12,6 +16,26 @@ class FormaddJob extends StatefulWidget {
 }
 
 class _FormaddJobState extends State<FormaddJob> {
+
+  String? userId;
+
+  @override
+  void initState() { 
+    super.initState();
+    takeId();
+  }
+  Future takeId() async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final storedId = prefs.getString("userId");
+    if (storedId != null) {
+      setState(() {
+        userId = storedId;
+      });
+      print("User ID dari SharedPreferences: $userId");
+    } else {
+      print("User ID belum tersimpan di SharedPreferences");
+    }
+  }
 
   JobAPIServices jobs = JobAPIServices();
 
@@ -297,7 +321,7 @@ class _FormaddJobState extends State<FormaddJob> {
                     final tanggalStr = DateFormat('yyyy-MM-dd').format(_selectedDate!);
                     final waktuStr = _selectedTime!.format(context);
 
-                    jobs.create(_judulController.text, _kategori!, _deskripsiController.text, _alamatController.text, _BudgetController.text, Count, tanggalStr, waktuStr, isActive);
+                    jobs.create(userId!, _judulController.text, _kategori!, _deskripsiController.text, _alamatController.text, _BudgetController.text, Count, tanggalStr, waktuStr, isActive);
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text("Job berhasil dikirim!")),
                     );

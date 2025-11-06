@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:no_poverty/Database/database_Service.dart';
 import 'package:no_poverty/screens/add_job/add_job.dart';
 import 'package:no_poverty/screens/home/list_Helper.dart';
@@ -22,33 +25,23 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   bool isWorkMode = false;
-  String? username;
-  
+  String? userId;
+
   @override
-  void initState() {
+  void initState() { 
     super.initState();
-    loadusername();
+    takeId();
   }
-  // fungsi untuk mengambil nama sesuai id yang login
-  Future<void> loadusername() async {
+  Future takeId() async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final userId = prefs.getInt("userId");
-
-    if(userId != null) {
-      final dbpath = await getDatabasesPath();
-      final path = join(dbpath, DatabaseService.DB_NAME);
-      final db = await openDatabase(path);
-
-      final List<Map<String, dynamic>> result = await db.query(
-        "users",
-        where: "id = ?",
-        whereArgs: [userId],
-      );
-      if (result.isNotEmpty) {
-        setState(() {
-          username = result.first['username'];
-        });
-      }
+    final storedId = prefs.getString("userId");
+    if (storedId != null) {
+      setState(() {
+        userId = storedId;
+      });
+      print("User ID dari SharedPreferences: $userId");
+    } else {
+      print("User ID belum tersimpan di SharedPreferences");
     }
   }
 
