@@ -4,6 +4,7 @@ import 'package:no_poverty/models/job_model.dart';
 
 class JobAPIServices {
   Future<JobModel> create(
+    String userId,
     String judulPekerjaan, 
     String kategori, 
     String deskripsi, 
@@ -19,6 +20,7 @@ class JobAPIServices {
         Uri.parse('http://localhost:5000/jobs/tambahjob'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
+          'userId': userId,
           'judulPekerjaan': judulPekerjaan, 
           'kategori': kategori,
           'deskripsi': deskripsi,
@@ -30,7 +32,6 @@ class JobAPIServices {
           'izinkanTawarMenawar': izinkanTawarMenawar,
         })
       );
-      print('Respon status: ${res.statusCode}');
       print('Response body: ${res.body}');
       final datafinal = jsonDecode(res.body);
       return JobModel.fromJson(datafinal);
