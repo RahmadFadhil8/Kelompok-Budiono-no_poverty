@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "626050383133",
+    "project_id": "jobwaroeng",
+    "storage_bucket": "jobwaroeng.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:626050383133:android:0fcadad3e000c9b5b735f4",
+        "android_client_info": {
+          "package_name": "com.example.no_poverty"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKq5fXIMg1TxLAcuRsxP9RlF37x6vdFko"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -19,7 +19,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool isLoggedIn = false;
   bool _isObscure = true;
 
-  UserAPIServices users = UserAPIServices(); 
+  UserApiService users = UserApiService(); 
 
   final TextEditingController _userController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();

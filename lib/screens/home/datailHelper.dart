@@ -13,7 +13,7 @@ class DetailHelper extends StatefulWidget {
 }
 
 class _DetailHelperState extends State<DetailHelper> {
-  UserAPIServices users = UserAPIServices();
+  UserApiService users = UserApiService();
 
   @override
   Widget build(BuildContext context) {

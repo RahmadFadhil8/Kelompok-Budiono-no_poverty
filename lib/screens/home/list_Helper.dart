@@ -15,7 +15,7 @@ class ListHelper extends StatefulWidget {
 }
 
 class _ListHelperState extends State<ListHelper> {
-  UserAPIServices users = UserAPIServices();
+  UserApiService users = UserApiService();
   
   @override
   Widget build(BuildContext context) {

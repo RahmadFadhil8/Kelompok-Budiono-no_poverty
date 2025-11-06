@@ -5,6 +5,19 @@ import 'package:no_poverty/models/user_model.dart';
 class UserApiService {
   final String baseUrl = "http://localhost:5000/users"; // ganti sesuai IP/device
 
+  Future <List<UserModel>> getAll () async {
+    try {
+      final res = await http.get(
+        Uri.parse(baseUrl),
+        headers: {'Content-Type': 'application/json'}
+      );
+      final data = jsonDecode(res.body);
+      return data is List ? data.map((item) {return UserModel.fromJson(item);}).toList() : [];
+    } catch (e) {
+      print("error saat ambil data user: ${e}");
+      return [];
+    }
+  }
   // 🔹 Register user
   Future<UserModel> registerUser({
     required String email,
