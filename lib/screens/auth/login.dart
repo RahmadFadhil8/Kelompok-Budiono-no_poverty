@@ -449,6 +449,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   onPressed: () async{
 
 await AuthServices().signInWithFacebook();
+print("sign with fesnuk");
 
                                     final snackbar = SnackBar(
                                       content: Row(
