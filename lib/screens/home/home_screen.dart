@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:no_poverty/Database/database_Service.dart';
 import 'package:no_poverty/provider/chatbot_provider.dart';
 import 'package:no_poverty/screens/add_job/add_job.dart';
@@ -22,14 +25,27 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   bool isWorkMode = false;
+  String? userId;
   String? username;
 
   @override
-  void initState() {
+  void initState() { 
     super.initState();
-    loadusername();
+    takeId();
   }
 
+  Future takeId() async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final storedId = prefs.getString("userId");
+    if (storedId != null) {
+      setState(() {
+        userId = storedId;
+      });
+      print("User ID dari SharedPreferences: $userId");
+    } else {
+      print("User ID belum tersimpan di SharedPreferences");
+    }
+  }
   void _sendMessage(ChatbotProvider chatProvider) {
     chatProvider.getMsgAI(
       """Kamu adalah asisten AI resmi dari aplikasi bernama JobWaroeng, sebuah platform digital berbasis mobile dan website yang berfungsi sebagai penghubung antara pencari kerja paruh waktu (part-time) dengan pemberi kerja.
