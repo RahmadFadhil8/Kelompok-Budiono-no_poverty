@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:no_poverty/models/verifikasi_data_model.dart';
+import 'package:no_poverty/models/verification_data_model.dart';
 import 'package:no_poverty/screens/Verifikasi/Review.dart';
 import 'package:no_poverty/screens/Verifikasi/widget/widget_UploadCard.dart';
 
@@ -30,7 +30,7 @@ class _VerifikasiSTNKState extends State<VerifikasiSTNK> {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null){
       setState(() {
-        widget.verifikasiData.stnkFile = File(pickedFile.path);
+        widget.verifikasiData.stnkImage = File(pickedFile.path);
       });
     }
   }
@@ -99,14 +99,12 @@ class _VerifikasiSTNKState extends State<VerifikasiSTNK> {
 
                   UploadCard(
                     title: "Bukti Kendaraan (Opsional)", 
-                    file: widget.verifikasiData.stnkFile,
+                    file: widget.verifikasiData.stnkImage,
                     onTap: (){_pickImage();}, 
                     successText: "STNK berhasil diupload",
                     iconData: Icons.file_upload_outlined,
                     hintText: "Upload STNK (Opsional)",),
                   const SizedBox(height: 16,),
-
-                  
 
                 ],
               ),),

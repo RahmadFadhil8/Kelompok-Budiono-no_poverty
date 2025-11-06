@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:no_poverty/models/verifikasi_data_model.dart';
-import 'package:no_poverty/services/verifikasi_API_service.dart';
+import 'package:no_poverty/models/verification_data_model.dart';
+import 'package:no_poverty/services/verifikasi_api_service.dart';
 import 'package:no_poverty/screens/main_bottom_navigation.dart';
 
 
@@ -108,7 +108,7 @@ class _reviewDokumenState extends State<reviewDokumen> {
                   const SizedBox(height: 10),
                   _buildDocRow("SKCK", data.isSKCKcomplete),
                   const SizedBox(height: 10),
-                  if (data.stnkFile != null)
+                  if (data.stnkImage != null)
                   _buildDocRow("STNK", data.isSTNKcomplete),
                   const SizedBox(height: 20),
 

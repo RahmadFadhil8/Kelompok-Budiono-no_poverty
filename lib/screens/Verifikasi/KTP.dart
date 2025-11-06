@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:no_poverty/models/verifikasi_data_model.dart';
+import 'package:no_poverty/models/verification_data_model.dart';
 import 'package:no_poverty/screens/Verifikasi/SKCK.dart';
 import 'package:no_poverty/screens/Verifikasi/widget/widget_UploadCard.dart';
 

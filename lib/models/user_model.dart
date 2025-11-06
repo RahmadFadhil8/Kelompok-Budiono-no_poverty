@@ -1,3 +1,5 @@
+import 'package:no_poverty/models/verification_data_model.dart';
+
 class UserModel {
     final String id;
     final String email;
@@ -8,6 +10,8 @@ class UserModel {
     final String lokasi;
     final String pekerjaan;
     final String salary;
+    final bool isVerif;
+    final VerifikasiData? verifikasi;
 
     UserModel({
         required this.id,
@@ -18,13 +22,15 @@ class UserModel {
         required this.nama,
         required this.lokasi,
         required this.pekerjaan,
-        required this.salary
+        required this.salary,
+        this.isVerif = false,
+        this.verifikasi,
     });
 
 
     factory UserModel.fromJson(Map<String, dynamic> json){ 
         return UserModel(
-            id: json["_id"]?.toString() ?? "",
+            id: json["id"]?.toString() ?? "",
             email: json["email"] ?? "",
             username: json["username"] ?? "",
             password: json["password"] ?? "",
@@ -32,7 +38,9 @@ class UserModel {
             nomorHp: json["nomorHp"] ?? "",
             lokasi: json["lokasi"] ?? "",
             pekerjaan: json["pekerjaan"] ?? "",
-            salary: json["salary"] ?? ""
+            salary: json["salary"] ?? "",
+            isVerif: json["isVerif"] ?? false,
+            verifikasi: json["verifikasi"] != null ? VerifikasiData.fromJson(json["verifikasi"]) : null,
         );
     }
 
@@ -46,6 +54,8 @@ class UserModel {
         "lokasi": lokasi,
         "pekerjaan": pekerjaan,
         "salary": salary,
+        "isVerif": isVerif,
+        "verifikasi": verifikasi?.toJson(),
     };
 
 }

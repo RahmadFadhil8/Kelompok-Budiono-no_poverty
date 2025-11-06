@@ -1,16 +1,17 @@
+import 'dart:convert';
+
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:no_poverty/Database/database_Service.dart';
 import 'package:no_poverty/provider/chatbot_provider.dart';
 import 'package:no_poverty/screens/add_job/add_job.dart';
 import 'package:no_poverty/screens/home/list_Helper.dart';
 import 'package:no_poverty/screens/home/list_ketegori.dart';
 import 'package:no_poverty/widgets/custom_Button.dart';
-import 'package:no_poverty/widgets/custom_Listtile.dart';
 import 'package:no_poverty/widgets/custom_card.dart';
 import 'package:no_poverty/widgets/sub_title1.dart';
 import 'package:no_poverty/widgets/title1.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
@@ -24,14 +25,27 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   bool isWorkMode = false;
+  String? userId;
   String? username;
 
   @override
-  void initState() {
+  void initState() { 
     super.initState();
-    loadusername();
+    takeId();
   }
 
+  Future takeId() async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final storedId = prefs.getString("userId");
+    if (storedId != null) {
+      setState(() {
+        userId = storedId;
+      });
+      print("User ID dari SharedPreferences: $userId");
+    } else {
+      print("User ID belum tersimpan di SharedPreferences");
+    }
+  }
   void _sendMessage(ChatbotProvider chatProvider) {
     chatProvider.getMsgAI(
       """Kamu adalah asisten AI resmi dari aplikasi bernama JobWaroeng, sebuah platform digital berbasis mobile dan website yang berfungsi sebagai penghubung antara pencari kerja paruh waktu (part-time) dengan pemberi kerja.

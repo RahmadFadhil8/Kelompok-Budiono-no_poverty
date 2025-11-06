@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:no_poverty/models/verifikasi_data_model.dart';
+import 'package:no_poverty/models/verification_data_model.dart';
 import 'package:no_poverty/screens/Verifikasi/STNK.dart';
 import 'package:no_poverty/screens/Verifikasi/widget/widget_UploadCard.dart';
 
@@ -30,7 +30,7 @@ class _VerifikasiSKCKState extends State<VerifikasiSKCK> {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null){
       setState(() {
-        widget.verifikasiData.skckFile = File(pickedFile.path);
+        widget.verifikasiData.skckImage = File(pickedFile.path);
       });
     }
   }
@@ -106,7 +106,7 @@ class _VerifikasiSKCKState extends State<VerifikasiSKCK> {
 
                   UploadCard(
                     title: "Upload SKCK", 
-                    file: widget.verifikasiData.skckFile,
+                    file: widget.verifikasiData.skckImage,
                     onTap: (){_pickImage();}, 
                     successText: "SKCK berhasil diupload",
                     iconData: Icons.description_outlined,
