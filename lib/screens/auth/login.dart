@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:no_poverty/services/auth_services.dart';
 import 'package:no_poverty/services/user_api_services.dart';
 import 'package:no_poverty/Database/user_database/user_database.dart';
 import 'package:no_poverty/screens/auth/register.dart';
@@ -445,7 +446,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 child: IconButton(
-                                  onPressed: () {
+                                  onPressed: () async{
+
+await AuthServices().signInWithFacebook();
+print("sign with fesnuk");
+
                                     final snackbar = SnackBar(
                                       content: Row(
                                         children: [
