@@ -2,19 +2,38 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:no_poverty/models/user_model.dart';
 
-class UserAPIServices {
-  Future <List<UserModel>> getAll () async{
-    try {
-      final res = await http.get(
-        Uri.parse("http://localhost:5000/users"),
-        headers: {'Content-Type': 'application/json'},
-      );
+class UserApiService {
+  final String baseUrl = "http://localhost:5000/users"; // ganti sesuai IP/device
+
+  // 🔹 Register user
+  Future<UserModel> registerUser({
+    required String email,
+    required String username,
+    required String nomorHp,
+    required String password,
+  }) async {
+    final url = Uri.parse('$baseUrl/register');
+
+    final body = {
+      "email": email,
+      "username": username,
+      "nomorHp": nomorHp,
+      "password": password,
+      "nama": username, // backend butuh nama
+    };
+
+    final res = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(body),
+    );
+
+    if (res.statusCode == 201) {
       final data = jsonDecode(res.body);
-      print(data);
-      return data is List ? data.map((item) {return UserModel.fromJson(item);}).toList() : []; 
-    } catch (e) {
-      print("eror saat ambil data user: ${e}");
-      return [];
+      return UserModel.fromJson(data['user']);
+    } else {
+      final data = jsonDecode(res.body);
+      throw Exception(data['message'] ?? 'Registrasi gagal');
     }
   }
 
@@ -44,27 +63,30 @@ class UserAPIServices {
     }
   }
 
-  Future<Map<String, dynamic>?> loginUser(String email, String password) async {
-    try {
-      final response = await http.post(
-        Uri.parse("http://localhost:5000/users/login"),
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode({
-          "email": email,
-          "password": password,
-        }),
-      );
+  // 🔹 Login user
+  Future<UserModel> loginUser({
+    required String email,
+    required String password,
+  }) async {
+    final url = Uri.parse('$baseUrl/login');
 
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        return data;
-      } else {
-        print("Login gagal: ${response.body}");
-        return null;
-      }
-    } catch (e) {
-      print("Terjadi kesalahan saat login: $e");
-      return null;
+    final body = {
+      "email": email,
+      "password": password,
+    };
+
+    final res = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(body),
+    );
+
+    if (res.statusCode == 200) {
+      final data = jsonDecode(res.body);
+      return UserModel.fromJson(data['user']);
+    } else {
+      final data = jsonDecode(res.body);
+      throw Exception(data['message'] ?? 'Login gagal');
     }
   }
 }

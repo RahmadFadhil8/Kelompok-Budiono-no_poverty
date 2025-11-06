@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:no_poverty/services/user_api_services.dart';
 import 'package:no_poverty/Database/user_database/user_database.dart';
 import 'package:no_poverty/screens/auth/register.dart';
 import 'package:no_poverty/screens/main_bottom_navigation.dart';
@@ -23,6 +24,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _userController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  final UserApiService userApiService = UserApiService();
+
   @override
   void initState() {
     super.initState();
@@ -40,35 +43,40 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> loginUser() async {
-  final email = _userController.text.trim();
-  final password = _passwordController.text;
+  String input = _userController.text.trim();
+  String password = _passwordController.text;
 
-  if (email.isEmpty || password.isEmpty) {
+  if (input.isEmpty || password.isEmpty) {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Email dan password tidak boleh kosong")),
+      const SnackBar(
+        content: Text("Email/Telepon dan password tidak boleh kosong!"),
+      ),
     );
     return;
   }
-
-  final api = users;
-  final response = await api.loginUser(email, password);
-
-  if (response != null && response["user"] != null) {
-    final user = response["user"];
-
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setBool("isLoggedIn", true);
-    await prefs.setString("userId", user["_id"].toString());
-    await prefs.setString("email", user["email"]);
-    await prefs.setString("username", user["username"]);
-
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => const MainBottomNavigation()),
+  try {
+    final user = await userApiService.loginUser(
+      email: input,
+      password: password,
     );
-  } else {
+
+    // simpan login di shared preferences (optional)
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isLoggedIn', true);
+    await prefs.setString('userEmail', user.email);
+
+    setState(() {
+      isLoggedIn = true;
+    });
+
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Login gagal, periksa kembali email/password")),
+      const SnackBar(content: Text("Login berhasil")),
+    );
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(e.toString().replaceAll('Exception: ', '')),
+      ),
     );
   }
 }
