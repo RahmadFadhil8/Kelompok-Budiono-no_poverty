@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:no_poverty/services/auth_services.dart';
 import 'package:no_poverty/services/user_api_services.dart';
 import 'package:no_poverty/Database/user_database/user_database.dart';
 import 'package:no_poverty/screens/auth/register.dart';
@@ -19,7 +20,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool isLoggedIn = false;
   bool _isObscure = true;
 
-  UserApiService users = UserApiService(); 
+  UserApiService users = UserApiService();
 
   final TextEditingController _userController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -43,43 +44,41 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> loginUser() async {
-  String input = _userController.text.trim();
-  String password = _passwordController.text;
+    String input = _userController.text.trim();
+    String password = _passwordController.text;
 
-  if (input.isEmpty || password.isEmpty) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("Email/Telepon dan password tidak boleh kosong!"),
-      ),
-    );
-    return;
+    if (input.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Email/Telepon dan password tidak boleh kosong!"),
+        ),
+      );
+      return;
+    }
+    try {
+      final user = await userApiService.loginUser(
+        email: input,
+        password: password,
+      );
+
+      // simpan login di shared preferences (optional)
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('isLoggedIn', true);
+      await prefs.setString('userEmail', user.email);
+
+      setState(() {
+        isLoggedIn = true;
+      });
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Login berhasil")));
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString().replaceAll('Exception: ', ''))),
+      );
+    }
   }
-  try {
-    final user = await userApiService.loginUser(
-      email: input,
-      password: password,
-    );
-
-    // simpan login di shared preferences (optional)
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('isLoggedIn', true);
-    await prefs.setString('userEmail', user.email);
-
-    setState(() {
-      isLoggedIn = true;
-    });
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Login berhasil")),
-    );
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(e.toString().replaceAll('Exception: ', '')),
-      ),
-    );
-  }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -445,7 +444,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 child: IconButton(
-                                  onPressed: () {
+                                  onPressed: () async {
+                                    await AuthServices().signInWithFacebook();
+                                    print("sign with fesnuk");
+
                                     final snackbar = SnackBar(
                                       content: Row(
                                         children: [

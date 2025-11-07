@@ -15,7 +15,6 @@ class JobActive extends StatefulWidget {
 }
 
 class _JobActiveState extends State<JobActive> {
-  
   UserApiService users = UserApiService();
   @override
   Widget build(BuildContext context) {
