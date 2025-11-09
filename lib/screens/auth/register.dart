@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:no_poverty/Analytics/analytics_helper.dart';
-import 'package:no_poverty/services/auth_service1.dart';
+import 'package:no_poverty/services/auth_serviceDedi.dart';
 import 'package:no_poverty/services/user_api_services.dart';
 import 'login.dart';
 

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:no_poverty/Analytics/analytics_helper.dart';
 import 'package:no_poverty/screens/auth/login.dart';
-import 'package:no_poverty/services/auth_service1.dart';
+import 'package:no_poverty/services/auth_serviceDedi.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 // Jika kamu pakai FirebaseAuth untuk login/logout, aktifkan ini:
 // import 'package:firebase_auth/firebase_auth.dart';

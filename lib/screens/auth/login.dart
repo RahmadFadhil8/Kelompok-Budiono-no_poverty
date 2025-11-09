@@ -1,9 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:no_poverty/Analytics/analytics_helper.dart';
-import 'package:no_poverty/services/auth_service1.dart';
+import 'package:no_poverty/services/auth_serviceDedi.dart';
 import 'package:no_poverty/services/auth_services.dart';
-import 'package:no_poverty/services/github_services.dart';
 import 'package:no_poverty/services/user_api_services.dart';
 import 'package:no_poverty/Database/user_database/user_database.dart';
 import 'package:no_poverty/screens/auth/register.dart';
@@ -525,8 +524,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 child: IconButton(
-                                  onPressed: () async{
-                                    await GitHubAuth().signInWithGitHub();
+                                  onPressed: () {
                                     print("login dengan github");
                                     final snackbar = SnackBar(
                                       content: Row(
