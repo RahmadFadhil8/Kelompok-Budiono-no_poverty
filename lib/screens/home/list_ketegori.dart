@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:no_poverty/Analytics/analytics_helper.dart';
 import 'package:no_poverty/widgets/custom_Button.dart';
 import 'package:no_poverty/widgets/title1.dart';
 
@@ -10,6 +11,8 @@ class KategotiList extends StatefulWidget {
 }
 
 class _KategotiListState extends State<KategotiList> {
+  MyAnalytics analytics = MyAnalytics();
+
   List<Map<String, dynamic>> daftarKetegori = [
     {"nama": "Cleaning", "icon": Icons.cleaning_services},
     {"nama": "Home Assistance", "icon": Icons.home_repair_service},
@@ -60,7 +63,9 @@ class _KategotiListState extends State<KategotiList> {
                         ],
                       ),
                     ),
-                    onPress: () {},
+                    onPress: () async{
+                      await analytics.clikcbutton("kategori ${kategori['nama']}");
+                    },
                   );
                 },
               ),
