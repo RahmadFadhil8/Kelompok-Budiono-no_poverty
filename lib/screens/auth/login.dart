@@ -445,8 +445,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                                 child: IconButton(
                                   onPressed: () async {
-                                    await AuthServices().signInWithFacebook();
-                                    print("sign with fesnuk");
+                                    await AuthServices().signInWithGitHub();
+                                    print("sign with github");
 
                                     final snackbar = SnackBar(
                                       content: Row(
@@ -462,7 +462,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                           ),
                                           SizedBox(width: 10),
                                           Text(
-                                            "Sign up for Facebook coming soon!",
+                                            "Sign up with github success",
                                             style: TextStyle(
                                               color: Colors.black,
                                             ),
@@ -485,7 +485,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     ).showSnackBar(snackbar);
                                   },
                                   icon: Image.network(
-                                    'https://cdn-icons-png.flaticon.com/128/5968/5968764.png',
+                                    'https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png',
                                     width: 25,
                                     height: 25,
                                   ),
