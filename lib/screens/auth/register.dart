@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:no_poverty/Analytics/analytics_helper.dart';
+import 'package:no_poverty/services/auth_serviceDedi.dart';
 import 'package:no_poverty/services/user_api_services.dart';
 import 'login.dart';
 
@@ -20,6 +22,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _confirmPasswordController = TextEditingController();
   
   final UserApiService userApiService = UserApiService();
+
+  MyAnalytics analytics = MyAnalytics();
+
+  final AuthService1 _authService = AuthService1();
  
   @override
   void dispose() {
@@ -32,51 +38,71 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Future<void> _registerUser() async {
-  String email = _emailController.text.trim();
-  String nomorHP = _nomorHPControler.text.trim();
-  String username = _usernameController.text.trim();
-  String password = _passwordController.text.trim();
-  String confirmPassword = _confirmPasswordController.text.trim();
+    String email = _emailController.text.trim();
+    String nomorHP = _nomorHPControler.text.trim();
+    String username = _usernameController.text.trim();
+    String password = _passwordController.text.trim();
+    String confirmPassword = _confirmPasswordController.text.trim();
 
-  // validasi sama seperti sebelumnya
-  if (email.isEmpty || nomorHP.isEmpty || username.isEmpty || password.isEmpty) {
-    // ... tampilkan snackbar error
-    return;
+    // validasi sama seperti sebelumnya
+    if (email.isEmpty || nomorHP.isEmpty || username.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Semua field wajib diisi!"),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    if (password != confirmPassword) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Password dan konfirmasi tidak sama!"),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    try {
+      final user = await _authService.signUpWithEmailPassword(
+        email,
+        password,
+      );
+
+      analytics.userRegister(email);
+
+      if (user != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Registrasi berhasil!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        // Setelah register, langsung arahkan ke halaman login
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const LoginScreen()),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Registrasi gagal. Coba lagi."),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Registrasi gagal: ${e.toString().replaceAll('Exception: ', '')}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
-
-  if (password != confirmPassword) {
-    // ... tampilkan snackbar error
-    return;
-  }
-
-  try {
-    final user = await userApiService.registerUser(
-      email: email,
-      username: username,
-      nomorHp: nomorHP,
-      password: password,
-    );
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Registrasi berhasil!'),
-        backgroundColor: Colors.green,
-      ),
-    );
-
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => const LoginScreen()),
-    );
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Registrasi gagal: ${e.toString().replaceAll('Exception: ', '')}'),
-        backgroundColor: Colors.red,
-      ),
-    );
-  }
-}
 
   @override
   Widget build(BuildContext context) {

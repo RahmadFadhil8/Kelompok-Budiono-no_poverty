@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:no_poverty/Analytics/analytics_helper.dart';
 import 'package:no_poverty/screens/search/job_active.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -11,14 +12,28 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController Searchmode = TextEditingController();
   String searchQuery = '';
+
+  MyAnalytics analytics = MyAnalytics();
+  
   @override
   void initState() {
     super.initState();
     Searchmode.addListener(() {
+      final query = Searchmode.text.trim();
       setState(() {
-        searchQuery = Searchmode.text;
+        searchQuery = query;
       });
+
+      if (query.isEmpty) {
+        analytics.userpencarian(query);
+      }
     },);
+  }
+
+  @override
+  void dispose() {
+    Searchmode.dispose();
+    super.dispose();
   }
 
   @override

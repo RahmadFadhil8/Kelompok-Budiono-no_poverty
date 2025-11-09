@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:no_poverty/Analytics/analytics_helper.dart';
+import 'package:no_poverty/services/auth_serviceDedi.dart';
 import 'package:no_poverty/services/auth_services.dart';
 import 'package:no_poverty/services/user_api_services.dart';
 import 'package:no_poverty/Database/user_database/user_database.dart';
@@ -16,12 +18,16 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+
   bool EmailSelected = true;
   bool isLoggedIn = false;
   bool _isObscure = true;
 
   UserApiService users = UserApiService();
+  MyAnalytics analytics = MyAnalytics();
+  
 
+  final AuthService1 _authService = AuthService1();
   final TextEditingController _userController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -32,6 +38,14 @@ class _LoginScreenState extends State<LoginScreen> {
     super.initState();
     checkLoginStatus();
   }
+
+  @override
+  void dispose() {
+    _userController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
 
   void checkLoginStatus() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -56,26 +70,36 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
     try {
-      final user = await userApiService.loginUser(
-        email: input,
-        password: password,
-      );
+      final user = await _authService.signInWithEmailPassword(input,password,);
 
-      // simpan login di shared preferences (optional)
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('isLoggedIn', true);
-      await prefs.setString('userEmail', user.email);
+      
+      
+      if (user != null) {  
 
-      setState(() {
-        isLoggedIn = true;
-      });
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('isLoggedIn', true);
+        await prefs.setString('userId', user.uid);
+        await prefs.setString('userEmail', user.email ?? '');
 
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("Login berhasil")));
+        await analytics.userLogin(input);
+        await analytics.usertimeout();
+        await analytics.userId(user.uid);
+        await analytics.userpoperty(user.email);
+
+        setState(() {
+          isLoggedIn = true;
+        });
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text("Login berhasil")));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Login gagal. Periksa email dan password.")),
+        );
+      }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.toString().replaceAll('Exception: ', ''))),
+        SnackBar(content: Text("Terjadi kesalahan: $e")),
       );
     }
   }
@@ -349,6 +373,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
 
+                          // untuk login
                           const SizedBox(height: 18),
                           ElevatedButton(
                             style: ElevatedButton.styleFrom(
@@ -500,6 +525,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                                 child: IconButton(
                                   onPressed: () {
+                                    print("login dengan github");
                                     final snackbar = SnackBar(
                                       content: Row(
                                         children: [

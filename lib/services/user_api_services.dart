@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:no_poverty/models/user_model.dart';
 
 class UserApiService {
-  final String baseUrl = "http://localhost:5000/users"; // ganti sesuai IP/device
+  final String baseUrl = "http://10.0.2.2:5000/users"; // ganti sesuai IP/device
 
   Future <List<UserModel>> getAll () async {
     try {
