@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:no_poverty/services/auth_service.dart';
+import 'package:no_poverty/screens/auth/login.dart';
 import 'package:no_poverty/services/user_api_services.dart';
-import 'login.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -14,17 +15,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _obscureConfirm = true;
 
   final _emailController = TextEditingController();
-  final _nomorHPControler = TextEditingController();
+  final _nomorHPController = TextEditingController();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  
-  final UserApiService userApiService = UserApiService();
- 
+
+  final AuthService _authService = AuthService();
+  final UserApiService _userApiService = UserApiService();
+
   @override
   void dispose() {
     _emailController.dispose();
-    _nomorHPControler.dispose();
+    _nomorHPController.dispose();
     _usernameController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
@@ -32,51 +34,74 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Future<void> _registerUser() async {
-  String email = _emailController.text.trim();
-  String nomorHP = _nomorHPControler.text.trim();
-  String username = _usernameController.text.trim();
-  String password = _passwordController.text.trim();
-  String confirmPassword = _confirmPasswordController.text.trim();
+    final email = _emailController.text.trim();
+    final nomorHP = _nomorHPController.text.trim();
+    final username = _usernameController.text.trim();
+    final password = _passwordController.text.trim();
+    final confirmPassword = _confirmPasswordController.text.trim();
 
-  // validasi sama seperti sebelumnya
-  if (email.isEmpty || nomorHP.isEmpty || username.isEmpty || password.isEmpty) {
-    // ... tampilkan snackbar error
-    return;
+    // 🔹 Validasi input
+    if (email.isEmpty || nomorHP.isEmpty || username.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Semua field harus diisi!"),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    if (password != confirmPassword) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Password tidak sama!"),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    try {
+      // 🔹 Register ke Firebase Authentication
+      final user = await _authService.signUpWithEmailPassword(email, password);
+
+      if (user != null) {
+        // 🔹 Simpan data tambahan ke API lokal / database kamu
+        await _userApiService.registerUser(
+          email: email,
+          username: username,
+          nomorHp: nomorHP,
+          password: password,
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Registrasi berhasil! Silakan login."),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const LoginScreen()),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Registrasi gagal di Firebase."),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Error: ${e.toString()}"),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
-
-  if (password != confirmPassword) {
-    // ... tampilkan snackbar error
-    return;
-  }
-
-  try {
-    final user = await userApiService.registerUser(
-      email: email,
-      username: username,
-      nomorHp: nomorHP,
-      password: password,
-    );
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Registrasi berhasil!'),
-        backgroundColor: Colors.green,
-      ),
-    );
-
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => const LoginScreen()),
-    );
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Registrasi gagal: ${e.toString().replaceAll('Exception: ', '')}'),
-        backgroundColor: Colors.red,
-      ),
-    );
-  }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -96,11 +121,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const ListTile(
-                  leading: Icon(
-                    Icons.storefront,
-                    size: 70,
-                    color: Colors.white,
-                  ),
+                  leading: Icon(Icons.storefront, size: 70, color: Colors.white),
                   title: Text(
                     "JobWaroeng",
                     style: TextStyle(
@@ -136,9 +157,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           onTap: () {
                             Navigator.pushReplacement(
                               context,
-                              MaterialPageRoute(
-                                builder: (_) => const LoginScreen(),
-                              ),
+                              MaterialPageRoute(builder: (_) => const LoginScreen()),
                             );
                           },
                           child: Container(
@@ -173,298 +192,99 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
                 const SizedBox(height: 35),
-
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  width: 400,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withAlpha(300),
-                        blurRadius: 4,
-                        offset: const Offset(0, 5),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    children: [
-                      TextField(
-                        controller: _emailController,
-                        keyboardType: TextInputType.emailAddress,
-                        decoration: InputDecoration(
-                          hintText: "Email",
-                          prefixIcon: const Icon(Icons.email),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(18),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 14,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 18),
-                      TextField(
-                        controller: _nomorHPControler,
-                        decoration: InputDecoration(
-                          hintText: "nomorHP",
-                          prefixIcon: const Icon(Icons.phone),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(18),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 14,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 18),
-                      TextField(
-                        controller: _usernameController,
-                        decoration: InputDecoration(
-                          hintText: "Username",
-                          prefixIcon: const Icon(Icons.person),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(18),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 14,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 18),
-                      TextField(
-                        controller: _passwordController,
-                        obscureText: _obscurePassword,
-                        decoration: InputDecoration(
-                          hintText: "Password",
-                          prefixIcon: const Icon(Icons.lock),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(18),
-                          ),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _obscurePassword
-                                  ? Icons.visibility_off
-                                  : Icons.visibility,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _obscurePassword = !_obscurePassword;
-                              });
-                            },
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 14,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 18),
-                      TextField(
-                        controller: _confirmPasswordController,
-                        obscureText: _obscureConfirm,
-                        decoration: InputDecoration(
-                          hintText: "Confirm Password",
-                          prefixIcon: const Icon(Icons.lock_outline),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(18),
-                          ),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _obscureConfirm
-                                  ? Icons.visibility_off
-                                  : Icons.visibility,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _obscureConfirm = !_obscureConfirm;
-                              });
-                            },
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 14,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 18),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          minimumSize: const Size(320, 50),
-                          backgroundColor: const Color(0xFF02457A),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                        ),
-                        onPressed: _registerUser,
-                        child: const Text(
-                          "Register",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      const Row(
-                        children: [
-                          Expanded(child: Divider(thickness: 1)),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 8.0),
-                            child: Text("atau"),
-                          ),
-                          Expanded(child: Divider(thickness: 1)),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFD6EBEE),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: IconButton(
-                              onPressed: () {
-                                final snackbar = SnackBar(
-                                  content: const Row(
-                                    children: [
-                                      Icon(
-                                        Icons.notifications_active,
-                                        color: Color.fromARGB(255, 75, 74, 74),
-                                      ),
-                                      SizedBox(width: 10),
-                                      Text(
-                                        "Sign up for Google coming soon!",
-                                        style: TextStyle(color: Colors.black),
-                                      ),
-                                    ],
-                                  ),
-                                  duration: const Duration(seconds: 3),
-                                  backgroundColor: const Color(0xFFD6EBEE),
-                                  behavior: SnackBarBehavior.floating,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  margin: const EdgeInsets.symmetric(
-                                    horizontal: 20,
-                                    vertical: 10,
-                                  ),
-                                );
-                                ScaffoldMessenger.of(
-                                  context,
-                                ).showSnackBar(snackbar);
-                              },
-                              icon: Image.network(
-                                'https://cdn-icons-png.flaticon.com/128/281/281764.png',
-                                width: 25,
-                                height: 25,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          Container(
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFD6EBEE),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: IconButton(
-                              onPressed: () {
-                                final snackbar = SnackBar(
-                                  content: const Row(
-                                    children: [
-                                      Icon(
-                                        Icons.notifications_active,
-                                        color: Color.fromARGB(255, 75, 74, 74),
-                                      ),
-                                      SizedBox(width: 10),
-                                      Text(
-                                        "Sign up for Facebook coming soon!",
-                                        style: TextStyle(color: Colors.black),
-                                      ),
-                                    ],
-                                  ),
-                                  duration: const Duration(seconds: 3),
-                                  backgroundColor: const Color(0xFFD6EBEE),
-                                  behavior: SnackBarBehavior.floating,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  margin: const EdgeInsets.symmetric(
-                                    horizontal: 20,
-                                    vertical: 10,
-                                  ),
-                                );
-                                ScaffoldMessenger.of(
-                                  context,
-                                ).showSnackBar(snackbar);
-                              },
-                              icon: Image.network(
-                                'https://cdn-icons-png.flaticon.com/128/5968/5968764.png',
-                                width: 25,
-                                height: 25,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          Container(
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFD6EBEE),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: IconButton(
-                              onPressed: () {
-                                final snackbar = SnackBar(
-                                  content: const Row(
-                                    children: [
-                                      Icon(
-                                        Icons.notifications_active,
-                                        color: Color.fromARGB(255, 75, 74, 74),
-                                      ),
-                                      SizedBox(width: 10),
-                                      Text(
-                                        "Sign up for Apple coming soon!",
-                                        style: TextStyle(color: Colors.black),
-                                      ),
-                                    ],
-                                  ),
-                                  duration: const Duration(seconds: 3),
-                                  backgroundColor: const Color(0xFFD6EBEE),
-                                  behavior: SnackBarBehavior.floating,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  margin: const EdgeInsets.symmetric(
-                                    horizontal: 20,
-                                    vertical: 10,
-                                  ),
-                                );
-                                ScaffoldMessenger.of(
-                                  context,
-                                ).showSnackBar(snackbar);
-                              },
-                              icon: Image.network(
-                                'https://cdn-icons-png.flaticon.com/128/0/747.png',
-                                width: 25,
-                                height: 25,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
+                _buildForm(),
               ],
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildForm() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      width: 400,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withAlpha(300),
+            blurRadius: 4,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          _buildTextField(_emailController, "Email", Icons.email),
+          const SizedBox(height: 18),
+          _buildTextField(_nomorHPController, "Nomor HP", Icons.phone),
+          const SizedBox(height: 18),
+          _buildTextField(_usernameController, "Username", Icons.person),
+          const SizedBox(height: 18),
+          _buildPasswordField(_passwordController, "Password", _obscurePassword,
+              () => setState(() => _obscurePassword = !_obscurePassword)),
+          const SizedBox(height: 18),
+          _buildPasswordField(
+              _confirmPasswordController,
+              "Konfirmasi Password",
+              _obscureConfirm,
+              () => setState(() => _obscureConfirm = !_obscureConfirm)),
+          const SizedBox(height: 18),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              minimumSize: const Size(320, 50),
+              backgroundColor: const Color(0xFF02457A),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
+            ),
+            onPressed: _registerUser,
+            child: const Text(
+              "Register",
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTextField(
+      TextEditingController controller, String hint, IconData icon) {
+    return TextField(
+      controller: controller,
+      decoration: InputDecoration(
+        hintText: hint,
+        prefixIcon: Icon(icon),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(18)),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      ),
+    );
+  }
+
+  Widget _buildPasswordField(TextEditingController controller, String hint,
+      bool obscure, VoidCallback toggle) {
+    return TextField(
+      controller: controller,
+      obscureText: obscure,
+      decoration: InputDecoration(
+        hintText: hint,
+        prefixIcon: const Icon(Icons.lock),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(18)),
+        suffixIcon: IconButton(
+          icon: Icon(obscure ? Icons.visibility_off : Icons.visibility),
+          onPressed: toggle,
+        ),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       ),
     );
   }

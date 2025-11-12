@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:no_poverty/models/user_model.dart';
 
 class UserApiService {
-  final String baseUrl = "http://localhost:5000/users"; // ganti sesuai IP/device
+  final String baseUrl = "http://192.168.1.22:5000/users"; // ganti sesuai IP/device
 
   Future <List<UserModel>> getAll () async {
     try {
@@ -53,7 +53,7 @@ class UserApiService {
   Future <UserModel> getByid (String id) async{
     try {
       final res = await http.get(
-        Uri.parse("http://localhost:5000/users/${id}"),
+        Uri.parse("http://192.168.1.22:5000/users/${id}"),
         headers: {'Content-Type': 'application/json'},
       );
       final data = jsonDecode(res.body);
