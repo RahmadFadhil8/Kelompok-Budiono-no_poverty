@@ -6,11 +6,15 @@ import 'package:flutter/material.dart';
 class AuthServices {
   final currUser = FirebaseAuth.instance.currentUser;
 
+  // ==========================
+  // FACEBOOK LOGIN
+  // ==========================
   Future<UserCredential> signInWithFacebook() async {
     final LoginResult loginResult = await FacebookAuth.instance.login();
 
     final OAuthCredential facebookAuthCredential =
         FacebookAuthProvider.credential(loginResult.accessToken!.tokenString);
+
     return FirebaseAuth.instance.signInWithCredential(facebookAuthCredential);
   }
 
@@ -19,7 +23,6 @@ class AuthServices {
   // ==========================================
 
   /// Kirim OTP ke nomor telepon
-  /// Gunakan di emulator: +1 650-555-1234 → OTP otomatis: 5555453
   Future<String?> sendOTP(String phoneNumber, BuildContext context) async {
     String? verificationId;
     Completer<String?> completer = Completer();
@@ -38,8 +41,10 @@ class AuthServices {
           } else if (e.code == 'quota-exceeded') {
             errorMsg = "Kuota SMS Firebase habis. Coba lagi nanti.";
           } else if (e.code.contains('BILLING')) {
-            errorMsg = "Billing belum diaktifkan di Firebase. Aktifkan di console.firebase.google.com";
+            errorMsg =
+                "Billing belum diaktifkan di Firebase. Aktifkan di console.firebase.google.com";
           }
+
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(errorMsg)),
           );
@@ -75,19 +80,24 @@ class AuthServices {
   }
 
   /// Verifikasi OTP dan login
-  Future<User?> verifyOTP(String verificationId, String otp, BuildContext context) async {
+  Future<User?> verifyOTP(
+      String verificationId, String otp, BuildContext context) async {
     try {
       final credential = PhoneAuthProvider.credential(
         verificationId: verificationId,
         smsCode: otp,
       );
-      final userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+
+      final userCredential =
+          await FirebaseAuth.instance.signInWithCredential(credential);
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("Login dengan OTP berhasil!"),
           backgroundColor: Colors.green,
         ),
       );
+
       return userCredential.user;
     } on FirebaseAuthException catch (e) {
       String errorMsg = "OTP salah atau kadaluarsa";
@@ -96,6 +106,7 @@ class AuthServices {
       } else if (e.code == 'session-expired') {
         errorMsg = "Sesi OTP kadaluarsa. Kirim ulang.";
       }
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(errorMsg)),
       );
@@ -106,10 +117,11 @@ class AuthServices {
       );
       return null;
     }
-    print(FirebaseAuth.instance.signInWithCredential(facebookAuthCredential));
-    return FirebaseAuth.instance.signInWithCredential(facebookAuthCredential);
   }
 
+  // ==========================
+  // GITHUB LOGIN
+  // ==========================
   Future<UserCredential> signInWithGitHub() async {
     GithubAuthProvider githubProvider = GithubAuthProvider();
     return await FirebaseAuth.instance.signInWithProvider(githubProvider);
