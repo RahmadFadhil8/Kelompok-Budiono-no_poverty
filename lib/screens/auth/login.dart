@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:no_poverty/services/Auth_Google.dart';
 import 'package:no_poverty/services/auth_services.dart';
 import 'package:no_poverty/services/user_api_services.dart';
 import 'package:no_poverty/Database/user_database/user_database.dart';
@@ -392,42 +393,23 @@ class _LoginScreenState extends State<LoginScreen> {
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 child: IconButton(
-                                  onPressed: () {
-                                    final snackbar = SnackBar(
-                                      content: Row(
-                                        children: [
-                                          Icon(
-                                            Icons.notifications_active,
-                                            color: const Color.fromARGB(
-                                              255,
-                                              75,
-                                              74,
-                                              74,
-                                            ),
-                                          ),
-                                          SizedBox(width: 10),
-                                          Text(
-                                            "Sign up for Google coming soon!",
-                                            style: TextStyle(
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      duration: Duration(seconds: 3),
-                                      backgroundColor: Color(0xFFD6EBEE),
-                                      behavior: SnackBarBehavior.floating,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      margin: EdgeInsets.symmetric(
-                                        horizontal: 20,
-                                        vertical: 10,
-                                      ),
-                                    );
-                                    ScaffoldMessenger.of(
-                                      context,
-                                    ).showSnackBar(snackbar);
+                                  onPressed: () async {
+                                    try {
+                                      final result = await AuthGoogle().signInWithGoogle();
+                                      if (result == null){
+                                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Login dibatalkan")),);
+                                        return;
+                                      }
+                                      final isNew = result.additionalUserInfo?.isNewUser ?? false;
+
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text(isNew? "Akun baru bersihal dibuat!" : "Berhasil login!",))
+                                      );
+
+                                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> MainBottomNavigation() ));
+                                    } catch (e) {
+                                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Login gagal: $e")),);
+                                    }
                                   },
                                   icon: Image.network(
                                     'https://cdn-icons-png.flaticon.com/128/281/281764.png',
