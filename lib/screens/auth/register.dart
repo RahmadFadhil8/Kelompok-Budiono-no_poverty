@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:no_poverty/services/user_api_services.dart';
 import 'login.dart';
+import 'package:no_poverty/services/auth_services.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -12,6 +13,11 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   bool _obscurePassword = true;
   bool _obscureConfirm = true;
+  bool EmailSelected = true;
+  bool _otpSent = false;
+  String? _verificationId;
+  final TextEditingController _otpController = TextEditingController();
+  final TextEditingController _namaController = TextEditingController();
 
   final _emailController = TextEditingController();
   final _nomorHPControler = TextEditingController();
@@ -20,6 +26,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _confirmPasswordController = TextEditingController();
   
   final UserApiService userApiService = UserApiService();
+
+  bool _isLoading = false;
  
   @override
   void dispose() {
@@ -28,55 +36,77 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _usernameController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
+    _otpController.dispose();
+    _namaController.dispose();
     super.dispose();
   }
 
   Future<void> _registerUser() async {
-  String email = _emailController.text.trim();
-  String nomorHP = _nomorHPControler.text.trim();
-  String username = _usernameController.text.trim();
-  String password = _passwordController.text.trim();
-  String confirmPassword = _confirmPasswordController.text.trim();
+    String email = _emailController.text.trim();
+    String nomorHP = _nomorHPControler.text.trim();
+    String username = _usernameController.text.trim();
+    String password = _passwordController.text.trim();
+    String confirmPassword = _confirmPasswordController.text.trim();
+    String nama = _namaController.text.trim();
 
-  // validasi sama seperti sebelumnya
-  if (email.isEmpty || nomorHP.isEmpty || username.isEmpty || password.isEmpty) {
-    // ... tampilkan snackbar error
-    return;
+    if (nama.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Nama lengkap tidak boleh kosong!")),
+      );
+      return;
+    }
+
+    if (EmailSelected) {
+      if (email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Email dan password tidak boleh kosong!")),
+        );
+        return;
+      }
+      if (password != confirmPassword) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Password tidak cocok!")),
+        );
+        return;
+      }
+    } else {
+      if (nomorHP.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Nomor HP tidak boleh kosong!")),
+        );
+        return;
+      }
+    }
+
+    try {
+      final user = await userApiService.registerUser(
+        email: EmailSelected ? email : "",
+        username: username,
+        nomorHp: !EmailSelected ? nomorHP : "",
+        password: EmailSelected ? password : "",
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Registrasi berhasil!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      // LANGSUNG KE LOGIN — DIPINDAH KE SINI
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const LoginScreen()),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Registrasi gagal: ${e.toString().replaceAll('Exception: ', '')}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
-
-  if (password != confirmPassword) {
-    // ... tampilkan snackbar error
-    return;
-  }
-
-  try {
-    final user = await userApiService.registerUser(
-      email: email,
-      username: username,
-      nomorHp: nomorHP,
-      password: password,
-    );
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Registrasi berhasil!'),
-        backgroundColor: Colors.green,
-      ),
-    );
-
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => const LoginScreen()),
-    );
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Registrasi gagal: ${e.toString().replaceAll('Exception: ', '')}'),
-        backgroundColor: Colors.red,
-      ),
-    );
-  }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -173,7 +203,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
                 const SizedBox(height: 35),
-
                 Container(
                   padding: const EdgeInsets.all(20),
                   width: 400,
@@ -190,126 +219,252 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   child: Column(
                     children: [
+                      // === NAMA LENGKAP ===
                       TextField(
-                        controller: _emailController,
-                        keyboardType: TextInputType.emailAddress,
+                        controller: _namaController,
                         decoration: InputDecoration(
-                          hintText: "Email",
-                          prefixIcon: const Icon(Icons.email),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(18),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 14,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 18),
-                      TextField(
-                        controller: _nomorHPControler,
-                        decoration: InputDecoration(
-                          hintText: "nomorHP",
-                          prefixIcon: const Icon(Icons.phone),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(18),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 14,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 18),
-                      TextField(
-                        controller: _usernameController,
-                        decoration: InputDecoration(
-                          hintText: "Username",
+                          hintText: "Nama Lengkap",
                           prefixIcon: const Icon(Icons.person),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(18),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 14,
-                          ),
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(18)),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                         ),
                       ),
                       const SizedBox(height: 18),
-                      TextField(
-                        controller: _passwordController,
-                        obscureText: _obscurePassword,
-                        decoration: InputDecoration(
-                          hintText: "Password",
-                          prefixIcon: const Icon(Icons.lock),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(18),
-                          ),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _obscurePassword
-                                  ? Icons.visibility_off
-                                  : Icons.visibility,
+
+                      // === TAB EMAIL / TELEPON ===
+                      Container(
+                        height: 45,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFD6EBEE),
+                          borderRadius: BorderRadius.circular(18),
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    EmailSelected = true;
+                                    _otpSent = false;
+                                    _otpController.clear();
+                                  });
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: EmailSelected ? Colors.white : Colors.transparent,
+                                    borderRadius: BorderRadius.circular(18),
+                                  ),
+                                  alignment: Alignment.center,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(Icons.email_outlined, size: 15),
+                                      SizedBox(width: 10),
+                                      Text("Email"),
+                                    ],
+                                  ),
+                                ),
+                              ),
                             ),
-                            onPressed: () {
-                              setState(() {
-                                _obscurePassword = !_obscurePassword;
-                              });
-                            },
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 14,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 18),
-                      TextField(
-                        controller: _confirmPasswordController,
-                        obscureText: _obscureConfirm,
-                        decoration: InputDecoration(
-                          hintText: "Confirm Password",
-                          prefixIcon: const Icon(Icons.lock_outline),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(18),
-                          ),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _obscureConfirm
-                                  ? Icons.visibility_off
-                                  : Icons.visibility,
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    EmailSelected = false;
+                                    _otpSent = false;
+                                    _otpController.clear();
+                                  });
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: !EmailSelected ? Colors.white : Colors.transparent,
+                                    borderRadius: BorderRadius.circular(18),
+                                  ),
+                                  alignment: Alignment.center,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(Icons.phone, size: 15),
+                                      SizedBox(width: 10),
+                                      Text("Telepon"),
+                                    ],
+                                  ),
+                                ),
+                              ),
                             ),
-                            onPressed: () {
-                              setState(() {
-                                _obscureConfirm = !_obscureConfirm;
-                              });
-                            },
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 14,
-                          ),
+                          ],
                         ),
                       ),
                       const SizedBox(height: 18),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          minimumSize: const Size(320, 50),
-                          backgroundColor: const Color(0xFF02457A),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
+
+                      // === FORM BERDASARKAN PILIHAN ===
+                      if (EmailSelected) ...[
+                        TextField(
+                          controller: _emailController,
+                          keyboardType: TextInputType.emailAddress,
+                          decoration: InputDecoration(
+                            hintText: "Email",
+                            prefixIcon: const Icon(Icons.email),
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(18)),
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                           ),
                         ),
-                        onPressed: _registerUser,
-                        child: const Text(
-                          "Register",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                        const SizedBox(height: 18),
+                        TextField(
+                          controller: _passwordController,
+                          obscureText: _obscurePassword,
+                          decoration: InputDecoration(
+                            hintText: "Password",
+                            prefixIcon: const Icon(Icons.lock),
+                            suffixIcon: IconButton(
+                              icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility),
+                              onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                            ),
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(18)),
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                           ),
                         ),
-                      ),
+                        const SizedBox(height: 18),
+                        TextField(
+                          controller: _confirmPasswordController,
+                          obscureText: _obscureConfirm,
+                          decoration: InputDecoration(
+                            hintText: "Confirm Password",
+                            prefixIcon: const Icon(Icons.lock_outline),
+                            suffixIcon: IconButton(
+                              icon: Icon(_obscureConfirm ? Icons.visibility_off : Icons.visibility),
+                              onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
+                            ),
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(18)),
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                          ),
+                        ),
+                        const SizedBox(height: 18),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            minimumSize: const Size(320, 50),
+                            backgroundColor: const Color(0xFF02457A),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                          ),
+                          onPressed: _isLoading ? null : () async {
+                            if (_namaController.text.trim().isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text("Nama lengkap wajib diisi!")),
+                              );
+                              return;
+                            }
+                            setState(() => _isLoading = true);
+                            await _registerUser();
+                            setState(() => _isLoading = false);
+                          },
+                          child: _isLoading
+                              ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                              : const Text(
+                                  "Register",
+                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                                ),
+                        ),
+                      ] else ...[
+                        TextField(
+                          controller: _nomorHPControler,
+                          keyboardType: TextInputType.phone,
+                          decoration: InputDecoration(
+                            hintText: "Nomor Telepon",
+                            prefixIcon: const Icon(Icons.phone),
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(18)),
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                          ),
+                        ),
+                        const SizedBox(height: 18),
+                        if (!_otpSent)
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              minimumSize: const Size(320, 50),
+                              backgroundColor: const Color(0xFF02457A),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                            ),
+                            onPressed: _isLoading ? null : () async {
+                              String nama = _namaController.text.trim();
+                              String phone = _nomorHPControler.text.trim();
+
+                              if (nama.isEmpty) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text("Nama lengkap wajib diisi sebelum kirim OTP!")),
+                                );
+                                return;
+                              }
+                              if (phone.isEmpty) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text("Nomor HP tidak boleh kosong!")),
+                                );
+                                return;
+                              }
+
+                              if (!phone.startsWith('+')) phone = '+62$phone';
+
+                              setState(() => _isLoading = true);
+
+                              final verId = await AuthServices().sendOTP(phone, context);
+                              if (verId != null) {
+                                setState(() {
+                                  _verificationId = verId;
+                                  _otpSent = true;
+                                });
+                              }
+
+                              setState(() => _isLoading = false);
+                            },
+                            child: _isLoading
+                                ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                                : const Text("Kirim OTP", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                          )
+                        else
+                          Column(
+                            children: [
+                              TextField(
+                                controller: _otpController,
+                                keyboardType: TextInputType.number,
+                                decoration: InputDecoration(
+                                  hintText: "Masukkan OTP",
+                                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(18)),
+                                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                                ),
+                              ),
+                              const SizedBox(height: 18),
+                              // TOMBOL INI YANG DIPERBAIKI
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  minimumSize: const Size(320, 50),
+                                  backgroundColor: const Color(0xFF02457A),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                                ),
+                                onPressed: _isLoading ? null : () async {
+                                  setState(() => _isLoading = true);
+
+                                  final user = await AuthServices().verifyOTP(_verificationId!, _otpController.text, context);
+                                  if (user != null) {
+                                    await _registerUser(); // Ini akan langsung ke Login karena Navigator di dalam _registerUser
+                                  }
+
+                                  setState(() => _isLoading = false);
+                                },
+                                child: _isLoading
+                                    ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                                    : const Text("Verifikasi & Daftar", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _otpSent = false;
+                                    _otpController.clear();
+                                  });
+                                },
+                                child: const Text("Kirim ulang OTP"),
+                              ),
+                            ],
+                          ),
+                      ],
+
                       const SizedBox(height: 10),
                       const Row(
                         children: [
@@ -352,14 +507,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(12),
                                   ),
-                                  margin: const EdgeInsets.symmetric(
-                                    horizontal: 20,
-                                    vertical: 10,
-                                  ),
+                                  margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                                 );
-                                ScaffoldMessenger.of(
-                                  context,
-                                ).showSnackBar(snackbar);
+                                ScaffoldMessenger.of(context).showSnackBar(snackbar);
                               },
                               icon: Image.network(
                                 'https://cdn-icons-png.flaticon.com/128/281/281764.png',
@@ -396,14 +546,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(12),
                                   ),
-                                  margin: const EdgeInsets.symmetric(
-                                    horizontal: 20,
-                                    vertical: 10,
-                                  ),
+                                  margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                                 );
-                                ScaffoldMessenger.of(
-                                  context,
-                                ).showSnackBar(snackbar);
+                                ScaffoldMessenger.of(context).showSnackBar(snackbar);
                               },
                               icon: Image.network(
                                 'https://cdn-icons-png.flaticon.com/128/5968/5968764.png',
@@ -440,14 +585,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(12),
                                   ),
-                                  margin: const EdgeInsets.symmetric(
-                                    horizontal: 20,
-                                    vertical: 10,
-                                  ),
+                                  margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                                 );
-                                ScaffoldMessenger.of(
-                                  context,
-                                ).showSnackBar(snackbar);
+                                ScaffoldMessenger.of(context).showSnackBar(snackbar);
                               },
                               icon: Image.network(
                                 'https://cdn-icons-png.flaticon.com/128/0/747.png',
