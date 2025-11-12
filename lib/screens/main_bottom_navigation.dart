@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:no_poverty/Analytics/analytics_helper.dart';
+import 'package:no_poverty/screens/chat/chat.dart';
 
 import 'package:no_poverty/screens/chatbot/chat_bot_screen.dart';
 import 'package:no_poverty/screens/home/home_screen.dart';
+import 'package:no_poverty/screens/notifikasi/notifikasi.dart';
+import 'package:no_poverty/screens/profile/profile.dart';
 import 'package:no_poverty/screens/search/search_screen.dart';
 
 class MainBottomNavigation extends StatefulWidget {
@@ -12,7 +16,27 @@ class MainBottomNavigation extends StatefulWidget {
 }
 
 class _MainBottomNavigationState extends State<MainBottomNavigation> {
-  final List<Widget> _screens = [HomeScreen(), SearchScreen()];
+  final List<Widget> _screens = [HomeScreen(), SearchScreen(), ChatScreenPage(), NotifikasiPage(), ProfileScreen()];
+
+  MyAnalytics analytics = MyAnalytics();
+
+  String pageName(int index) {
+    switch (index) {
+      case 0:
+        return "Home";
+      case 1:
+        return "Search";
+      case 2:
+        return "Chat";
+      case 3:
+        return "Notifikasi";
+      case 4:
+        return "Profile";
+      default:
+        return 'Unknown';
+    }
+  }
+
   int _selectedScreen = 0;
   @override
   Widget build(BuildContext context) {
@@ -48,6 +72,7 @@ class _MainBottomNavigationState extends State<MainBottomNavigation> {
           setState(() {
             _selectedScreen = value;
           });
+          analytics.userpindahPage(pageName(value));
         },
       ),
     );
