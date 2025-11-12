@@ -8,6 +8,7 @@ class AuthServices {
 
   Future<UserCredential> signInWithFacebook() async {
     final LoginResult loginResult = await FacebookAuth.instance.login();
+
     final OAuthCredential facebookAuthCredential =
         FacebookAuthProvider.credential(loginResult.accessToken!.tokenString);
     return FirebaseAuth.instance.signInWithCredential(facebookAuthCredential);
@@ -105,5 +106,12 @@ class AuthServices {
       );
       return null;
     }
+    print(FirebaseAuth.instance.signInWithCredential(facebookAuthCredential));
+    return FirebaseAuth.instance.signInWithCredential(facebookAuthCredential);
+  }
+
+  Future<UserCredential> signInWithGitHub() async {
+    GithubAuthProvider githubProvider = GithubAuthProvider();
+    return await FirebaseAuth.instance.signInWithProvider(githubProvider);
   }
 }

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:no_poverty/Analytics/analytics_helper.dart';
+import 'package:no_poverty/services/auth_serviceDedi.dart';
 import 'package:no_poverty/services/user_api_services.dart';
 import 'login.dart';
 import 'package:no_poverty/services/auth_services.dart';
@@ -28,6 +30,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final UserApiService userApiService = UserApiService();
 
   bool _isLoading = false;
+  MyAnalytics analytics = MyAnalytics();
+
+  final AuthService1 _authService = AuthService1();
  
   @override
   void dispose() {
@@ -52,6 +57,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (nama.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Nama lengkap tidak boleh kosong!")),
+
+    // validasi sama seperti sebelumnya
+    if (email.isEmpty || nomorHP.isEmpty || username.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Semua field wajib diisi!"),
+          backgroundColor: Colors.red,
+        ),
       );
       return;
     }
@@ -98,6 +111,45 @@ class _RegisterScreenState extends State<RegisterScreen> {
         context,
         MaterialPageRoute(builder: (_) => const LoginScreen()),
       );
+    if (password != confirmPassword) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Password dan konfirmasi tidak sama!"),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    try {
+      final user = await _authService.signUpWithEmailPassword(
+        email,
+        password,
+      );
+
+      analytics.userRegister(email);
+
+      if (user != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Registrasi berhasil!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        // Setelah register, langsung arahkan ke halaman login
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const LoginScreen()),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Registrasi gagal. Coba lagi."),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

@@ -6,6 +6,7 @@ class UserApiService {
   // GANTI INI: Emulator Android → 10.0.2.2
   // HP Fisik → ganti jadi IP komputer kamu (misal: 192.168.1.100)
   final String baseUrl = "http://10.0.2.2:5000/users";
+  final String baseUrl = "http://10.0.2.2:5000/users"; // ganti sesuai IP/device
 
   Future<List<UserModel>> getAll() async {
     try {
