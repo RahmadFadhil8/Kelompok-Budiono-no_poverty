@@ -1,5 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:no_poverty/screens/auth/register.dart';
+import 'package:no_poverty/screens/main_bottom_navigation.dart';
+import 'package:no_poverty/services/auth_service.dart'; // 🔹 Panggil AuthService
 import 'package:no_poverty/Analytics/analytics_helper.dart';
 import 'package:no_poverty/services/auth_serviceDedi.dart';
 import 'package:no_poverty/services/auth_services.dart';
@@ -17,11 +20,14 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  bool emailSelected = true;
 
   bool EmailSelected = true;
   bool isLoggedIn = false;
   bool _isObscure = true;
+  bool _loading = false;
 
+  final AuthService _authService = AuthService();
   // TAMBAHAN UNTUK OTP
   String? _verificationId;
   bool _otpSent = false;
@@ -60,8 +66,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void checkLoginStatus() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool Log = prefs.getBool('isLoggedIn') ?? false;
-    if (Log) {
+    bool log = prefs.getBool('isLoggedIn') ?? false;
+    if (log) {
       setState(() {
         isLoggedIn = true;
       });
@@ -74,6 +80,37 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (input.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Email dan password tidak boleh kosong!")),
+      );
+      return;
+    }
+
+    setState(() => _loading = true);
+
+    try {
+      // 🔹 Login via Firebase
+      final user =
+          await _authService.signInWithEmailPassword(input, password);
+
+      if (user != null) {
+        // 🔹 Simpan status login
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('isLoggedIn', true);
+        await prefs.setString('userEmail', user.email ?? '');
+
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text("Login berhasil")));
+
+        // 🔹 Navigasi ke halaman utama
+        if (mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => const MainBottomNavigation()),
+          );
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Login gagal. Periksa email/password.")),
         const SnackBar(
           content: Text("Email/Telepon dan password tidak boleh kosong!"),
         ),
@@ -118,6 +155,8 @@ class _LoginScreenState extends State<LoginScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Terjadi kesalahan: $e")),
       );
+    } finally {
+      setState(() => _loading = false);
     }
   }
 
@@ -126,6 +165,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (isLoggedIn) {
       return const MainBottomNavigation();
     }
+
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -142,6 +182,7 @@ class _LoginScreenState extends State<LoginScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const ListTile(
+                  leading: Icon(Icons.storefront, size: 70, color: Colors.white),
                   leading: Icon(
                     Icons.storefront,
                     size: 70,
@@ -160,7 +201,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     style: TextStyle(color: Colors.white, fontSize: 15),
                   ),
                 ),
-                SizedBox(height: 40),
+                const SizedBox(height: 40),
+
+                // 🔹 Toggle Login/Daftar
                 Container(
                   width: 250,
                   height: 50,
@@ -171,7 +214,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       BoxShadow(
                         color: Colors.black.withAlpha(300),
                         blurRadius: 4,
-                        offset: Offset(0, 5),
+                        offset: const Offset(0, 5),
                       ),
                     ],
                   ),
@@ -218,7 +261,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     ],
                   ),
                 ),
-                SizedBox(height: 35),
+
+                const SizedBox(height: 35),
+
+                // 🔹 Form login
                 Container(
                   padding: const EdgeInsets.all(20),
                   width: 400,
@@ -229,12 +275,74 @@ class _LoginScreenState extends State<LoginScreen> {
                       BoxShadow(
                         color: Colors.black.withAlpha(300),
                         blurRadius: 4,
-                        offset: Offset(0, 5),
+                        offset: const Offset(0, 5),
                       ),
                     ],
                   ),
                   child: Column(
                     children: [
+                      const SizedBox(height: 20),
+                      TextField(
+                        controller: _userController,
+                        decoration: InputDecoration(
+                          hintText: "Email",
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(18),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 14,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 18),
+                      TextField(
+                        controller: _passwordController,
+                        obscureText: _isObscure,
+                        decoration: InputDecoration(
+                          suffixIcon: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                _isObscure = !_isObscure;
+                              });
+                            },
+                            icon: Icon(
+                              _isObscure
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                              color: const Color(0xFF808080),
+                            ),
+                          ),
+                          hintText: "Password",
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(18),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 14,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      _loading
+                          ? const CircularProgressIndicator()
+                          : ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                minimumSize: const Size(320, 50),
+                                backgroundColor: const Color(0xFF02457A),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 14),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                              ),
+                              onPressed: loginUser,
+                              child: const Text(
+                                "Login",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
                       Container(
                         height: 45,
                         decoration: BoxDecoration(
@@ -652,10 +760,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ),
                                 ),
                               ),
-                            ],
-                          ),
-                        ],
-                      ),
+                            ),
                     ],
                   ),
                 ),

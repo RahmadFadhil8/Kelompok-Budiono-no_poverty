@@ -22,14 +22,6 @@
           }
         },
         {
-          "client_id": "677012134579-t25nqdlg3dbcr6j33o09mnl80hs5ekv7.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.no_poverty",
-            "certificate_hash": "9ead13d3458f1b0b726da4db80b44b3869b736cd"
-          }
-        },
-        {
           "client_id": "677012134579-gvggaint59dlo1nc7msqb3u108503hij.apps.googleusercontent.com",
           "client_type": 3
         }
