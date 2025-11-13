@@ -1,11 +1,9 @@
-import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:flutter/material.dart';
 import 'package:no_poverty/Analytics/analytics_helper.dart';
 import 'package:no_poverty/Database/database_Service.dart';
 import 'package:no_poverty/screens/add_job/add_job.dart';
 import 'package:no_poverty/screens/home/customer/list_Helper.dart';
 import 'package:no_poverty/screens/home/customer/list_ketegori.dart';
-import 'package:no_poverty/screens/notifikasi/notifikasi.dart';
 import 'package:no_poverty/widgets/custom_Button.dart';
 import 'package:no_poverty/widgets/custom_card.dart';
 import 'package:no_poverty/widgets/sub_title1.dart';
