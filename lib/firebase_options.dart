@@ -64,6 +64,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '677012134579',
     projectId: 'jobwaroeng-a78c9',
     storageBucket: 'jobwaroeng-a78c9.firebasestorage.app',
+    androidClientId: '677012134579-ie0v06qpo9uk8uqkcdieed79548m7768.apps.googleusercontent.com',
+    iosClientId: '677012134579-jpm9mpvl51f0u9ko0n5i8os7elqe1he5.apps.googleusercontent.com',
     iosBundleId: 'com.example.noPoverty',
   );
 
@@ -73,6 +75,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '677012134579',
     projectId: 'jobwaroeng-a78c9',
     storageBucket: 'jobwaroeng-a78c9.firebasestorage.app',
+    androidClientId: '677012134579-ie0v06qpo9uk8uqkcdieed79548m7768.apps.googleusercontent.com',
+    iosClientId: '677012134579-jpm9mpvl51f0u9ko0n5i8os7elqe1he5.apps.googleusercontent.com',
     iosBundleId: 'com.example.noPoverty',
   );
 

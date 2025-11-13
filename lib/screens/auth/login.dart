@@ -1,13 +1,12 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:no_poverty/Analytics/analytics_helper.dart';
-import 'package:no_poverty/services/auth_serviceDedi.dart';
-import 'package:no_poverty/services/auth_services.dart';
-import 'package:no_poverty/services/user_api_services.dart';
-import 'package:no_poverty/Database/user_database/user_database.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:no_poverty/screens/auth/register.dart';
 import 'package:no_poverty/screens/main_bottom_navigation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:no_poverty/Analytics/analytics_helper.dart';
+import 'package:no_poverty/services/auth_service.dart';
+import 'package:no_poverty/services/auth_serviceDedi.dart';
+import 'package:no_poverty/services/auth_services.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -17,9 +16,10 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  bool emailSelected = true;
   bool isLoggedIn = false;
+  bool emailSelected = true;
   bool _isObscure = true;
+  bool _loading = false;
   bool _otpSent = false;
   bool _isLoading = false;
 
@@ -39,20 +39,10 @@ class _LoginScreenState extends State<LoginScreen> {
     checkLoginStatus();
   }
 
-  @override
-  void dispose() {
-    _userController.dispose();
-    _passwordController.dispose();
-    _otpController.dispose();
-    super.dispose();
-  }
-
   void checkLoginStatus() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool logged = prefs.getBool('isLoggedIn') ?? false;
-    if (logged) {
-      setState(() => isLoggedIn = true);
-    }
+    if (logged) setState(() => isLoggedIn = true);
   }
 
   Future<void> loginUser() async {
@@ -61,10 +51,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (input.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Email/Telepon dan password tidak boleh kosong!")),
+        const SnackBar(content: Text("Email dan password tidak boleh kosong!")),
       );
       return;
     }
+
+    setState(() => _loading = true);
 
     try {
       final user = await _authService.signInWithEmailPassword(input, password);
@@ -93,10 +85,15 @@ class _LoginScreenState extends State<LoginScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Terjadi kesalahan: $e")),
       );
+    } finally {
+      setState(() => _loading = false);
     }
   }
 
-  // 🔹 OTP Login
+  // ==========================================
+  // OTP LOGIN
+  // ==========================================
+
   Future<void> sendOtp() async {
     String phone = _userController.text.trim();
     if (phone.isEmpty) {
@@ -171,7 +168,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 40),
 
-                // LOGIN / DAFTAR SWITCH
+                // Switch Login / Daftar
                 Container(
                   width: 250,
                   height: 50,
@@ -215,7 +212,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 35),
 
-                // FORM LOGIN
+                // Form Login
                 Container(
                   padding: const EdgeInsets.all(20),
                   width: 400,
@@ -225,27 +222,23 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   child: Column(
                     children: [
-                      // Switch Email / Phone
-                      Row(
-                        children: [
-                          Expanded(
-                            child: ChoiceChip(
-                              label: const Text("Email"),
-                              selected: emailSelected,
-                              onSelected: (v) => setState(() => emailSelected = true),
-                            ),
-                          ),
-                          Expanded(
-                            child: ChoiceChip(
-                              label: const Text("Telepon"),
-                              selected: !emailSelected,
-                              onSelected: (v) => setState(() => emailSelected = false),
-                            ),
-                          ),
-                        ],
+                      // Toggle Email / Telepon
+                      Container(
+                        height: 45,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFD6EBEE),
+                          borderRadius: BorderRadius.circular(18),
+                        ),
+                        child: Row(
+                          children: [
+                            _toggleButton("Email", true),
+                            _toggleButton("Telepon", false),
+                          ],
+                        ),
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 30),
 
+                      // Input Email/Telepon
                       TextField(
                         controller: _userController,
                         keyboardType: emailSelected
@@ -253,12 +246,14 @@ class _LoginScreenState extends State<LoginScreen> {
                             : TextInputType.phone,
                         decoration: InputDecoration(
                           hintText: emailSelected ? "Email" : "Nomor Telepon",
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(18)),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(18),
+                          ),
                         ),
                       ),
                       const SizedBox(height: 18),
 
-                      // Password / OTP input
+                      // Password atau OTP
                       if (emailSelected)
                         TextField(
                           controller: _passwordController,
@@ -266,9 +261,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           decoration: InputDecoration(
                             hintText: "Password",
                             suffixIcon: IconButton(
-                              icon: Icon(_isObscure
-                                  ? Icons.visibility_off
-                                  : Icons.visibility),
+                              icon: Icon(
+                                _isObscure ? Icons.visibility_off : Icons.visibility,
+                              ),
                               onPressed: () => setState(() {
                                 _isObscure = !_isObscure;
                               }),
@@ -331,10 +326,12 @@ class _LoginScreenState extends State<LoginScreen> {
                               borderRadius: BorderRadius.circular(15),
                             ),
                           ),
-                          child: const Text(
-                            "Login",
-                            style: TextStyle(color: Colors.white),
-                          ),
+                          child: _loading
+                              ? const CircularProgressIndicator(color: Colors.white)
+                              : const Text(
+                                  "Login",
+                                  style: TextStyle(color: Colors.white),
+                                ),
                         ),
 
                       const SizedBox(height: 15),
@@ -345,16 +342,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          // Google
-                          socialButton(
+                          _socialButton(
                             iconUrl: 'https://cdn-icons-png.flaticon.com/128/281/281764.png',
                             message: "Google login coming soon!",
                           ),
-
                           const SizedBox(width: 10),
-
-                          // Facebook
-                          socialButton(
+                          _socialButton(
                             iconUrl: 'https://cdn-icons-png.flaticon.com/128/733/733547.png',
                             onTap: () async {
                               await _firebaseAuth.signInWithFacebook();
@@ -363,11 +356,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               );
                             },
                           ),
-
                           const SizedBox(width: 10),
-
-                          // GitHub
-                          socialButton(
+                          _socialButton(
                             iconUrl:
                                 'https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png',
                             onTap: () async {
@@ -390,7 +380,38 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget socialButton({
+  // ==============================
+  // WIDGET REUSABLE
+  // ==============================
+
+  Widget _toggleButton(String label, bool isEmail) {
+    bool selected = (emailSelected == isEmail);
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => setState(() => emailSelected = isEmail),
+        child: Container(
+          decoration: BoxDecoration(
+            color: selected ? Colors.white : Colors.transparent,
+            borderRadius: BorderRadius.circular(18),
+            boxShadow: selected
+                ? [BoxShadow(color: Colors.black.withAlpha(100), blurRadius: 3)]
+                : null,
+          ),
+          alignment: Alignment.center,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(isEmail ? Icons.email_outlined : Icons.phone, size: 15),
+              const SizedBox(width: 8),
+              Text(label),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _socialButton({
     required String iconUrl,
     VoidCallback? onTap,
     String? message,

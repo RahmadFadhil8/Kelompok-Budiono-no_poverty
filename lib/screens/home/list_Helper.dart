@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:no_poverty/Database/job_database/job_database.dart';
-import 'package:no_poverty/screens/home/datailHelper.dart';
+import 'datailHelper.dart';
 import 'package:no_poverty/services/user_api_services.dart';
 import 'package:no_poverty/widgets/custom_Button.dart';
 import 'package:no_poverty/widgets/custom_Listtile.dart';
 import 'package:no_poverty/widgets/sub_title1.dart';
-
 
 class ListHelper extends StatefulWidget {
   const ListHelper({super.key});
@@ -15,65 +13,90 @@ class ListHelper extends StatefulWidget {
 }
 
 class _ListHelperState extends State<ListHelper> {
-  UserApiService users = UserApiService();
-  
+  final UserApiService users = UserApiService();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: const Text("Daftar Helper")),
       body: FutureBuilder(
-        future: users.getAll(), 
+        future: users.getAll(),
         builder: (context, snapshot) {
+          // === LOADING STATE ===
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return CircularProgressIndicator();
+            return const Center(child: CircularProgressIndicator());
           }
+
+          // === ERROR STATE ===
           if (snapshot.hasError) {
-            return Center(child: Text(snapshot.error.toString()));
+            return Center(child: Text("Error: ${snapshot.error}"));
           }
+
+          // === EMPTY STATE ===
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text("Belum ada data helper tersedia."));
+          }
+
           final data = snapshot.data!;
+
+          // === SUCCESS STATE ===
           return ListView.builder(
+            padding: const EdgeInsets.all(12),
             itemCount: data.length,
-            itemBuilder: (context, index){
-              final jobs = data[index];
+            itemBuilder: (context, index) {
+              final helper = data[index];
+
               return Column(
-              children: [
-                CustomListile(
-                  tileColor: Colors.white,
-                  leading: CircleAvatar(
-                    radius: 20,
-                    backgroundImage: NetworkImage('https://picsum.photos/seed/${jobs.id}/120/120')
-                  ),
-                  title: jobs.username,
-                  subtitle: Row(
-                    children: [
-                      SubTitle1(title: jobs.pekerjaan, size: 14),
-                      SizedBox(width: 10),
-                      Icon(
-                        Icons.location_on_outlined,
-                        size: 16,
-                        color: Colors.grey,
+                children: [
+                  CustomListile(
+                    tileColor: Colors.white,
+                    leading: CircleAvatar(
+                      radius: 24,
+                      backgroundImage: NetworkImage(
+                        'https://picsum.photos/seed/${helper.id}/120/120',
                       ),
-                      SizedBox(width: 4),
-                      SubTitle1(title: jobs.lokasi, size: 14),
-                    ],
+                    ),
+                    title: helper.username,
+                    subtitle: Row(
+                      children: [
+                        SubTitle1(title: helper.pekerjaan, size: 14),
+                        const SizedBox(width: 10),
+                        const Icon(
+                          Icons.location_on_outlined,
+                          size: 16,
+                          color: Colors.grey,
+                        ),
+                        const SizedBox(width: 4),
+                        SubTitle1(title: helper.lokasi, size: 14),
+                      ],
+                    ),
+                    trailing: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text("${helper.salary}/jam"),
+                        const SizedBox(height: 5),
+                        CustomButton(
+                          child: const Text("Detail"),
+                          onPress: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    DetailHelper(userId: helper.id),
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
                   ),
-                  trailing: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text("${jobs.salary}/jam"),
-                      SizedBox(height: 5),
-                      CustomButton(child: Text("Detail"), onPress: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => DetailHelper(Userid: jobs.id)));
-                      }),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 16),
-              ],
-            );
-            }
+                  const SizedBox(height: 16),
+                ],
+              );
+            },
           );
-        }
-      )
+        },
+      ),
     );
   }
 }
