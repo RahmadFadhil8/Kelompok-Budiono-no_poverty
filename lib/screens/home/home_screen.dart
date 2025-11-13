@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:no_poverty/Analytics/analytics_helper.dart';
 import 'package:no_poverty/Database/database_Service.dart';
 import 'package:no_poverty/provider/chatbot_provider.dart';
 import 'package:no_poverty/screens/add_job/add_job.dart';
@@ -29,6 +30,8 @@ class _HomeScreenState extends State<HomeScreen> {
   bool isWorkMode = false;
   String? userId;
   String? username;
+
+  MyAnalytics analytics = MyAnalytics();
 
   @override
   void initState() { 
@@ -197,7 +200,9 @@ jika kamu mengerti jawab : Halo, Ada yang bisa saya bantu?
             icon: Icon(Icons.notifications_none, color: Colors.black),
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              analytics.clikcbutton("Settings");
+            },
             icon: Icon(Icons.settings, color: Colors.black),
           ),
         ],
@@ -224,7 +229,8 @@ jika kamu mengerti jawab : Halo, Ada yang bisa saya bantu?
                         ],
                       ),
                     ),
-                    onPress: () {
+                    onPress: ()async {
+                      await analytics.clikcbutton("buat job");
                       Navigator.push(context, MaterialPageRoute(builder: (context) => addJob()));
                     },
                   ),
@@ -244,7 +250,9 @@ jika kamu mengerti jawab : Halo, Ada yang bisa saya bantu?
                         ],
                       ),
                     ),
-                    onPress: () {},
+                    onPress: () async{
+                      await analytics.clikcbutton("cari helper");
+                    },
                   ),
                 ),
               ],
@@ -262,7 +270,7 @@ jika kamu mengerti jawab : Halo, Ada yang bisa saya bantu?
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text("Job Akif"),
-                TextButton(onPressed: () {}, child: Text("Lainnya >", style: TextStyle(color: Colors.black),)),
+                TextButton(onPressed: () async{await analytics.clikcbutton("job aktif lainnya");}, child: Text("Lainnya >", style: TextStyle(color: Colors.black),)),
               ],
             ),
 
