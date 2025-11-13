@@ -72,7 +72,7 @@ class _MainBottomNavigationState extends State<MainBottomNavigation> {
           setState(() {
             _selectedScreen = value;
           });
-          analytics.userpindahPage(pageName(value));
+          analytics.userpindahPage(pageName(value));  //ini implementasi
         },
       ),
     );

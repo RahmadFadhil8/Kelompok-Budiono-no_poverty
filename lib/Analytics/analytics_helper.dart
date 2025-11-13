@@ -7,7 +7,7 @@ class MyAnalytics {
   Future<void> clikcbutton(_value) async {
     await analytics.logEvent(
       name: "${_value}_click", 
-      parameters: {'value': "user klik button ${_value}"}
+      parameters: {'value': "user_klik_button_${_value}"}
     );
     print(_value);
   }
@@ -15,7 +15,7 @@ class MyAnalytics {
   //sudah
   Future<void> userLogin(email)async {
     await analytics.logEvent(
-      name: "user login",
+      name: "user_login",
       parameters: {'email': email}
     );
   }
@@ -23,7 +23,7 @@ class MyAnalytics {
   //sudah
   Future<void> userRegister(email)async {
     await analytics.logEvent(
-      name: "user Register",
+      name: "user_Register",
       parameters: {'email': email}
     );
   }
@@ -38,13 +38,14 @@ class MyAnalytics {
   // sudah
   Future<void> resetData() async {
     await analytics.resetAnalyticsData();
+    print("Analytics data di-reset.");
   }
 
   // sudah
   Future<void> userpindahPage(page)async {
     await analytics.logEvent(
-      name: "user pindah halaman",
-      parameters: {'halaman': "pindah ke ${page}"}
+      name: "user_pindah_halaman",
+      parameters: {'halaman': "pindah_ke_${page}"}
     );
   }
 
@@ -52,8 +53,8 @@ class MyAnalytics {
   // sudah
   Future<void> userpencarian(pencarian)async {
     await analytics.logEvent(
-      name: "user melakukan pencarian",
-      parameters: {'pencarian': "user mencari ${pencarian}"}
+      name: "user_melakukan_pencarian_${pencarian}",
+      parameters: {'pencarian': "user_mencari_${pencarian}"}
     );
   }
 
@@ -62,6 +63,7 @@ class MyAnalytics {
     await analytics.setSessionTimeoutDuration(
       Duration(minutes: 1)
     );
+    print("Session timeout diatur ke 1 menit.");
   }
 
   // sudah

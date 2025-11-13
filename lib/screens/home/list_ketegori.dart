@@ -63,8 +63,8 @@ class _KategotiListState extends State<KategotiList> {
                         ],
                       ),
                     ),
-                    onPress: () async{
-                      await analytics.clikcbutton("kategori ${kategori['nama']}");
+                    onPress: () {
+                      analytics.clikcbutton("kategori_${kategori['nama']}");
                     },
                   );
                 },

@@ -224,8 +224,8 @@ jika kamu mengerti jawab : Halo, Ada yang bisa saya bantu?
                         ],
                       ),
                     ),
-                    onPress: ()async {
-                      await analytics.clikcbutton("buat job");
+                    onPress: () {
+                      analytics.clikcbutton("buat_job");
                       Navigator.push(context, MaterialPageRoute(builder: (context) => addJob()));
                     },
                   ),
@@ -245,8 +245,8 @@ jika kamu mengerti jawab : Halo, Ada yang bisa saya bantu?
                         ],
                       ),
                     ),
-                    onPress: () async{
-                      await analytics.clikcbutton("cari helper");
+                    onPress: () {
+                      analytics.clikcbutton("cari_helper");
                     },
                   ),
                 ),
@@ -265,7 +265,7 @@ jika kamu mengerti jawab : Halo, Ada yang bisa saya bantu?
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text("Job Akif"),
-                TextButton(onPressed: () async{await analytics.clikcbutton("job aktif lainnya");}, child: Text("Lainnya >", style: TextStyle(color: Colors.black),)),
+                TextButton(onPressed: () { analytics.clikcbutton("job_aktif_lainnya");}, child: Text("Lainnya >", style: TextStyle(color: Colors.black),)),
               ],
             ),
 
