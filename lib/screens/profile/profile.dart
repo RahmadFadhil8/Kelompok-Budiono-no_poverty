@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:no_poverty/Analytics/analytics_helper.dart';
 import 'package:no_poverty/screens/auth/login.dart';
 import 'package:no_poverty/services/auth_services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-// Jika kamu pakai FirebaseAuth untuk login/logout, aktifkan ini:
-// import 'package:firebase_auth/firebase_auth.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -22,25 +19,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
   MyAnalytics analytics = MyAnalytics();
   final AuthServices _authService = AuthServices();
 
-  String? userName;
-  String? userEmail;
-
   @override
   void initState() {
     super.initState();
     analytics.clikcbutton('open_profile_screen');
-    _loadUserData();
   }
 
-  Future<void> _loadUserData() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      userName = prefs.getString('userName') ?? 'Pengguna';
-      userEmail = prefs.getString('userEmail') ?? 'email@tidakdiketahui.com';
-    });
-  }
   @override
   Widget build(BuildContext context) {
+    final user = _authService.currentUser!;
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
@@ -52,10 +39,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         title: const Text(
           "Pengaturan",
-          style: TextStyle(
-            color: Colors.black87,
-            fontWeight: FontWeight.w600,
-          ),
+          style: TextStyle(color: Colors.black87, fontWeight: FontWeight.w600),
         ),
         centerTitle: true,
       ),
@@ -90,16 +74,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          userName ?? 'Loading...',
+                          user.email!,
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 18,
                           ),
                         ),
-                        Text(
-                          userEmail ?? '',
-                          style: TextStyle(color: Colors.grey),
-                        ),
+                        Text(user.email!, style: TextStyle(color: Colors.grey)),
                         SizedBox(height: 4),
                         Row(
                           children: [
@@ -153,7 +134,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               icon: Icons.verified_user_outlined,
               title: "Status Verifikasi",
               trailing: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.yellow[100],
                   borderRadius: BorderRadius.circular(12),
@@ -208,7 +192,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             // ======== LOGOUT BUTTON ========
             Center(
               child: ElevatedButton.icon(
-                onPressed: () async{
+                onPressed: () async {
                   await analytics.userlogout();
 
                   await _authService.signOut();
@@ -224,11 +208,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       MaterialPageRoute(builder: (_) => const LoginScreen()),
                     );
                   }
-                }, 
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.redAccent,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 40, vertical: 14),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 40,
+                    vertical: 14,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
