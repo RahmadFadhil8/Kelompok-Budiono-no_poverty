@@ -1,13 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:no_poverty/services/Auth_Google.dart';
 import 'package:no_poverty/services/auth_services.dart';
-import 'package:no_poverty/services/user_api_services.dart';
-import 'package:no_poverty/Database/user_database/user_database.dart';
 import 'package:no_poverty/screens/auth/register.dart';
 import 'package:no_poverty/screens/main_bottom_navigation.dart';
 import 'package:no_poverty/Analytics/analytics_helper.dart';
-import 'package:no_poverty/services/auth_services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -18,7 +15,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   bool isLoggedIn = false;
-  final bool emailSelected = true; 
+  final bool emailSelected = true;
   bool _isObscure = true;
   bool _loading = false;
 
@@ -53,7 +50,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Email dan password tidak boleh kosong!"), backgroundColor: Colors.red),
+        const SnackBar(
+          content: Text("Email dan password tidak boleh kosong!"),
+          backgroundColor: Colors.red,
+        ),
       );
       return;
     }
@@ -71,32 +71,40 @@ class _LoginScreenState extends State<LoginScreen> {
         await analytics.userLogin(email);
         await analytics.usertimeout();
         await analytics.userId(user.uid);
-        await analytics.userpoperty(user.email); 
+        await analytics.userpoperty(user.email);
 
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Login berhasil"), backgroundColor: Colors.green),
+          const SnackBar(
+            content: Text("Login berhasil"),
+            backgroundColor: Colors.green,
+          ),
         );
 
         if (mounted) {
-           Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (_) => const MainBottomNavigation()),
-            );
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => const MainBottomNavigation()),
+          );
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Login gagal. Periksa email dan password."), backgroundColor: Colors.red),
+          const SnackBar(
+            content: Text("Login gagal. Periksa email dan password."),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Terjadi kesalahan: ${e.toString()}"), backgroundColor: Colors.red),
+        SnackBar(
+          content: Text("Terjadi kesalahan: ${e.toString()}"),
+          backgroundColor: Colors.red,
+        ),
       );
     } finally {
       setState(() => _loading = false);
     }
   }
-  
 
   @override
   Widget build(BuildContext context) {
@@ -118,10 +126,18 @@ class _LoginScreenState extends State<LoginScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const ListTile(
-                  leading: Icon(Icons.storefront, size: 70, color: Colors.white),
+                  leading: Icon(
+                    Icons.storefront,
+                    size: 70,
+                    color: Colors.white,
+                  ),
                   title: Text(
                     "JobWaroeng",
-                    style: TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   subtitle: Text(
                     "Temukan Pekerjaan Harianmu",
@@ -137,7 +153,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(30),
                     boxShadow: [
-                       BoxShadow(
+                      BoxShadow(
                         color: Colors.black.withOpacity(0.2),
                         blurRadius: 4,
                         offset: const Offset(0, 4),
@@ -155,7 +171,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           alignment: Alignment.center,
                           child: const Text(
                             "Login",
-                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),
@@ -164,13 +183,18 @@ class _LoginScreenState extends State<LoginScreen> {
                           onTap: () {
                             Navigator.pushReplacement(
                               context,
-                              MaterialPageRoute(builder: (_) => const RegisterScreen()),
+                              MaterialPageRoute(
+                                builder: (_) => const RegisterScreen(),
+                              ),
                             );
                           },
                           child: const Center(
                             child: Text(
                               "Daftar",
-                              style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ),
@@ -187,7 +211,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
-                       BoxShadow(
+                      BoxShadow(
                         color: Colors.black.withOpacity(0.2),
                         blurRadius: 4,
                         offset: const Offset(0, 4),
@@ -217,11 +241,14 @@ class _LoginScreenState extends State<LoginScreen> {
                           prefixIcon: const Icon(Icons.lock),
                           suffixIcon: IconButton(
                             icon: Icon(
-                              _isObscure ? Icons.visibility_off : Icons.visibility,
+                              _isObscure
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
                             ),
-                            onPressed: () => setState(() {
-                              _isObscure = !_isObscure;
-                            }),
+                            onPressed:
+                                () => setState(() {
+                                  _isObscure = !_isObscure;
+                                }),
                           ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(18),
@@ -238,41 +265,25 @@ class _LoginScreenState extends State<LoginScreen> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(15),
                           ),
-                          const SizedBox(height: 10),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Color(0xFFD6EBEE),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: IconButton(
-                                  onPressed: () async {
-                                    try {
-                                      final result = await AuthGoogle().signInWithGoogle();
-                                      if (result == null){
-                                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Login dibatalkan")),);
-                                        return;
-                                      }
-                                      final isNew = result.additionalUserInfo?.isNewUser ?? false;
-
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(content: Text(isNew? "Akun baru bersihal dibuat!" : "Berhasil login!",))
-                                      );
-
-                                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> MainBottomNavigation() ));
-                                    } catch (e) {
-                                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Login gagal: $e")),);
-                                    }
-                                  },
-                                  icon: Image.network(
-                                    'https://cdn-icons-png.flaticon.com/128/281/281764.png',
-                                    width: 25,
-                                    height: 25,
+                        ),
+                        child:
+                            _loading
+                                ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                                : const Text(
+                                  "Login",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                              ),
                       ),
 
                       const SizedBox(height: 15),
@@ -283,8 +294,48 @@ class _LoginScreenState extends State<LoginScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           _socialButton(
-                            iconUrl: 'https://cdn-icons-png.flaticon.com/128/281/281764.png',
-                            message: "Google login coming soon!",
+                            iconUrl:
+                                'https://cdn-icons-png.flaticon.com/128/281/281764.png',
+                            onTap: () async {
+                              try {
+                                final result =
+                                    await _authServices.signInWithGoogle();
+                                if (result == null) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text("Login dibatalkan"),
+                                    ),
+                                  );
+                                  return;
+                                }
+                                final isNew =
+                                    result.additionalUserInfo?.isNewUser ??
+                                    false;
+
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      isNew
+                                          ? "Akun baru bersihal dibuat!"
+                                          : "Berhasil login!",
+                                    ),
+                                    backgroundColor:  Colors.green,
+                                  ),
+                                );
+
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder:
+                                        (context) => MainBottomNavigation(),
+                                  ),
+                                );
+                              } catch (e) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text("Login gagal: $e")),
+                                );
+                              }
+                            },
                           ),
                           const SizedBox(width: 10),
                           _socialButton(
@@ -295,19 +346,31 @@ class _LoginScreenState extends State<LoginScreen> {
                               try {
                                 await _authServices.signInWithGitHub();
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text("Login GitHub berhasil!"), backgroundColor: Colors.green),
+                                  const SnackBar(
+                                    content: Text("Login GitHub berhasil!"),
+                                    backgroundColor: Colors.green,
+                                  ),
                                 );
                                 if (mounted) {
-                                  final prefs = await SharedPreferences.getInstance();
+                                  final prefs =
+                                      await SharedPreferences.getInstance();
                                   await prefs.setBool('isLoggedIn', true);
                                   Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(builder: (_) => const MainBottomNavigation()),
+                                    context,
+                                    MaterialPageRoute(
+                                      builder:
+                                          (_) => const MainBottomNavigation(),
+                                    ),
                                   );
                                 }
                               } catch (e) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text("Login GitHub gagal: ${e.toString()}"), backgroundColor: Colors.red),
+                                  SnackBar(
+                                    content: Text(
+                                      "Login GitHub gagal: ${e.toString()}",
+                                    ),
+                                    backgroundColor: Colors.red,
+                                  ),
                                 );
                               } finally {
                                 setState(() => _loading = false);
@@ -327,7 +390,6 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-
   Widget _socialButton({
     required String iconUrl,
     VoidCallback? onTap,
@@ -340,10 +402,14 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
       child: IconButton(
         icon: Image.network(iconUrl, width: 25, height: 25),
-        onPressed: onTap ??
+        onPressed:
+            onTap ??
             () {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(message ?? "Coming soon!"), backgroundColor: Colors.orange),
+                SnackBar(
+                  content: Text(message ?? "Coming soon!"),
+                  backgroundColor: Colors.orange,
+                ),
               );
             },
       ),
