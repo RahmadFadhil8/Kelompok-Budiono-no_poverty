@@ -7,9 +7,10 @@ import 'package:no_poverty/Analytics/analytics_helper.dart';
 import 'package:no_poverty/Database/database_Service.dart';
 import 'package:no_poverty/provider/chatbot_provider.dart';
 import 'package:no_poverty/screens/add_job/add_job.dart';
+import 'package:no_poverty/screens/auth/login.dart';
 import 'package:no_poverty/screens/home/list_Helper.dart';
 import 'package:no_poverty/screens/home/list_ketegori.dart';
-import 'package:no_poverty/screens/notifikasi/notifikasi.dart';
+import 'package:no_poverty/services/Auth_Google.dart';
 import 'package:no_poverty/widgets/custom_Button.dart';
 import 'package:no_poverty/widgets/custom_card.dart';
 import 'package:no_poverty/widgets/sub_title1.dart';
@@ -188,10 +189,14 @@ jika kamu mengerti jawab : Halo, Ada yang bisa saya bantu?
         backgroundColor: Colors.white,
         actions: [
           IconButton(
-            onPressed: () {
-              analytics.clikcbutton("notifikasi");
-              Navigator.push(context, MaterialPageRoute(builder: (context) => NotifikasiPage()));
+            onPressed: () async {
+              await AuthGoogle().signOut();
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> LoginScreen()));
             },
+            icon: Icon(Icons.logout_outlined, color: Colors.black),
+          ),
+          IconButton(
+            onPressed: () {},
             icon: Icon(Icons.notifications_none, color: Colors.black),
           ),
           IconButton(

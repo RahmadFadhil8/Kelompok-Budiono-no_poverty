@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:no_poverty/services/Auth_Google.dart';
+import 'package:no_poverty/services/auth_services.dart';
+import 'package:no_poverty/services/user_api_services.dart';
+import 'package:no_poverty/Database/user_database/user_database.dart';
 import 'package:no_poverty/screens/auth/register.dart';
 import 'package:no_poverty/screens/main_bottom_navigation.dart';
 import 'package:no_poverty/Analytics/analytics_helper.dart';
@@ -235,12 +238,40 @@ class _LoginScreenState extends State<LoginScreen> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(15),
                           ),
-                        ),
-                        child: _loading
-                            ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                            : const Text(
-                                "Login",
-                                style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                          const SizedBox(height: 10),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Color(0xFFD6EBEE),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: IconButton(
+                                  onPressed: () async {
+                                    try {
+                                      final result = await AuthGoogle().signInWithGoogle();
+                                      if (result == null){
+                                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Login dibatalkan")),);
+                                        return;
+                                      }
+                                      final isNew = result.additionalUserInfo?.isNewUser ?? false;
+
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text(isNew? "Akun baru bersihal dibuat!" : "Berhasil login!",))
+                                      );
+
+                                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> MainBottomNavigation() ));
+                                    } catch (e) {
+                                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Login gagal: $e")),);
+                                    }
+                                  },
+                                  icon: Image.network(
+                                    'https://cdn-icons-png.flaticon.com/128/281/281764.png',
+                                    width: 25,
+                                    height: 25,
+                                  ),
+                                ),
                               ),
                       ),
 
