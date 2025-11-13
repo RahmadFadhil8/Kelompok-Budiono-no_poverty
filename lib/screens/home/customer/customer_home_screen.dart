@@ -73,69 +73,8 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          children: [
-            AnimatedToggleSwitch<bool>.dual(
-              current: isWorkMode,
-              first: false,
-              second: true,
-              spacing: 50,
-              style: const ToggleStyle(
-                borderColor: Color.fromARGB(31, 155, 155, 155),
-              ),
-              borderWidth: 5.0,
-              height: 55,
-              onChanged: (value) => setState(() => isWorkMode = value),
-              styleBuilder:
-                  (value) => ToggleStyle(
-                    indicatorColor: value ? Colors.green : Colors.blue,
-                  ),
-              iconBuilder:
-                  (value) =>
-                      value
-                          ? const Icon(
-                            Icons.engineering,
-                            color: Colors.white,
-                            size: 32,
-                          )
-                          : const Icon(
-                            Icons.business_center,
-                            color: Colors.white,
-                            size: 32,
-                          ),
-              textBuilder:
-                  (value) =>
-                      value
-                          ? const Center(child: Text('Work'))
-                          : const Center(child: Text('Hire')),
-            ),
-          ],
-        ),
-        backgroundColor: Colors.white,
-        actions: [
-          IconButton(
-            onPressed: () {
-              analytics.clikcbutton("notifikasi");
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => NotifikasiPage()),
-              );
-            },
-            icon: Icon(Icons.notifications_none, color: Colors.black),
-          ),
-          IconButton(
-            onPressed: () {
-              analytics.clikcbutton("Settings");
-            },
-            icon: Icon(Icons.settings, color: Colors.black),
-          ),
-        ],
-      ),
       body: Padding(
         padding: const EdgeInsets.all(12),
-
-        // bagian tombol job dan cari helper
         child: Column(
           children: [
             Row(

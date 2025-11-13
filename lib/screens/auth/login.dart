@@ -109,7 +109,6 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     if (isLoggedIn) return const MainBottomNavigation();
-
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(

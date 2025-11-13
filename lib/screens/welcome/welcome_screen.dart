@@ -37,6 +37,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       SharedPreferences prefs = await SharedPreferences.getInstance();
 
       await prefs.setBool("isSeeWelcome", true);
+      await prefs.setBool("isWorkMode", false);
       await prefs.reload();
       print("Sampai sini aman");
       if (!mounted) return;
