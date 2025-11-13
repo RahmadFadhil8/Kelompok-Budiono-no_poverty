@@ -7,10 +7,9 @@ import 'package:no_poverty/Analytics/analytics_helper.dart';
 import 'package:no_poverty/Database/database_Service.dart';
 import 'package:no_poverty/provider/chatbot_provider.dart';
 import 'package:no_poverty/screens/add_job/add_job.dart';
-import 'package:no_poverty/screens/auth/login.dart';
 import 'package:no_poverty/screens/home/list_Helper.dart';
 import 'package:no_poverty/screens/home/list_ketegori.dart';
-import 'package:no_poverty/services/Auth_Google.dart';
+import 'package:no_poverty/screens/notifikasi/notifikasi.dart';
 import 'package:no_poverty/widgets/custom_Button.dart';
 import 'package:no_poverty/widgets/custom_card.dart';
 import 'package:no_poverty/widgets/sub_title1.dart';
@@ -34,12 +33,12 @@ class _HomeScreenState extends State<HomeScreen> {
   MyAnalytics analytics = MyAnalytics();
 
   @override
-  void initState() { 
+  void initState() {
     super.initState();
     takeId();
   }
 
-  Future takeId() async{
+  Future takeId() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final storedId = prefs.getString("userId");
     if (storedId != null) {
@@ -51,6 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
       print("User ID belum tersimpan di SharedPreferences");
     }
   }
+
   void _sendMessage(ChatbotProvider chatProvider) {
     chatProvider.getMsgAI(
       """Kamu adalah asisten AI resmi dari aplikasi bernama JobWaroeng, sebuah platform digital berbasis mobile dan website yang berfungsi sebagai penghubung antara pencari kerja paruh waktu (part-time) dengan pemberi kerja.
@@ -189,14 +189,13 @@ jika kamu mengerti jawab : Halo, Ada yang bisa saya bantu?
         backgroundColor: Colors.white,
         actions: [
           IconButton(
-            onPressed: () async {
-              await AuthGoogle().signOut();
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> LoginScreen()));
+            onPressed: () {
+              analytics.clikcbutton("notifikasi");
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => NotifikasiPage()),
+              );
             },
-            icon: Icon(Icons.logout_outlined, color: Colors.black),
-          ),
-          IconButton(
-            onPressed: () {},
             icon: Icon(Icons.notifications_none, color: Colors.black),
           ),
           IconButton(
@@ -229,9 +228,12 @@ jika kamu mengerti jawab : Halo, Ada yang bisa saya bantu?
                         ],
                       ),
                     ),
-                    onPress: ()async {
+                    onPress: () async {
                       await analytics.clikcbutton("buat job");
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => addJob()));
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => addJob()),
+                      );
                     },
                   ),
                 ),
@@ -250,7 +252,7 @@ jika kamu mengerti jawab : Halo, Ada yang bisa saya bantu?
                         ],
                       ),
                     ),
-                    onPress: () async{
+                    onPress: () async {
                       await analytics.clikcbutton("cari helper");
                     },
                   ),
@@ -270,7 +272,15 @@ jika kamu mengerti jawab : Halo, Ada yang bisa saya bantu?
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text("Job Akif"),
-                TextButton(onPressed: () async{await analytics.clikcbutton("job aktif lainnya");}, child: Text("Lainnya >", style: TextStyle(color: Colors.black),)),
+                TextButton(
+                  onPressed: () async {
+                    await analytics.clikcbutton("job aktif lainnya");
+                  },
+                  child: Text(
+                    "Lainnya >",
+                    style: TextStyle(color: Colors.black),
+                  ),
+                ),
               ],
             ),
 
@@ -382,7 +392,7 @@ jika kamu mengerti jawab : Halo, Ada yang bisa saya bantu?
 
             // Helper
             SizedBox(height: 12),
-            Expanded(child: const ListHelper())
+            Expanded(child: const ListHelper()),
           ],
         ),
       ),

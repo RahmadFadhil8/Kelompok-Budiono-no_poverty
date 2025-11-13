@@ -1,10 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthServices {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
 
-    Future<UserCredential?> signInWithGitHub() async {
+  Future<UserCredential?> signInWithGitHub() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       GithubAuthProvider githubProvider = GithubAuthProvider();
@@ -66,6 +68,27 @@ class AuthServices {
           print(" Error tidak diketahui: ${e.code}");
       }
       return null;
+    }
+  }
+
+  Future<UserCredential?> signInWithGoogle() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      final GoogleSignInAccount? user = await _googleSignIn.signIn();
+      if (user == null) return null;
+
+      final GoogleSignInAuthentication googleAuth = await user.authentication;
+
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+      final userCred = await _auth.signInWithCredential(credential);
+      prefs.setBool("isLoggedIn", true);
+      return userCred;
+    } catch (e) {
+      print("Google SignIn Error: $e");
+      rethrow;
     }
   }
 
