@@ -17,7 +17,7 @@ class JobAPIServices {
   ) async {
     try {
       var res = await http.post(
-        Uri.parse('http://localhost:5000/jobs/tambahjob'),
+        Uri.parse('http://192.168.1.22:5000/jobs/tambahjob'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'userId': userId,

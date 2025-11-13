@@ -33,12 +33,12 @@ class _HomeScreenState extends State<HomeScreen> {
   MyAnalytics analytics = MyAnalytics();
 
   @override
-  void initState() { 
+  void initState() {
     super.initState();
     takeId();
   }
 
-  Future takeId() async{
+  Future takeId() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final storedId = prefs.getString("userId");
     if (storedId != null) {
@@ -50,6 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
       print("User ID belum tersimpan di SharedPreferences");
     }
   }
+
   void _sendMessage(ChatbotProvider chatProvider) {
     chatProvider.getMsgAI(
       """Kamu adalah asisten AI resmi dari aplikasi bernama JobWaroeng, sebuah platform digital berbasis mobile dan website yang berfungsi sebagai penghubung antara pencari kerja paruh waktu (part-time) dengan pemberi kerja.
@@ -190,7 +191,10 @@ jika kamu mengerti jawab : Halo, Ada yang bisa saya bantu?
           IconButton(
             onPressed: () {
               analytics.clikcbutton("notifikasi");
-              Navigator.push(context, MaterialPageRoute(builder: (context) => NotifikasiPage()));
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => NotifikasiPage()),
+              );
             },
             icon: Icon(Icons.notifications_none, color: Colors.black),
           ),
@@ -224,9 +228,12 @@ jika kamu mengerti jawab : Halo, Ada yang bisa saya bantu?
                         ],
                       ),
                     ),
-                    onPress: () {
-                      analytics.clikcbutton("buat_job");
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => addJob()));
+                    onPress: () async {
+                      await analytics.clikcbutton("buat job");
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => addJob()),
+                      );
                     },
                   ),
                 ),
@@ -245,8 +252,8 @@ jika kamu mengerti jawab : Halo, Ada yang bisa saya bantu?
                         ],
                       ),
                     ),
-                    onPress: () {
-                      analytics.clikcbutton("cari_helper");
+                    onPress: () async {
+                      await analytics.clikcbutton("cari helper");
                     },
                   ),
                 ),
@@ -265,7 +272,15 @@ jika kamu mengerti jawab : Halo, Ada yang bisa saya bantu?
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text("Job Akif"),
-                TextButton(onPressed: () { analytics.clikcbutton("job_aktif_lainnya");}, child: Text("Lainnya >", style: TextStyle(color: Colors.black),)),
+                TextButton(
+                  onPressed: () async {
+                    await analytics.clikcbutton("job aktif lainnya");
+                  },
+                  child: Text(
+                    "Lainnya >",
+                    style: TextStyle(color: Colors.black),
+                  ),
+                ),
               ],
             ),
 
@@ -377,7 +392,7 @@ jika kamu mengerti jawab : Halo, Ada yang bisa saya bantu?
 
             // Helper
             SizedBox(height: 12),
-            Expanded(child: const ListHelper())
+            Expanded(child: const ListHelper()),
           ],
         ),
       ),

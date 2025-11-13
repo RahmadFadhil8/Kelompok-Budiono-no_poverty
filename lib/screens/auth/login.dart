@@ -1,13 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:no_poverty/Analytics/analytics_helper.dart';
-import 'package:no_poverty/services/auth_serviceDedi.dart';
 import 'package:no_poverty/services/auth_services.dart';
-import 'package:no_poverty/services/user_api_services.dart';
-import 'package:no_poverty/Database/user_database/user_database.dart';
 import 'package:no_poverty/screens/auth/register.dart';
 import 'package:no_poverty/screens/main_bottom_navigation.dart';
-import 'package:no_poverty/services/user_api_services.dart';
+import 'package:no_poverty/Analytics/analytics_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -18,20 +14,16 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-
-  bool EmailSelected = true;
   bool isLoggedIn = false;
+  final bool emailSelected = true;
   bool _isObscure = true;
+  bool _loading = false;
 
-  UserApiService users = UserApiService();
-  MyAnalytics analytics = MyAnalytics();
-  
-
-  final AuthService1 _authService = AuthService1();
   final TextEditingController _userController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  final UserApiService userApiService = UserApiService();
+  final AuthServices _authServices = AuthServices();
+  final MyAnalytics analytics = MyAnalytics();
 
   @override
   void initState() {
@@ -46,69 +38,78 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-
   void checkLoginStatus() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool Log = prefs.getBool('isLoggedIn') ?? false;
-    if (Log) {
-      setState(() {
-        isLoggedIn = true;
-      });
-    }
+    bool logged = prefs.getBool('isLoggedIn') ?? false;
+    if (logged) setState(() => isLoggedIn = true);
   }
 
   Future<void> loginUser() async {
-    String input = _userController.text.trim();
-    String password = _passwordController.text;
+    final email = _userController.text.trim();
+    final password = _passwordController.text;
 
-    if (input.isEmpty || password.isEmpty) {
+    if (email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("Email/Telepon dan password tidak boleh kosong!"),
+          content: Text("Email dan password tidak boleh kosong!"),
+          backgroundColor: Colors.red,
         ),
       );
       return;
     }
+
+    setState(() => _loading = true);
+
     try {
-      final user = await _authService.signInWithEmailPassword(input,password,);
-
-      
-      
-      if (user != null) {  
-
-        SharedPreferences prefs = await SharedPreferences.getInstance();
+      final user = await _authServices.signInWithEmailPassword(email, password);
+      if (user != null) {
+        final prefs = await SharedPreferences.getInstance();
         await prefs.setBool('isLoggedIn', true);
         await prefs.setString('userId', user.uid);
         await prefs.setString('userEmail', user.email ?? '');
 
-        await analytics.userLogin(input); // ini implementasinya
+        await analytics.userLogin(email); // ini implementasinya
         await analytics.usertimeout(); // ini implementasinya
         await analytics.userId(user.uid); // ini implementasinya
         await analytics.userpoperty(user.email); // ini implementasinya
 
-        setState(() {
-          isLoggedIn = true;
-        });
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text("Login berhasil")));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Login berhasil"),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        if (mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => const MainBottomNavigation()),
+          );
+        }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Login gagal. Periksa email dan password.")),
+          const SnackBar(
+            content: Text("Login gagal. Periksa email dan password."),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Terjadi kesalahan: $e")),
+        SnackBar(
+          content: Text("Terjadi kesalahan: ${e.toString()}"),
+          backgroundColor: Colors.red,
+        ),
       );
+    } finally {
+      setState(() => _loading = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (isLoggedIn) {
-      return const MainBottomNavigation();
-    }
+    if (isLoggedIn) return const MainBottomNavigation();
+
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -125,7 +126,7 @@ class _LoginScreenState extends State<LoginScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const ListTile(
-                  leading: const Icon(
+                  leading: Icon(
                     Icons.storefront,
                     size: 70,
                     color: Colors.white,
@@ -143,7 +144,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     style: TextStyle(color: Colors.white, fontSize: 15),
                   ),
                 ),
-                SizedBox(height: 40),
+                const SizedBox(height: 40),
+
                 Container(
                   width: 250,
                   height: 50,
@@ -152,9 +154,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     borderRadius: BorderRadius.circular(30),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withAlpha(300),
+                        color: Colors.black.withOpacity(0.2),
                         blurRadius: 4,
-                        offset: Offset(0, 5),
+                        offset: const Offset(0, 4),
                       ),
                     ],
                   ),
@@ -186,9 +188,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             );
                           },
-                          child: Container(
-                            alignment: Alignment.center,
-                            child: const Text(
+                          child: const Center(
+                            child: Text(
                               "Daftar",
                               style: TextStyle(
                                 color: Colors.black,
@@ -201,7 +202,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     ],
                   ),
                 ),
-                SizedBox(height: 35),
+                const SizedBox(height: 35),
+
                 Container(
                   padding: const EdgeInsets.all(20),
                   width: 400,
@@ -210,366 +212,170 @@ class _LoginScreenState extends State<LoginScreen> {
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withAlpha(300),
+                        color: Colors.black.withOpacity(0.2),
                         blurRadius: 4,
-                        offset: Offset(0, 5),
+                        offset: const Offset(0, 4),
                       ),
                     ],
                   ),
                   child: Column(
                     children: [
-                      Container(
-                        height: 45,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFD6EBEE),
-                          borderRadius: BorderRadius.circular(18),
-                          boxShadow:
-                              EmailSelected
-                                  ? [
-                                    BoxShadow(
-                                      color: Colors.black.withAlpha(300),
-                                      blurRadius: 3,
-                                    ),
-                                  ]
-                                  : null,
-                        ),
-
-                        //tombol Email dan telepon
-                        child: Row(
-                          children: [
-                            // email
-                            Expanded(
-                              child: GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    EmailSelected = true;
-                                    _userController.clear();
-                                    _passwordController.clear();
-                                    _isObscure = true;
-                                  });
-                                },
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color:
-                                        EmailSelected
-                                            ? Colors.white
-                                            : Colors.transparent,
-                                    borderRadius: BorderRadius.circular(18),
-                                    boxShadow:
-                                        EmailSelected
-                                            ? [
-                                              BoxShadow(
-                                                color: Colors.black.withAlpha(
-                                                  300,
-                                                ),
-                                                blurRadius: 3,
-                                              ),
-                                            ]
-                                            : null,
-                                  ),
-                                  alignment: Alignment.center,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(Icons.email_outlined, size: 15),
-                                      SizedBox(width: 10),
-                                      Text("Email"),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                            //telepone
-                            Expanded(
-                              child: GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    EmailSelected = false;
-                                    _userController.clear();
-                                    _passwordController.clear();
-                                    _isObscure = true;
-                                  });
-                                },
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color:
-                                        !EmailSelected
-                                            ? Colors.white
-                                            : Colors.transparent,
-                                    borderRadius: BorderRadius.circular(18),
-                                    boxShadow:
-                                        !EmailSelected
-                                            ? [
-                                              BoxShadow(
-                                                color: Colors.black.withAlpha(
-                                                  300,
-                                                ),
-                                                blurRadius: 3,
-                                              ),
-                                            ]
-                                            : null,
-                                  ),
-                                  alignment: Alignment.center,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(Icons.email_outlined, size: 15),
-                                      SizedBox(width: 10),
-                                      Text("Telepon"),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
+                      TextField(
+                        controller: _userController,
+                        keyboardType: TextInputType.emailAddress,
+                        decoration: InputDecoration(
+                          hintText: "Email",
+                          prefixIcon: const Icon(Icons.email),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(18),
+                          ),
                         ),
                       ),
+                      const SizedBox(height: 18),
 
+                      TextField(
+                        controller: _passwordController,
+                        obscureText: _isObscure,
+                        decoration: InputDecoration(
+                          hintText: "Password",
+                          prefixIcon: const Icon(Icons.lock),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _isObscure
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                            ),
+                            onPressed:
+                                () => setState(() {
+                                  _isObscure = !_isObscure;
+                                }),
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(18),
+                          ),
+                        ),
+                      ),
                       const SizedBox(height: 30),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
+
+                      ElevatedButton(
+                        onPressed: _loading ? null : loginUser,
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: const Size(double.infinity, 50),
+                          backgroundColor: const Color(0xFF02457A),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                        ),
+                        child:
+                            _loading
+                                ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                                : const Text(
+                                  "Login",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                      ),
+
+                      const SizedBox(height: 15),
+                      const Divider(),
+                      const SizedBox(height: 10),
+
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const SizedBox(height: 8),
-                          TextField(
-                            controller: _userController,
-                            decoration: InputDecoration(
-                              hintText: EmailSelected ? "Email" : "Telepone",
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(18),
-                              ),
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 14,
-                              ),
-                            ),
-                          ),
+                          _socialButton(
+                            iconUrl:
+                                'https://cdn-icons-png.flaticon.com/128/281/281764.png',
+                            onTap: () async {
+                              try {
+                                final result =
+                                    await _authServices.signInWithGoogle();
+                                if (result == null) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text("Login dibatalkan"),
+                                    ),
+                                  );
+                                  return;
+                                }
+                                final isNew =
+                                    result.additionalUserInfo?.isNewUser ??
+                                    false;
 
-                          const SizedBox(height: 18),
-                          TextField(
-                            controller: _passwordController,
-                            obscureText: _isObscure,
-                            decoration: InputDecoration(
-                              suffixIcon: IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    _isObscure = !_isObscure;
-                                  });
-                                },
-                                icon: Icon(
-                                  _isObscure
-                                      ? Icons.visibility_off
-                                      : Icons.visibility,
-                                  color: Color(0xFF808080),
-                                ),
-                              ),
-                              hintText: "Password",
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(18),
-                              ),
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 14,
-                              ),
-                            ),
-                          ),
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      isNew
+                                          ? "Akun baru bersihal dibuat!"
+                                          : "Berhasil login!",
+                                    ),
+                                    backgroundColor:  Colors.green,
+                                  ),
+                                );
 
-                          // untuk login
-                          const SizedBox(height: 18),
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              minimumSize: const Size(320, 50),
-                              backgroundColor: Color(0xFF02457A),
-                              padding: EdgeInsets.symmetric(vertical: 14),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                            ),
-                            onPressed: () {
-                              loginUser();
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder:
+                                        (context) => MainBottomNavigation(),
+                                  ),
+                                );
+                              } catch (e) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text("Login gagal: $e")),
+                                );
+                              }
                             },
-                            child: const Text(
-                              "Login",
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
                           ),
-                          const SizedBox(height: 10),
-                          Row(
-                            children: [
-                              Expanded(child: Divider(thickness: 1)),
-                              Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 8.0),
-                                child: Text("atau"),
-                              ),
-                              Expanded(child: Divider(thickness: 1)),
-                            ],
-                          ),
-                          const SizedBox(height: 10),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Color(0xFFD6EBEE),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: IconButton(
-                                  onPressed: () {
-                                    final snackbar = SnackBar(
-                                      content: Row(
-                                        children: [
-                                          Icon(
-                                            Icons.notifications_active,
-                                            color: const Color.fromARGB(
-                                              255,
-                                              75,
-                                              74,
-                                              74,
-                                            ),
-                                          ),
-                                          SizedBox(width: 10),
-                                          Text(
-                                            "Sign up for Google coming soon!",
-                                            style: TextStyle(
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      duration: Duration(seconds: 3),
-                                      backgroundColor: Color(0xFFD6EBEE),
-                                      behavior: SnackBarBehavior.floating,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      margin: EdgeInsets.symmetric(
-                                        horizontal: 20,
-                                        vertical: 10,
-                                      ),
-                                    );
-                                    ScaffoldMessenger.of(
-                                      context,
-                                    ).showSnackBar(snackbar);
-                                  },
-                                  icon: Image.network(
-                                    'https://cdn-icons-png.flaticon.com/128/281/281764.png',
-                                    width: 25,
-                                    height: 25,
+                          const SizedBox(width: 10),
+                          _socialButton(
+                            iconUrl:
+                                'https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png',
+                            onTap: () async {
+                              setState(() => _loading = true);
+                              try {
+                                await _authServices.signInWithGitHub();
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text("Login GitHub berhasil!"),
+                                    backgroundColor: Colors.green,
                                   ),
-                                ),
-                              ),
-
-                              SizedBox(width: 10),
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Color(0xFFD6EBEE),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: IconButton(
-                                  onPressed: () async {
-                                    await AuthServices().signInWithFacebook();
-                                    print("sign with fesnuk");
-
-                                    final snackbar = SnackBar(
-                                      content: Row(
-                                        children: [
-                                          Icon(
-                                            Icons.notifications_active,
-                                            color: const Color.fromARGB(
-                                              255,
-                                              75,
-                                              74,
-                                              74,
-                                            ),
-                                          ),
-                                          SizedBox(width: 10),
-                                          Text(
-                                            "Sign up for Facebook coming soon!",
-                                            style: TextStyle(
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      duration: Duration(seconds: 3),
-                                      backgroundColor: Color(0xFFD6EBEE),
-                                      behavior: SnackBarBehavior.floating,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      margin: EdgeInsets.symmetric(
-                                        horizontal: 20,
-                                        vertical: 10,
-                                      ),
-                                    );
-                                    ScaffoldMessenger.of(
-                                      context,
-                                    ).showSnackBar(snackbar);
-                                  },
-                                  icon: Image.network(
-                                    'https://cdn-icons-png.flaticon.com/128/5968/5968764.png',
-                                    width: 25,
-                                    height: 25,
+                                );
+                                if (mounted) {
+                                  final prefs =
+                                      await SharedPreferences.getInstance();
+                                  await prefs.setBool('isLoggedIn', true);
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder:
+                                          (_) => const MainBottomNavigation(),
+                                    ),
+                                  );
+                                }
+                              } catch (e) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      "Login GitHub gagal: ${e.toString()}",
+                                    ),
+                                    backgroundColor: Colors.red,
                                   ),
-                                ),
-                              ),
-
-                              SizedBox(width: 10),
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Color(0xFFD6EBEE),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: IconButton(
-                                  onPressed: () {
-                                    print("login dengan github");
-                                    final snackbar = SnackBar(
-                                      content: Row(
-                                        children: [
-                                          Icon(
-                                            Icons.notifications_active,
-                                            color: const Color.fromARGB(
-                                              255,
-                                              75,
-                                              74,
-                                              74,
-                                            ),
-                                          ),
-                                          SizedBox(width: 10),
-                                          Text(
-                                            "Sign up for Apple coming soon!",
-                                            style: TextStyle(
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      duration: Duration(seconds: 3),
-                                      backgroundColor: Color(0xFFD6EBEE),
-                                      behavior: SnackBarBehavior.floating,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      margin: EdgeInsets.symmetric(
-                                        horizontal: 20,
-                                        vertical: 10,
-                                      ),
-                                    );
-                                    ScaffoldMessenger.of(
-                                      context,
-                                    ).showSnackBar(snackbar);
-                                  },
-                                  icon: Image.network(
-                                    'https://cdn-icons-png.flaticon.com/128/0/747.png',
-                                    width: 25,
-                                    height: 25,
-                                  ),
-                                ),
-                              ),
-                            ],
+                                );
+                              } finally {
+                                setState(() => _loading = false);
+                              }
+                            },
                           ),
                         ],
                       ),
@@ -580,6 +386,32 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _socialButton({
+    required String iconUrl,
+    VoidCallback? onTap,
+    String? message,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFFD6EBEE),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: IconButton(
+        icon: Image.network(iconUrl, width: 25, height: 25),
+        onPressed:
+            onTap ??
+            () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(message ?? "Coming soon!"),
+                  backgroundColor: Colors.orange,
+                ),
+              );
+            },
       ),
     );
   }
