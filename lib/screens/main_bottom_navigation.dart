@@ -3,7 +3,7 @@ import 'package:no_poverty/Analytics/analytics_helper.dart';
 import 'package:no_poverty/screens/chat/chat.dart';
 
 import 'package:no_poverty/screens/chatbot/chat_bot_screen.dart';
-import 'package:no_poverty/screens/home/home_screen.dart';
+import 'package:no_poverty/screens/home/customer/customer_home_screen.dart';
 import 'package:no_poverty/screens/notifikasi/notifikasi.dart';
 import 'package:no_poverty/screens/profile/profile.dart';
 import 'package:no_poverty/screens/search/search_screen.dart';
@@ -16,7 +16,7 @@ class MainBottomNavigation extends StatefulWidget {
 }
 
 class _MainBottomNavigationState extends State<MainBottomNavigation> {
-  final List<Widget> _screens = [HomeScreen(), SearchScreen(), ChatScreenPage(), NotifikasiPage(), ProfileScreen()];
+  final List<Widget> _screens = [CustomerHomeScreen(), SearchScreen(), ChatScreenPage(), NotifikasiPage(), ProfileScreen()];
 
   MyAnalytics analytics = MyAnalytics();
 

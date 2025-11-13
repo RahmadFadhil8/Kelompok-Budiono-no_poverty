@@ -319,7 +319,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                           ? "Akun baru bersihal dibuat!"
                                           : "Berhasil login!",
                                     ),
-                                    backgroundColor:  Colors.green,
+                                    backgroundColor: Colors.green,
                                   ),
                                 );
 
