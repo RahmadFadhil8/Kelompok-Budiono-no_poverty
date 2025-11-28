@@ -33,6 +33,7 @@ class MyAnalytics {
     await analytics.logEvent(
       name: 'user_logout',
     );
+    print("user logout");
   }
 
   // sudah
