@@ -21,52 +21,8 @@ class CustomerHomeScreen extends StatefulWidget {
 
 class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
   bool isWorkMode = false;
-  String? userId;
-  String? username;
 
   MyAnalytics analytics = MyAnalytics();
-
-  @override
-  void initState() {
-    super.initState();
-    takeId();
-  }
-
-  Future takeId() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    final storedId = prefs.getString("userId");
-    if (storedId != null) {
-      setState(() {
-        userId = storedId;
-      });
-      print("User ID dari SharedPreferences: $userId");
-    } else {
-      print("User ID belum tersimpan di SharedPreferences");
-    }
-  }
-
-  // fungsi untuk mengambil nama sesuai id yang login
-  Future<void> loadusername() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    final userId = prefs.getInt("userId");
-
-    if (userId != null) {
-      final dbpath = await getDatabasesPath();
-      final path = join(dbpath, DatabaseService.DB_NAME);
-      final db = await openDatabase(path);
-
-      final List<Map<String, dynamic>> result = await db.query(
-        "users",
-        where: "id = ?",
-        whereArgs: [userId],
-      );
-      if (result.isNotEmpty) {
-        setState(() {
-          username = result.first['username'];
-        });
-      }
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,6 +31,104 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
         padding: const EdgeInsets.all(12),
         child: Column(
           children: [
+            CustomCard(
+              isShadow: false,
+              borderColor: Colors.deepOrange,
+              cardColor: Colors.orangeAccent,
+              childContainer: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Verifikasi Akun",
+                        style: TextStyle(fontSize: 20),
+                      ),
+                      const SizedBox(height: 4),
+                      const Text("Lengkapi verifikasi untuk akses penuh"),
+                    ],
+                  ),
+                  CustomButton(
+                    backgroundColor: Colors.orange,
+                    foregroundColor: Colors.white,
+                    child: Text("Mulai"),
+                    onPress: () {},
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [
+                    Color.fromARGB(255, 44, 93, 255),
+                    Color.fromARGB(255, 30, 83, 255),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(18),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.greenAccent.withOpacity(0.3),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.wallet, color: Colors.white, size: 28),
+                          SizedBox(width: 8),
+                          Text(
+                            "Balance",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 17,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      CustomButton(
+                        backgroundColor: Colors.transparent,
+                        child: Text("Top Up"),
+                        onPress: () {},
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 12),
+                  Text(
+                    "Rp 5.500.000",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 6),
+                  Text(
+                    "Available Balance",
+                    style: TextStyle(color: Colors.white70, fontSize: 14),
+                  ),
+                  SizedBox(height: 12),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
             Row(
               children: [
                 Expanded(
