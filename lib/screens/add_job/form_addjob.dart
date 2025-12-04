@@ -6,9 +6,7 @@ import 'package:no_poverty/Permission/handler.dart';
 import 'package:no_poverty/services/job_api_services.dart';
 import 'package:no_poverty/widgets/custom_Button.dart';
 import 'package:no_poverty/widgets/title1.dart';
-import 'package:path/path.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sqflite/sqflite.dart';
 
 class FormaddJob extends StatefulWidget {
   const FormaddJob({super.key});

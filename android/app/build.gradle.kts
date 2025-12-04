@@ -13,6 +13,23 @@ android {
     compileSdk = flutter.compileSdkVersion
     ndkVersion = "29.0.14206865"
 
+    dependencies {
+        constraints {
+            implementation("androidx.activity:activity") {
+                version { strictly("1.8.2") }
+                because("force downgrade activity to support AGP 8.7.0 without upgrade")
+            }
+            implementation("androidx.activity:activity-ktx") {
+                version { strictly("1.8.2") }
+                because("force downgrade activity to support AGP 8.7.0 without upgrade")
+            }
+            implementation("androidx.activity:activity-compose") {
+                version { strictly("1.8.2") }
+                because("force downgrade activity to support AGP 8.7.0 without upgrade")
+            }
+        }
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
