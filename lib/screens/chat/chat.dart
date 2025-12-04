@@ -16,7 +16,7 @@ class _ChatScreenPageState extends State<ChatScreenPage> {
         centerTitle: true,
       ),
       body: Center(
-        child: Text("ya kasihan belum ada yang chat"),
+        child: Text("belum ada chat"),
       ),
     );
   }
