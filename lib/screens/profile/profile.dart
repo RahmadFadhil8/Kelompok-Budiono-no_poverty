@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:no_poverty/Analytics/analytics_helper.dart';
 import 'package:no_poverty/screens/auth/login.dart';
 import 'package:no_poverty/services/auth_services.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // ← TAMBAHAN INI SAJA
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -18,6 +18,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   MyAnalytics analytics = MyAnalytics();
   final AuthServices _authService = AuthServices();
+
+  // TAMBAHAN: Cek status verifikasi dari SharedPreferences
+  Future<bool> _checkVerificationStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('isVerified') ?? false;
+  }
 
   @override
   void initState() {
@@ -130,28 +136,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
               title: "Edit Profil",
               onTap: () {},
             ),
-            _buildListTile(
-              icon: Icons.verified_user_outlined,
-              title: "Status Verifikasi",
-              trailing: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 4,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.yellow[100],
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Text(
-                  "Pending",
-                  style: TextStyle(
-                    color: Colors.orange,
-                    fontWeight: FontWeight.w600,
+
+            // STATUS VERIFIKASI — OTOMATIS GANTI JADI "Verified" KALAU SUDAH SELESAI
+            FutureBuilder<bool>(
+              future: _checkVerificationStatus(),
+              builder: (context, snapshot) {
+                final bool isVerified = snapshot.data ?? false;
+                return _buildListTile(
+                  icon: Icons.verified_user_outlined,
+                  title: "Status Verifikasi",
+                  trailing: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: isVerified ? Colors.green[100] : Colors.yellow[100],
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      isVerified ? "Verified" : "Pending",
+                      style: TextStyle(
+                        color: isVerified ? Colors.green[800] : Colors.orange,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
-                ),
-              ),
-              onTap: () {},
+                  onTap: () {},
+                );
+              },
             ),
+
             _buildListTile(
               icon: Icons.payment_outlined,
               title: "Metode Pembayaran",
@@ -194,14 +206,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: ElevatedButton.icon(
                 onPressed: () async {
                   await analytics.userlogout();
-
                   await _authService.signOut();
-
                   await analytics.resetData();
-
                   final prefs = await SharedPreferences.getInstance();
                   await prefs.clear();
-
                   if (context.mounted) {
                     Navigator.pushReplacement(
                       context,
@@ -211,13 +219,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.redAccent,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 40,
-                    vertical: 14,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
                 icon: const Icon(Icons.logout, color: Colors.white),
                 label: const Text(
