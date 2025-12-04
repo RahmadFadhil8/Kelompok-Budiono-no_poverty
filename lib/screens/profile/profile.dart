@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:no_poverty/Analytics/analytics_helper.dart';
+import 'package:no_poverty/Permission/handler.dart';
 import 'package:no_poverty/screens/auth/login.dart';
 import 'package:no_poverty/services/auth_services.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart'; // ← TAMBAHAN INI SAJA
 
 class ProfileScreen extends StatefulWidget {
@@ -15,7 +18,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool pushNotif = true;
   bool emailNotif = false;
   bool smsNotif = false;
+  bool location = false;
 
+  final Handler_Permission permission = Handler_Permission();
   MyAnalytics analytics = MyAnalytics();
   final AuthServices _authService = AuthServices();
 
@@ -196,7 +201,42 @@ class _ProfileScreenState extends State<ProfileScreen> {
             _buildSwitchTile(
               title: "SMS Notifications",
               value: smsNotif,
-              onChanged: (v) => setState(() => smsNotif = v),
+              onChanged: (v) async {
+                if (v == true) {
+                  
+                }
+              },
+            ),
+            _buildSwitchTile(
+              title: "Location Permission",
+              value: location,
+              onChanged: (v) async {
+                if (v == true) {
+                  try {
+                    Position? pos = await permission.getLocation();
+
+                    if (pos != null) {
+                      setState(() => location = true);
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("Lokasi diaktifkan: ${pos.latitude}, ${pos.longitude}"))
+                      );
+                    }
+                  } catch (e) {
+                    setState(() => location = false);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Gagal mengaktifkan lokasi: $e"))
+                    );
+                  }
+                } else {
+                  setState(() => location = false);
+                  openAppSettings();
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Permission tidak bisa dicabut lewat aplikasi.\nMatikan lewat Pengaturan Sistem."))
+                  );
+                }
+              },
             ),
 
             const SizedBox(height: 32),

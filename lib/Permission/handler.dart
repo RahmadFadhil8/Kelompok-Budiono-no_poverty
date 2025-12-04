@@ -9,14 +9,18 @@ class Handler_Permission {
 
     if (status.isDenied) {
       await Permission.location.request();
-    } else if (status.isPermanentlyDenied) {
+    } 
+    
+    if (status.isPermanentlyDenied) {
       openAppSettings();
-      return Future.error("Izin ditolak Permanen");
-    } else if (status.isGranted){
+      throw"Izin lokasi ditolak Permanen";
+    }
+    
+    if (status.isGranted){
       bool locationEnabled = await  Geolocator.isLocationServiceEnabled();
 
       if (!locationEnabled) {
-        return Future.error("GPS tidak Aktif");
+        throw"GPS tidak Aktif";
       }
 
       return await Geolocator.getCurrentPosition(

@@ -67,7 +67,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
               ),
             ),
             const SizedBox(height: 20),
-
+        
             Container(
               width: double.infinity,
               decoration: BoxDecoration(
@@ -134,9 +134,9 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                 ],
               ),
             ),
-
+        
             const SizedBox(height: 20),
-
+        
             Row(
               children: [
                 Expanded(
@@ -184,13 +184,13 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                 ),
               ],
             ),
-
+        
             // cari kategoti
             SizedBox(height: 10),
             Row(children: [Text("Kategori Populer")]),
             SizedBox(height: 10),
             KategotiList(),
-
+        
             // judul Job Aktif
             SizedBox(height: 10),
             Row(
@@ -208,7 +208,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                 ),
               ],
             ),
-
+        
             // CardJob
             SizedBox(height: 16),
             Column(
@@ -265,9 +265,9 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                           ),
                         ],
                       ),
-
+        
                       SizedBox(height: 16),
-
+        
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -304,7 +304,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                 ),
               ],
             ),
-
+        
             // judul helper
             SizedBox(height: 16),
             Row(
@@ -314,7 +314,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                 TextButton(onPressed: () {}, child: Text("Lainnya >")),
               ],
             ),
-
+        
             // Helper
             SizedBox(height: 12),
             Expanded(child: const ListHelper()),
