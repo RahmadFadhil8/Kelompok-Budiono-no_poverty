@@ -71,6 +71,7 @@ class JobModelFix {
       'location': location,
       'address': address,
       'wage': wage,
+      'date_time': date_time,
       'start_time': start_time,
       'end_time': end_time,
       'required_skills': requiredSkills,
