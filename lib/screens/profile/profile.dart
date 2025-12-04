@@ -3,6 +3,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:no_poverty/Analytics/analytics_helper.dart';
 import 'package:no_poverty/Permission/handler.dart';
 import 'package:no_poverty/screens/auth/login.dart';
+import 'package:no_poverty/screens/profile/edit_profile.dart';
 import 'package:no_poverty/services/auth_services.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart'; // ← TAMBAHAN INI SAJA
@@ -77,7 +78,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 children: [
                   const CircleAvatar(
                     radius: 35,
-                    backgroundImage: AssetImage('assets/profile.png'),
+                    backgroundImage: AssetImage(''),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
@@ -107,7 +108,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ),
                   OutlinedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=> EditProfile(user: user,)));
+                    },
                     style: OutlinedButton.styleFrom(
                       side: const BorderSide(color: Colors.blueAccent),
                       shape: RoundedRectangleBorder(

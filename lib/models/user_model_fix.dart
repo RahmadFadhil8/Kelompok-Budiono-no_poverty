@@ -5,6 +5,7 @@ class UserModelFix {
   final String name;
   final String email;
   final String phone;
+  final String bio;
   final String role; // "worker" | "employer" | "both"
   final bool verified;
 
@@ -30,6 +31,7 @@ class UserModelFix {
     required this.name,
     required this.email,
     required this.phone,
+    required this.bio,
     required this.role,
     required this.verified,
     required this.ktpUrl,
@@ -55,6 +57,7 @@ class UserModelFix {
       name: data['name'] ?? '',
       email: data['email'] ?? '',
       phone: data['phone'] ?? '',
+      bio: data['bio'] ?? '',
       role: data['role'] ?? 'worker',
       verified: data['verified'] ?? false,
       ktpUrl: data['ktp_url'] ?? '',
@@ -81,6 +84,7 @@ class UserModelFix {
       'name': name,
       'email': email,
       'phone': phone,
+      'bio': bio,
       'role': role,
       'verified': verified,
       'ktp_url': ktpUrl,
@@ -105,6 +109,7 @@ class UserModelFix {
     String? name,
     String? email,
     String? phone,
+    String? bio,
     String? role,
     bool? verified,
     String? ktpUrl,
@@ -125,6 +130,7 @@ class UserModelFix {
       name: name ?? this.name,
       email: email ?? this.email,
       phone: phone ?? this.phone,
+      bio: bio ?? this.bio,
       role: role ?? this.role,
       verified: verified ?? this.verified,
       ktpUrl: ktpUrl ?? this.ktpUrl,
