@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
+import 'package:no_poverty/Database/database_Service.dart';
+import 'package:no_poverty/Permission/handler.dart';
 import 'package:no_poverty/services/job_api_services.dart';
 import 'package:no_poverty/widgets/custom_Button.dart';
 import 'package:no_poverty/widgets/title1.dart';
@@ -13,8 +16,28 @@ class FormaddJob extends StatefulWidget {
 }
 
 class _FormaddJobState extends State<FormaddJob> {
-
+  String coordinate = "Belum ada";
+  String address = "Belum ada";
   String? userId;
+
+  final permission = Handler_Permission();
+
+  void getMylocation() async {
+    try {
+      Position? pos = await permission.getLocation();
+      String addresstext = await permission.getaddress(pos!);
+
+      setState(() {
+        coordinate = "lat: ${pos.latitude}, lng: ${pos.longitude}";
+        address = addresstext;
+      });
+    } catch (e) {
+      setState(() {
+        coordinate = "Error: $e";
+        address = "Tidak ada alamat";
+      });
+    }
+  }
 
   @override
   void initState() { 

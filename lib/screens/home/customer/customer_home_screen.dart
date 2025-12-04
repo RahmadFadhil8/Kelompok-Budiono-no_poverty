@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:no_poverty/Analytics/analytics_helper.dart';
-import 'package:no_poverty/Database/database_Service.dart';
 import 'package:no_poverty/screens/add_job/add_job.dart';
 import 'package:no_poverty/screens/home/customer/account_verification.dart';
 import 'package:no_poverty/screens/home/customer/list_Helper.dart';
@@ -9,9 +8,6 @@ import 'package:no_poverty/widgets/custom_Button.dart';
 import 'package:no_poverty/widgets/custom_card.dart';
 import 'package:no_poverty/widgets/sub_title1.dart';
 import 'package:no_poverty/widgets/title1.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart';
 
 class CustomerHomeScreen extends StatefulWidget {
   const CustomerHomeScreen({super.key});
