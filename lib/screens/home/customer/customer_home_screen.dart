@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:no_poverty/Analytics/analytics_helper.dart';
 import 'package:no_poverty/Database/database_Service.dart';
 import 'package:no_poverty/screens/add_job/add_job.dart';
+import 'package:no_poverty/screens/home/customer/account_verification.dart';
 import 'package:no_poverty/screens/home/customer/list_Helper.dart';
 import 'package:no_poverty/screens/home/customer/list_ketegori.dart';
 import 'package:no_poverty/widgets/custom_Button.dart';
@@ -53,7 +54,14 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                     backgroundColor: Colors.orange,
                     foregroundColor: Colors.white,
                     child: Text("Mulai"),
-                    onPress: () {},
+                    onPress: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const AccountVerificationScreen(),
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),

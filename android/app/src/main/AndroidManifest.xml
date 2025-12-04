@@ -1,4 +1,20 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- ====================== PERMISSION WAJIB UNTUK KTP & SELFIE ====================== -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <!-- Baca foto dari galeri (Android 6 – Android 12) -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+
+    <!-- Khusus Android 13 / API 33 ke atas (WAJIB sekarang!) -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+
+    <!-- Biar kamera tetap bisa dipakai meski HP tidak punya autofocus/flash -->
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
+    <!-- ============================================================================ -->
     <application
         android:label="no_poverty"
         android:name="${applicationName}"
