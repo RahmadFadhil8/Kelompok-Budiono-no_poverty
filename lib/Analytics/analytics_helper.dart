@@ -12,7 +12,6 @@ class MyAnalytics {
       name: "${_value}_click", 
       parameters: {'value': "user_klik_button_${_value}"}
     );
-    print(_value);
   }
 
   //sudah
@@ -36,13 +35,11 @@ class MyAnalytics {
     await analytics.logEvent(
       name: 'user_logout',
     );
-    print("user logout");
   }
 
   // sudah
   Future<void> resetData() async {
     await analytics.resetAnalyticsData();
-    print("Analytics data di-reset.");
   }
 
   // sudah
@@ -70,7 +67,6 @@ class MyAnalytics {
     await analytics.setSessionTimeoutDuration(
       Duration(minutes: 1)
     );
-    print("Session timeout diatur ke 1 menit.");
 
   }
 
@@ -100,7 +96,6 @@ class MyAnalytics {
 
     await analytics.logScreenView(screenName: page, screenClass: page);
 
-    print("Tracking started for $page at $_screenStartTime");
   }
 
   Future<void> endTracking() async {
@@ -116,7 +111,6 @@ class MyAnalytics {
       },
     );
 
-    print("User spent $duration seconds on $_currentScreenName");
 
     _screenStartTime = null;
     _currentScreenName = null;

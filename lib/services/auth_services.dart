@@ -87,7 +87,6 @@ class AuthServices {
       prefs.setBool("isLoggedIn", true);
       return userCred;
     } catch (e) {
-      print("Google SignIn Error: $e");
       rethrow;
     }
   }
