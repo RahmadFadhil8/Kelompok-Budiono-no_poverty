@@ -13,30 +13,36 @@ class EditProfile extends StatefulWidget {
 }
 
 class _EditProfileState extends State<EditProfile> {
-  final nameC = TextEditingController(text: "John Doe");
-  final emailC = TextEditingController(text: "john@example.com");
-  final phoneC = TextEditingController(text: "08123456789");
-  final locationC = TextEditingController(text: "-6.2001, 106.8167");
-  final bioC = TextEditingController(text: "I am a worker.");
+  final nameC = TextEditingController();
+  final emailC = TextEditingController();
+  final phoneC = TextEditingController();
+  final locationC = TextEditingController();
+  final bioC = TextEditingController();
 
-  // initial skills
-  List<String> skills = [
-    "konstruksi",
-    "teknisi listrik",
-    "plumbing",
-    "tukang cat",
-  ];
+  var skills = [];
 
-  bool isLoading = false;
+  final userService = UserProfileServices();
+  bool isLoading = true;
 
   @override
-  void dispose() {
-    nameC.dispose();
-    emailC.dispose();
-    phoneC.dispose();
-    locationC.dispose();
-    bioC.dispose();
-    super.dispose();
+  void initState() {
+    super.initState();
+    loadData();
+  }
+
+  Future<void> loadData() async {
+    final user = await userService.getUserProfileOnce();
+    final lat = user.location.latitude;
+    final lng = user.location.longitude;
+
+    nameC.text = user.name;
+    emailC.text = widget.user.email!;
+    phoneC.text = user.phone;
+    locationC.text = "$lat,$lng";
+    bioC.text = user.bio;
+    skills = user.skills;
+
+    setState(() => isLoading = false);
   }
 
   @override
@@ -54,7 +60,7 @@ class _EditProfileState extends State<EditProfile> {
                     const CircleAvatar(
                       radius: 50,
                       backgroundImage: NetworkImage(
-                        "https://ui-avatars.com/api/?name=John+Doe&background=0D8ABC&color=fff",
+                        "https://rxrdxiluiipvixhmaxms.supabase.co/storage/v1/object/sign/jobWaroengStorage/IMG_20240501_235806_448.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9hNThmOTQxZi02ZTY2LTQxYzYtOTkyYS01NzFhM2U0YjRkN2YiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJqb2JXYXJvZW5nU3RvcmFnZS9JTUdfMjAyNDA1MDFfMjM1ODA2XzQ0OC5qcGciLCJpYXQiOjE3NjQ5MjM4NDEsImV4cCI6MTc2NTUyODY0MX0.SxPISVa9Y5KJxgOiUoFi9c8re8CEruo65_BO5WQE1J8",
                       ),
                     ),
                     const SizedBox(height: 10),

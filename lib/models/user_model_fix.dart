@@ -102,49 +102,27 @@ class UserModelFix {
     };
   }
 
-  // -------------------------
-  // COPY WITH
-  // -------------------------
-  UserModelFix copyWith({
-    String? name,
-    String? email,
-    String? phone,
-    String? bio,
-    String? role,
-    bool? verified,
-    String? ktpUrl,
-    String? selfieUrl,
-    String? skckUrl,
-    GeoPoint? location,
-    List<String>? skills,
-    int? totalJobsCompleted,
-    int? totalRating,
-    int? ratingCount,
-    double? reliabilityScore,
-    List<String>? certifications,
-    Timestamp? createdAt,
-    Timestamp? updatedAt,
-  }) {
+  factory UserModelFix.empty(String id) {
     return UserModelFix(
       id: id,
-      name: name ?? this.name,
-      email: email ?? this.email,
-      phone: phone ?? this.phone,
-      bio: bio ?? this.bio,
-      role: role ?? this.role,
-      verified: verified ?? this.verified,
-      ktpUrl: ktpUrl ?? this.ktpUrl,
-      selfieUrl: selfieUrl ?? this.selfieUrl,
-      skckUrl: skckUrl ?? this.skckUrl,
-      location: location ?? this.location,
-      skills: skills ?? this.skills,
-      totalJobsCompleted: totalJobsCompleted ?? this.totalJobsCompleted,
-      totalRating: totalRating ?? this.totalRating,
-      ratingCount: ratingCount ?? this.ratingCount,
-      reliabilityScore: reliabilityScore ?? this.reliabilityScore,
-      certifications: certifications ?? this.certifications,
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
+      name: "",
+      email: "",
+      phone: "",
+      bio: "",
+      role: "worker",
+      verified: false,
+      ktpUrl: "",
+      selfieUrl: "",
+      skckUrl: null,
+      location: const GeoPoint(0, 0),
+      skills: const [],
+      totalJobsCompleted: 0,
+      totalRating: 0,
+      ratingCount: 0,
+      reliabilityScore: 0.0,
+      certifications: const [],
+      createdAt: Timestamp.now(),
+      updatedAt: Timestamp.now(),
     );
   }
 }
