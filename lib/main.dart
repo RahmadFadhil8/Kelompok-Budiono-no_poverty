@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:no_poverty/app_wrapper.dart';
+import 'package:no_poverty/models/user_model_fix.dart';
 import 'package:no_poverty/provider/chatbot_provider.dart';
+import 'package:no_poverty/screens/profile/profile.dart';
+import 'package:no_poverty/services/user_profile_services.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -16,8 +19,14 @@ void main() async {
   await ChatbotProvider().initialMsgAI();
 
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => ChatbotProvider(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ChatbotProvider()),
+        StreamProvider<UserModelFix?>(
+          create: (_) => UserProfileServices().getUserProfile(),
+          initialData: null,
+        ),
+      ],
       child: const MyApp(),
     ),
   );

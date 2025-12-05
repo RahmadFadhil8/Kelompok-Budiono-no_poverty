@@ -2,10 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
-import 'package:no_poverty/Database/database_Service.dart';
 import 'package:no_poverty/Permission/handler.dart';
 import 'package:no_poverty/models/job_model_fix_firestore.dart';
-import 'package:no_poverty/services/job_api_services.dart';
 import 'package:no_poverty/services/job_services_firestore.dart';
 import 'package:no_poverty/widgets/custom_Button.dart';
 import 'package:no_poverty/widgets/title1.dart';
@@ -57,9 +55,7 @@ class _FormaddJobState extends State<FormaddJob> {
       setState(() {
         userId = storedId;
       });
-      print("User ID dari SharedPreferences: $userId");
     } else {
-      print("User ID belum tersimpan di SharedPreferences");
     }
   }
 

@@ -21,7 +21,6 @@ class GeminiApiServices {
     };
 
     try {
-      print("msg : ${msg}");
       var res = await http.post(
         url,
         headers: <String, String>{
@@ -39,15 +38,12 @@ class GeminiApiServices {
       }
 
       var data = jsonDecode(res.body);
-      print(data);
       var resMsg = MessageModel(
         text: data['candidates'][0]['content']['parts'][0]['text'],
         isMe: false,
       );
-      print("data : ${resMsg.text}");
       return resMsg;
     } catch (e) {
-      print("error : ${e}");
       rethrow;
     }
   }

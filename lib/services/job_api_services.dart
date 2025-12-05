@@ -32,7 +32,6 @@ class JobAPIServices {
           'izinkanTawarMenawar': izinkanTawarMenawar,
         })
       );
-      print('Response body: ${res.body}');
       final datafinal = jsonDecode(res.body);
       return JobModel.fromJson(datafinal);
     } catch (e) {

@@ -10,7 +10,7 @@ class UserModelFix {
   final bool verified;
 
   final String ktpUrl;
-  final String selfieUrl;
+  final String imageUrl;
   final String? skckUrl;
 
   final GeoPoint location;
@@ -35,7 +35,7 @@ class UserModelFix {
     required this.role,
     required this.verified,
     required this.ktpUrl,
-    required this.selfieUrl,
+    required this.imageUrl,
     this.skckUrl,
     required this.location,
     required this.skills,
@@ -61,7 +61,7 @@ class UserModelFix {
       role: data['role'] ?? 'worker',
       verified: data['verified'] ?? false,
       ktpUrl: data['ktp_url'] ?? '',
-      selfieUrl: data['selfie_url'] ?? '',
+      imageUrl: data['image_url'] ?? '',
       skckUrl: data['skck_url'],
       location: data['location'] ?? const GeoPoint(0, 0),
       skills: List<String>.from(data['skills'] ?? []),
@@ -76,31 +76,38 @@ class UserModelFix {
     );
   }
 
-  // -------------------------
-  // TO MAP (Model → Firestore)
-  // -------------------------
-  Map<String, dynamic> toMap() {
-    return {
-      'name': name,
-      'email': email,
-      'phone': phone,
-      'bio': bio,
-      'role': role,
-      'verified': verified,
-      'ktp_url': ktpUrl,
-      'selfie_url': selfieUrl,
-      'skck_url': skckUrl,
-      'location': location,
-      'skills': skills,
-      'total_jobs_completed': totalJobsCompleted,
-      'total_rating': totalRating,
-      'rating_count': ratingCount,
-      'reliability_score': reliabilityScore,
-      'certifications': certifications,
-      'created_at': createdAt,
-      'updated_at': updatedAt,
-    };
+  Map<String, dynamic> toUpdateMap() {
+  final data = <String, dynamic>{};
+
+  if (name.isNotEmpty) data['name'] = name;
+  if (email.isNotEmpty) data['email'] = email;
+  if (phone.isNotEmpty) data['phone'] = phone;
+  if (bio.isNotEmpty) data['bio'] = bio;
+
+  data['role'] = role; 
+  data['verified'] = verified;
+
+  if (ktpUrl.isNotEmpty) data['ktp_url'] = ktpUrl;
+  if (imageUrl.isNotEmpty) data['image_url'] = imageUrl;
+  if (skckUrl != null) data['skck_url'] = skckUrl;
+
+  data['location'] = location;
+  if (skills.isNotEmpty) data['skills'] = skills;
+
+  data['total_jobs_completed'] = totalJobsCompleted;
+  data['total_rating'] = totalRating;
+  data['rating_count'] = ratingCount;
+  data['reliability_score'] = reliabilityScore;
+
+  if (certifications.isNotEmpty) {
+    data['certifications'] = certifications;
   }
+
+  data['updated_at'] = Timestamp.now();
+
+  return data;
+}
+
 
   factory UserModelFix.empty(String id) {
     return UserModelFix(
@@ -112,7 +119,7 @@ class UserModelFix {
       role: "worker",
       verified: false,
       ktpUrl: "",
-      selfieUrl: "",
+      imageUrl: "",
       skckUrl: null,
       location: const GeoPoint(0, 0),
       skills: const [],
@@ -125,4 +132,6 @@ class UserModelFix {
       updatedAt: Timestamp.now(),
     );
   }
+
+  
 }
