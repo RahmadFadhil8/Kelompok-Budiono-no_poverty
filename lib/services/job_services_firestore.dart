@@ -13,4 +13,12 @@ class JobService {
 
     return Data.docs.map((doc) => JobModelFix.fromMap(doc.id, doc.data() as Map<String, dynamic>)).toList();
   }
+
+  Future<JobModelFix?> getByid (String id) async {
+    final Data = await jobs.doc(id).get();
+
+    if(!Data.exists) return null;
+
+    return JobModelFix.fromMap(Data.id, Data.data() as Map<String, dynamic>);
+  }
 }
