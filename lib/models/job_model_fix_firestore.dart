@@ -8,9 +8,11 @@ class JobModelFix {
   final String description;
   final String category;
   final GeoPoint location;
+  final String  city;
   final String address;
+  final int max_applicants;
   final double wage;
-  final DateTime date_time;
+  final Timestamp date_time;
   final Timestamp start_time;
   final Timestamp end_time;
   final List<String> requiredSkills;
@@ -27,7 +29,9 @@ class JobModelFix {
     required this.description,
     required this.category,
     required this.location,
+    required this.city,
     required this.address,
+    required this.max_applicants,
     required this.wage,
     required this.date_time,
     required this.start_time,
@@ -48,17 +52,19 @@ class JobModelFix {
       description: data["description"], 
       category: data["category"], 
       location: data["location"], 
-      address: data["address"], 
+      city: data["city"],
+      address: data["address"],
+      max_applicants: (data["max_applicants"] as num).toInt(),
       wage: (data["wage"] as num).toDouble(), 
-      date_time: data["date_time"],
+      date_time: data['date_time'] as Timestamp,
       start_time: data["start_time"], 
       end_time: data["end_time"], 
       requiredSkills: List<String>.from(data["required_skills"] ?? []), 
-      status: data["open"], 
+      status: data["status"] ?? "", 
       worker_id_apply: List<String>.from(data["worker_id_apply"] ?? []), 
       selected_worker_id: data["selected_worker_id"],
-      createdAt: data["createdAt"], 
-      updatedAt: data["updatedAt"]
+      createdAt: data["created_at"], 
+      updatedAt: data["updated_at"]
     );
   }
 
@@ -69,7 +75,9 @@ class JobModelFix {
       'description': description,
       'category': category,
       'location': location,
+      'city': city,
       'address': address,
+      'max_applicants': max_applicants,
       'wage': wage,
       'date_time': date_time,
       'start_time': start_time,

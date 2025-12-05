@@ -33,6 +33,6 @@ class Handler_Permission {
     List<Placemark> placemark = await placemarkFromCoordinates(pos.latitude, pos.longitude);
 
     Placemark place = placemark.first;
-    return "${place.street}, ${place.subLocality}, ${place.locality}, ${place.administrativeArea}";
+    return "${place.administrativeArea} ${place.country}";
   }
 }
