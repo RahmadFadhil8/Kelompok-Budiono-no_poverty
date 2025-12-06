@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'account_verification4.dart'; // ← SUDAH TERHUBUNG KE STEP 4
+import 'package:no_poverty/utils/permission_utils.dart';
+import 'account_verification4.dart';
 
 class AccountVerificationStep3 extends StatefulWidget {
   const AccountVerificationStep3({super.key});
@@ -17,16 +17,9 @@ class _AccountVerificationStep3State extends State<AccountVerificationStep3> {
 
   final ImagePicker picker = ImagePicker();
 
+  // DIPERBAIKI — sekarang sama persis seperti kamera & galeri
   Future<void> _pickStnk() async {
-    final status = await Permission.photos.request();
-    if (!status.isGranted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Izin akses galeri diperlukan")),
-      );
-      return;
-    }
-
-    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+    final XFile? image = await PermissionUtils.pickFromGallery();
     if (image != null) {
       setState(() => _stnkImage = File(image.path));
     }
@@ -199,7 +192,9 @@ class _AccountVerificationStep3State extends State<AccountVerificationStep3> {
                               width: 2,
                             ),
                             padding: const EdgeInsets.symmetric(vertical: 16),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
                           ),
                           child: Text(
                             _isPremiumChecked ? "Dipilih" : "Pilih Background Check",
@@ -230,7 +225,7 @@ class _AccountVerificationStep3State extends State<AccountVerificationStep3> {
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         side: BorderSide(color: Colors.grey.shade400),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                        foregroundColor: Colors.black, // WARNA HITAM SESUAI PERMINTAAN
+                        foregroundColor: Colors.black,
                       ),
                       child: const Text("Kembali"),
                     ),
@@ -244,7 +239,7 @@ class _AccountVerificationStep3State extends State<AccountVerificationStep3> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => AccountVerificationStep4(
-                                    isPremiumSelected: _isPremiumChecked, // ← KIRIM STATUS KE STEP 4
+                                    isPremiumSelected: _isPremiumChecked,
                                   ),
                                 ),
                               );

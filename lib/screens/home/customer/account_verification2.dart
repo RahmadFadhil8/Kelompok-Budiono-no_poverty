@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:no_poverty/utils/permission_utils.dart';
 import 'account_verification3.dart';
 
 class AccountVerificationStep2 extends StatefulWidget {
@@ -15,18 +15,9 @@ class _AccountVerificationStep2State extends State<AccountVerificationStep2> {
   File? _skckImage;
   final ImagePicker _picker = ImagePicker();
 
+  // DIPERBAIKI — sekarang sama persis seperti kamera
   Future<void> _pickSkck() async {
-    final status = await Permission.photos.request();
-    if (!status.isGranted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Izin akses galeri diperlukan")),
-      );
-      return;
-    }
-    final XFile? image = await _picker.pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 85,
-    );
+    final XFile? image = await PermissionUtils.pickFromGallery();
     if (image != null) {
       setState(() => _skckImage = File(image.path));
     }
@@ -56,7 +47,7 @@ class _AccountVerificationStep2State extends State<AccountVerificationStep2> {
         ],
         elevation: 0,
         backgroundColor: Colors.white,
-        foregroundColor: Colors.black, // back button hitam
+        foregroundColor: Colors.black,
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -72,7 +63,6 @@ class _AccountVerificationStep2State extends State<AccountVerificationStep2> {
             ),
             const SizedBox(height: 40),
 
-            // Card Utama SKCK
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Card(
@@ -106,7 +96,6 @@ class _AccountVerificationStep2State extends State<AccountVerificationStep2> {
 
             const SizedBox(height: 40),
 
-            // Upload SKCK
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Column(
@@ -145,7 +134,6 @@ class _AccountVerificationStep2State extends State<AccountVerificationStep2> {
 
             const SizedBox(height: 30),
 
-            // Info Box
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 24),
               padding: const EdgeInsets.all(16),
@@ -170,7 +158,6 @@ class _AccountVerificationStep2State extends State<AccountVerificationStep2> {
 
             const SizedBox(height: 40),
 
-            // Tombol Kembali & Lanjut
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Row(
@@ -182,7 +169,7 @@ class _AccountVerificationStep2State extends State<AccountVerificationStep2> {
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         side: BorderSide(color: Colors.grey.shade400),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                        foregroundColor: Colors.black, // INI YANG BIKIN TOMBOL "KEMBALI" HITAM PEKAT!
+                        foregroundColor: Colors.black,
                       ),
                       child: const Text("Kembali"),
                     ),
