@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:no_poverty/utils/permission_utils.dart';
 import 'account_verification2.dart';
 
 class AccountVerificationScreen extends StatefulWidget {
@@ -15,36 +15,16 @@ class _AccountVerificationScreenState extends State<AccountVerificationScreen> {
   File? _ktpImage;
   File? _selfieImage;
 
-  final ImagePicker _picker = ImagePicker();
-
+  // DIPERBAIKI — pakai cara paling benar & bersih
   Future<void> _pickKtp() async {
-    final status = await Permission.photos.request();
-    if (!status.isGranted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Izin akses galeri diperlukan")),
-      );
-      return;
-    }
-
-    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    final XFile? image = await PermissionUtils.pickFromGallery();
     if (image != null) {
       setState(() => _ktpImage = File(image.path));
     }
   }
 
   Future<void> _takeSelfie() async {
-    final status = await Permission.camera.request();
-    if (!status.isGranted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Izin kamera diperlukan")),
-      );
-      return;
-    }
-
-    final XFile? image = await _picker.pickImage(
-      source: ImageSource.camera,
-      preferredCameraDevice: CameraDevice.front,
-    );
+    final XFile? image = await PermissionUtils.pickFromCamera();
     if (image != null) {
       setState(() => _selfieImage = File(image.path));
     }
@@ -121,7 +101,7 @@ class _AccountVerificationScreenState extends State<AccountVerificationScreen> {
               ),
             ),
 
-            const SizedBox(height: 40),
+            const SizedBox(height: 40), // ← SUDAH BENAR
 
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
