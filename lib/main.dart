@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:no_poverty/app_wrapper.dart';
 import 'package:no_poverty/models/user_model_fix.dart';
 import 'package:no_poverty/provider/chatbot_provider.dart';
@@ -15,6 +16,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await NotificationService.initialize();
   NotificationService.setListeners();
+  MobileAds.instance.initialize();
   await NotificationService.requestPermission();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await Supabase.initialize(
