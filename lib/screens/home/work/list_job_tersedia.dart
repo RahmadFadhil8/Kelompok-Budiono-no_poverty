@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:no_poverty/screens/home/customer/detailJob.dart';
 import 'package:no_poverty/services/job_applications_service.dart';
+import 'package:no_poverty/services/notification_service.dart';
 import 'package:no_poverty/widgets/custom_card.dart';
 import 'package:no_poverty/widgets/sub_title1.dart';
 import 'package:no_poverty/widgets/title1.dart';
@@ -175,6 +176,8 @@ class _listJobTersediaState extends State<listJobTersedia> {
                                 if (result == "success") {
                                   setState(() {});
                                   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Berhasil melamar pekerjaan!",),),);
+                                  await NotificationService.showDetailJobApplied(jobId: jobId);
+                                  
                                 } else if (result == "sudah ada") {
                                   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Kamu sudah pernah melamar job ini.",),),);
                                 } else if (result == "bukan worker") {
