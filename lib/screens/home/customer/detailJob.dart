@@ -209,6 +209,3 @@ class _DetailJobState extends State<DetailJob> {
     );
   }
 }
-
-//rahmad fadhil
-//231111932

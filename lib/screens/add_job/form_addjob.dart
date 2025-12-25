@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:intl/intl.dart';
 import 'package:no_poverty/Database/database_Service.dart';
 import 'package:no_poverty/Permission/handler.dart';
@@ -27,6 +28,37 @@ class _FormaddJobState extends State<FormaddJob> {
 
   final permission = Handler_Permission();
 
+  // <============Iklan Interstitial============>
+
+  InterstitialAd? _interstitialAd;
+  String Interstitialid = "ca-app-pub-3940256099942544/1033173712";
+
+  void _loadInterstitialAd() {
+    InterstitialAd.load( 
+      adUnitId: Interstitialid, 
+      adLoadCallback: InterstitialAdLoadCallback(
+        onAdLoaded: (ad) {
+          _interstitialAd = ad;
+          ad.fullScreenContentCallback = FullScreenContentCallback(
+            onAdDismissedFullScreenContent: (ad) {
+              ad.dispose();
+              _loadInterstitialAd();
+              
+            },
+            onAdFailedToShowFullScreenContent: (ad, error) {
+              ad.dispose();
+              _loadInterstitialAd();
+            },
+          );
+        }, 
+        onAdFailedToLoad: (error) {
+          print("Filed to load ad:${error.message}");
+        }),
+      request: AdRequest(),
+    );
+  }
+  // <================================================>
+
   void getMylocation() async {
     try {
       Position? pos = await permission.getLocation();
@@ -47,6 +79,7 @@ class _FormaddJobState extends State<FormaddJob> {
 
   @override
   void initState() { 
+    _loadInterstitialAd();
     super.initState();
     takeId();
     getMylocation();
@@ -485,9 +518,7 @@ class _FormaddJobState extends State<FormaddJob> {
 
                       if (!mounted) return;
 
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text("Job berhasil dikirim!")),
-                      );
+                      _interstitialAd?.show();
                       Navigator.pop(context);
 
                     } catch (e, s) {
