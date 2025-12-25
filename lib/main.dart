@@ -1,7 +1,10 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:no_poverty/app_wrapper.dart';
 import 'package:no_poverty/provider/chatbot_provider.dart';
 import 'package:no_poverty/screens/home/customer/customer_home_screen.dart';
+import 'package:no_poverty/services/notification_services.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -11,6 +14,10 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await ChatbotProvider().initialMsgAI();
 
+  await NotificationServices.initializeNotification(); 
+  WidgetsFlutterBinding.ensureInitialized();
+  unawaited(MobileAds.instance.initialize());
+  
   runApp(
     ChangeNotifierProvider(
       create: (_) => ChatbotProvider(),
@@ -20,6 +27,8 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
+  static final GlobalKey<NavigatorState> navigatorKey =
+      GlobalKey<NavigatorState>();
   const MyApp({super.key});
 
   @override
@@ -50,6 +59,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
       debugShowCheckedModeBanner: false,
+      navigatorKey: navigatorKey,
       home: AppWrapper(),
     );
   }

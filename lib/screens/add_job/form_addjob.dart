@@ -7,6 +7,7 @@ import 'package:no_poverty/Permission/handler.dart';
 import 'package:no_poverty/models/job_model_fix_firestore.dart';
 import 'package:no_poverty/services/job_api_services.dart';
 import 'package:no_poverty/services/job_services_firestore.dart';
+import 'package:no_poverty/services/notification_services.dart';
 import 'package:no_poverty/widgets/custom_Button.dart';
 import 'package:no_poverty/widgets/title1.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -471,13 +472,35 @@ class _FormaddJobState extends State<FormaddJob> {
                       updatedAt: Timestamp.now()
                     );
 
-                    await job.createJob(pekerjaan);
+                    try {  
+                      await job.createJob(pekerjaan);
 
+                      await NotificationServices.showNotification(
+                        title: "Job Berhasil dibuat",
+                        body: "Pekerjaan ${ _judulController.text} telah dipublikasi",
+                        payload: {
+                          "navigate":  "true",
+                        },
+                      );
+
+                      if (!mounted) return;
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("Job berhasil dikirim!")),
+                      );
+                      Navigator.pop(context);
+
+                    } catch (e, s) {
+                      debugPrint("Error Create JOB: $e");
+                      debugPrintStack(stackTrace: s);  
+                      if (!mounted) return;
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("Gagal membuat job")),
+                      );                    
+                    }
 
                     // jobs.create(userId!, _judulController.text, _kategori!, _deskripsiController.text, _alamatController.text, _BudgetController.text, Count, tanggalStr, waktuStr, isActive);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("Job berhasil dikirim!")),
-                    );
                   }, 
                   child: Text("Publish Job")
                 ),
