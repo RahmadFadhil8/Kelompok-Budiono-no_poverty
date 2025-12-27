@@ -15,7 +15,6 @@ class _AccountVerificationStep2State extends State<AccountVerificationStep2> {
   File? _skckImage;
   final ImagePicker _picker = ImagePicker();
 
-  // DIPERBAIKI — sekarang sama persis seperti kamera
   Future<void> _pickSkck() async {
     final XFile? image = await PermissionUtils.pickFromGallery();
     if (image != null) {

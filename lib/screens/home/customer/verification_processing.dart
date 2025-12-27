@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:no_poverty/screens/profile/profile.dart'; // INI YANG BENAR 100%!
+import 'package:no_poverty/screens/profile/profile.dart';
+import 'verification_success.dart';
 
 class VerificationProcessingScreen extends StatefulWidget {
   const VerificationProcessingScreen({super.key});
@@ -20,16 +21,24 @@ class _VerificationProcessingScreenState extends State<VerificationProcessingScr
     await Future.delayed(const Duration(seconds: 3));
 
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('isVerified', true);
+    await prefs.setBool('verificationPending', true); 
 
     if (!mounted) return;
 
-    // LANGSUNG KE PROFILE — IMPORT SUDAH 100% BENAR!
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (_) => const ProfileScreen()),
       (route) => false,
     );
+
+    Future.delayed(const Duration(milliseconds: 500), () {
+      if (mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const VerificationSuccessScreen()),
+        );
+      }
+    });
   }
 
   @override

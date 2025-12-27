@@ -9,6 +9,8 @@ import 'package:no_poverty/widgets/custom_Button.dart';
 import 'package:no_poverty/widgets/custom_card.dart';
 import 'package:no_poverty/widgets/sub_title1.dart';
 import 'package:no_poverty/widgets/title1.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:no_poverty/main.dart'; 
 
 class CustomerHomeScreen extends StatefulWidget {
   const CustomerHomeScreen({super.key});
@@ -52,7 +54,36 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                       backgroundColor: Colors.orange,
                       foregroundColor: Colors.white,
                       child: Text("Mulai"),
-                      onPress: () {
+                      onPress: () async {
+                        final AndroidFlutterLocalNotificationsPlugin? androidImplementation =
+                            notificationsPlugin.resolvePlatformSpecificImplementation<
+                                AndroidFlutterLocalNotificationsPlugin>();
+
+                        final bool? granted = await androidImplementation?.requestNotificationsPermission();
+
+                        if (granted == true || granted == null) {
+                          const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+                            'verification_start',
+                            'Verifikasi Akun',
+                            channelDescription: 'Notifikasi saat memulai proses verifikasi akun',
+                            importance: Importance.high,
+                            priority: Priority.high,
+                            playSound: true,
+                            enableVibration: true,
+                            icon: '@mipmap/ic_launcher',
+                          );
+
+                          const NotificationDetails notificationDetails =
+                              NotificationDetails(android: androidDetails);
+
+                          await notificationsPlugin.show(
+                            1001,
+                            'Yuk Lengkapi Verifikasi Akunmu! 👤',
+                            'Siapkan KTP, selfie, dan dokumen lain ya. Prosesnya cepat dan mudah!',
+                            notificationDetails,
+                          );
+                        }
+
                         Navigator.push(
                           context,
                           MaterialPageRoute(

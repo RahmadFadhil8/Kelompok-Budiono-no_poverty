@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'verification_processing.dart'; // ← SATU-SATUNYA TAMBAHAN
+import 'verification_processing.dart'; 
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:no_poverty/main.dart'; 
 
 class AccountVerificationStep4 extends StatefulWidget {
   final bool isPremiumSelected;
@@ -22,7 +24,7 @@ class _AccountVerificationStep4State extends State<AccountVerificationStep4> {
         title: const Text("Verifikasi Akun"),
         actions: const [
           Padding(
-            padding: EdgeInsets.only(right: 16),
+            padding: const EdgeInsets.only(right: 16),
             child: Center(
               child: Text(
                 "Step 4/4",
@@ -41,7 +43,7 @@ class _AccountVerificationStep4State extends State<AccountVerificationStep4> {
             LinearProgressIndicator(value: 1.0, minHeight: 6),
             const SizedBox(height: 8),
             const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text("100% selesai", style: TextStyle(color: Colors.grey)),
@@ -184,8 +186,27 @@ class _AccountVerificationStep4State extends State<AccountVerificationStep4> {
                   const SizedBox(width: 16),
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () {
-                        // SATU-SATUNYA PERUBAHAN FUNGSIONAL — KE HALAMAN PROSES
+                      onPressed: () async {
+                        // === TAMBAHAN: NOTIFIKASI KONFIRMASI SUBMIT ===
+                        const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+                          'submit_confirmation',
+                          'Submit Verifikasi',
+                          channelDescription: 'Dokumen verifikasi telah dikirim',
+                          importance: Importance.high,
+                          priority: Priority.high,
+                          playSound: true,
+                          enableVibration: true,
+                        );
+
+                        const NotificationDetails notificationDetails = NotificationDetails(android: androidDetails);
+
+                        await notificationsPlugin.show(
+                          1002,
+                          'Dokumen Verifikasi Berhasil Dikirim! ✅',
+                          'Kami akan review dalam 1-3 hari kerja. Terima kasih atas kesabaranmu!',
+                          notificationDetails,
+                        );
+     
                         Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(builder: (_) => const VerificationProcessingScreen()),

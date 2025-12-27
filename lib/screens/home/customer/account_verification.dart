@@ -14,8 +14,7 @@ class AccountVerificationScreen extends StatefulWidget {
 class _AccountVerificationScreenState extends State<AccountVerificationScreen> {
   File? _ktpImage;
   File? _selfieImage;
-
-  // DIPERBAIKI — pakai cara paling benar & bersih
+  
   Future<void> _pickKtp() async {
     final XFile? image = await PermissionUtils.pickFromGallery();
     if (image != null) {
@@ -101,7 +100,7 @@ class _AccountVerificationScreenState extends State<AccountVerificationScreen> {
               ),
             ),
 
-            const SizedBox(height: 40), // ← SUDAH BENAR
+            const SizedBox(height: 40), 
 
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
