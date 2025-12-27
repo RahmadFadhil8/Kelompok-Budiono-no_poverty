@@ -9,28 +9,32 @@ class MyAnalytics {
   // sudah
   Future<void> clikcbutton(_value) async {
     await analytics.logEvent(
-      name: "${_value}_click",
-      parameters: {'value': "user klik button ${_value}"},
+      name: "${_value}_click", 
+      parameters: {'value': "user_klik_button_${_value}"}
     );
-    print(_value);
   }
 
   //sudah
-  Future<void> userLogin(email) async {
-    await analytics.logEvent(name: "user login", parameters: {'email': email});
+  Future<void> userLogin(email)async {
+    await analytics.logEvent(
+      name: "user_login",
+      parameters: {'email': email}
+    );
   }
 
   //sudah
   Future<void> userRegister(email) async {
     await analytics.logEvent(
-      name: "user Register",
-      parameters: {'email': email},
+      name: "user_Register",
+      parameters: {'email': email}
     );
   }
 
   // sudah
   Future<void> userlogout() async {
-    await analytics.logEvent(name: 'user_logout');
+    await analytics.logEvent(
+      name: 'user_logout',
+    );
   }
 
   // sudah
@@ -41,22 +45,29 @@ class MyAnalytics {
   // sudah
   Future<void> userpindahPage(page) async {
     await analytics.logEvent(
-      name: "user pindah halaman",
-      parameters: {'halaman': "pindah ke ${page}"},
+
+      name: "user_pindah_halaman",
+      parameters: {'halaman': "pindah_ke_${page}"}
+
     );
   }
 
   // sudah
   Future<void> userpencarian(pencarian) async {
     await analytics.logEvent(
-      name: "user melakukan pencarian",
-      parameters: {'pencarian': "user mencari ${pencarian}"},
+
+      name: "user_melakukan_pencarian_${pencarian}",
+      parameters: {'pencarian': "user_mencari_${pencarian}"}
     );
   }
 
   //sudah
-  Future<void> usertimeout() async {
-    await analytics.setSessionTimeoutDuration(Duration(minutes: 1));
+
+  Future<void> usertimeout()async {
+    await analytics.setSessionTimeoutDuration(
+      Duration(minutes: 1)
+    );
+
   }
 
   // sudah
@@ -85,7 +96,6 @@ class MyAnalytics {
 
     await analytics.logScreenView(screenName: page, screenClass: page);
 
-    print("Tracking started for $page at $_screenStartTime");
   }
 
   Future<void> endTracking() async {
@@ -101,7 +111,6 @@ class MyAnalytics {
       },
     );
 
-    print("User spent $duration seconds on $_currentScreenName");
 
     _screenStartTime = null;
     _currentScreenName = null;

@@ -68,10 +68,10 @@ class _LoginScreenState extends State<LoginScreen> {
         await prefs.setString('userId', user.uid);
         await prefs.setString('userEmail', user.email ?? '');
 
-        await analytics.userLogin(email);
-        await analytics.usertimeout();
-        await analytics.userId(user.uid);
-        await analytics.userpoperty(user.email);
+        await analytics.userLogin(email); // ini implementasinya
+        await analytics.usertimeout(); // ini implementasinya
+        await analytics.userId(user.uid); // ini implementasinya
+        await analytics.userpoperty(user.email); // ini implementasinya
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(

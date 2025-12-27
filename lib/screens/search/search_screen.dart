@@ -24,8 +24,8 @@ class _SearchScreenState extends State<SearchScreen> {
         searchQuery = query;
       });
 
-      if (query.isEmpty) {
-        analytics.userpencarian(query);
+      if (query.isNotEmpty) {
+        analytics.userpencarian(query); //ini implementasi
       }
     },);
   }

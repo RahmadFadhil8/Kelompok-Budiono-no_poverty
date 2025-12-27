@@ -14,6 +14,34 @@ android {
     ndkVersion = "27.0.12077973"
 
 
+    dependencies {
+        constraints {
+            implementation("androidx.activity:activity") {
+                version { strictly("1.8.2") }
+                because("force downgrade activity to support AGP 8.7.0 without upgrade")
+            }
+            implementation("androidx.activity:activity-ktx") {
+                version { strictly("1.8.2") }
+                because("force downgrade activity to support AGP 8.7.0 without upgrade")
+            }
+            implementation("androidx.activity:activity-compose") {
+                version { strictly("1.8.2") }
+                because("force downgrade activity to support AGP 8.7.0 without upgrade")
+            }
+            implementation("androidx.core:core") {
+            version { strictly("1.12.0") }
+        }
+        implementation("androidx.core:core-ktx") {
+            version { strictly("1.12.0") }
+        }
+
+        // Browser harus turun dari 1.9.0 → 1.7.0
+        implementation("androidx.browser:browser") {
+            version { strictly("1.7.0") }
+        }
+        }
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11

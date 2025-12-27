@@ -1,6 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
-import 'package:no_poverty/services/job_api_services.dart';
+import 'package:no_poverty/Permission/handler.dart';
+import 'package:no_poverty/models/job_model_fix_firestore.dart';
+import 'package:no_poverty/services/job_services_firestore.dart';
 import 'package:no_poverty/widgets/custom_Button.dart';
 import 'package:no_poverty/widgets/title1.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,13 +17,36 @@ class FormaddJob extends StatefulWidget {
 }
 
 class _FormaddJobState extends State<FormaddJob> {
-
+  String coordinate = "Belum ada";
+  String address = "Belum ada";
+  GeoPoint? geoPoint;
   String? userId;
+
+  final permission = Handler_Permission();
+
+  void getMylocation() async {
+    try {
+      Position? pos = await permission.getLocation();
+      geoPoint = GeoPoint(pos!.latitude, pos.longitude);
+      String addresstext = await permission.getaddress(pos!);
+
+      setState(() {
+        coordinate = "lat: ${pos.latitude}, lng: ${pos.longitude}";
+        address = addresstext;
+      });
+    } catch (e) {
+      setState(() {
+        coordinate = "Error: $e";
+        address = "Tidak ada alamat";
+      });
+    }
+  }
 
   @override
   void initState() { 
     super.initState();
     takeId();
+    getMylocation();
   }
   Future takeId() async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -28,24 +55,31 @@ class _FormaddJobState extends State<FormaddJob> {
       setState(() {
         userId = storedId;
       });
-      print("User ID dari SharedPreferences: $userId");
     } else {
-      print("User ID belum tersimpan di SharedPreferences");
     }
   }
 
-  JobAPIServices jobs = JobAPIServices();
+  // JobAPIServices jobs = JobAPIServices();
+  JobService job = JobService();
+
+  String jobId = FirebaseFirestore.instance.collection("jobs").doc().id;
+
 
   final TextEditingController _judulController = TextEditingController();
   final TextEditingController _deskripsiController = TextEditingController();
   final TextEditingController _alamatController = TextEditingController();
   final TextEditingController _BudgetController = TextEditingController();
+  final TextEditingController _skillcontroler = TextEditingController();
+
+  
 
   String? _kategori;
   DateTime? _selectedDate;
-  TimeOfDay? _selectedTime;
+  TimeOfDay? startTime;
+  TimeOfDay? endTime;
   int Count = 0;
   bool isActive = false;
+  List<String> workerApply = [];
 
   final List<String> _kategoriList = [
     'Kebersihan',
@@ -68,14 +102,26 @@ class _FormaddJobState extends State<FormaddJob> {
     }
   }
 
-  Future<void> _selectTime(BuildContext context) async {
+  Future<void> selectStartTime(BuildContext context) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
-      initialTime: _selectedTime ?? TimeOfDay.now(),
+      initialTime: startTime ?? TimeOfDay.now(),
     );
-    if (picked != null && picked != _selectedTime) {
+    if (picked != null && picked != startTime) {
       setState(() {
-        _selectedTime = picked;
+        startTime = picked;
+      });
+    }
+  }
+
+  Future<void> selectendTime(BuildContext context) async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: endTime ?? TimeOfDay.now(),
+    );
+    if (picked != null && picked != endTime) {
+      setState(() {
+        endTime = picked;
       });
     }
   }
@@ -87,9 +133,12 @@ class _FormaddJobState extends State<FormaddJob> {
   }
 
   void minHelper () {
-    setState(() {
-      Count --;
-    });
+    if (Count >0) {
+      setState(() {
+        Count --;
+      });
+    }
+      
   }
 
   @override
@@ -216,11 +265,15 @@ class _FormaddJobState extends State<FormaddJob> {
                               ),
                             ),
                             const SizedBox(width: 12),
+                          ],
+                        ), 
+                        Row(
+                          children: [
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Title1(title: "waktu"),
+                                  Title1(title: "waktu mulai"),
                                   SizedBox(height: 12,),
                                   TextFormField(
                                     readOnly: true,
@@ -229,20 +282,67 @@ class _FormaddJobState extends State<FormaddJob> {
                                       border: const OutlineInputBorder(),
                                       suffixIcon: IconButton(
                                         icon: const Icon(Icons.access_time),
-                                        onPressed: () => _selectTime(context),
+                                        onPressed: () => selectStartTime(context),
                                       ),
-                                      hintText: _selectedTime == null
+                                      hintText: startTime == null
                                           ? '--:--'
-                                          : _selectedTime!.format(context),
+                                          : startTime!.format(context),
                                     ),
                                     validator: (_) =>
-                                        _selectedTime == null ? 'Pilih waktu' : null,
+                                        startTime == null ? 'Pilih waktu' : null,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(width: 4,),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Title1(title: "waktu selesai"),
+                                  SizedBox(height: 12,),
+                                  TextFormField(
+                                    readOnly: true,
+                                    decoration: InputDecoration(
+                                      labelText: 'Waktu *',
+                                      border: const OutlineInputBorder(),
+                                      suffixIcon: IconButton(
+                                        icon: const Icon(Icons.access_time),
+                                        onPressed: () => selectendTime(context),
+                                      ),
+                                      hintText: endTime == null
+                                          ? '--:--'
+                                          : endTime!.format(context),
+                                    ),
+                                    validator: (_) =>
+                                        endTime == null ? 'Pilih waktu' : null,
                                   ),
                                 ],
                               ),
                             ),
                           ],
-                        ),  
+                        ) 
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(height: 20,),
+                Card(
+                  child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Column(
+                      children: [
+                        Title1(title: "Skill yang di butuhkan"),
+                        SizedBox(height: 18,),
+                        TextFormField(
+                          controller: _skillcontroler,
+                          decoration: const InputDecoration(
+                            hintText: 'skil yang di butuhkan',
+                            border: OutlineInputBorder(),
+                          ),
+                          validator: (value) =>
+                            value!.isEmpty ? 'Budget wajib di isi' : null,
+                        )
                       ],
                     ),
                   ),
@@ -287,38 +387,90 @@ class _FormaddJobState extends State<FormaddJob> {
                           validator: (value) =>
                             value!.isEmpty ? 'Budget wajib di isi' : null,
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Title1(title: "Izinkan Tawar-Manawar"),
-                            Switch(
-                              value: isActive, 
-                              onChanged: (value) {
-                                setState(() {
-                                  isActive = value;
-                                });
-                              },
-                            )
-                          ],
-                        )
+
+                        // Row(
+                        //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        //   children: [
+                        //     Title1(title: "Izinkan Tawar-Manawar"),
+                        //     Switch(
+                        //       value: isActive, 
+                        //       onChanged: (value) {
+                        //         setState(() {
+                        //           isActive = value;
+                        //         });
+                        //       },
+                        //     )
+                        //   ],
+                        // )
                       ],
                     ),
                   ),
                 ),
                 SizedBox(height: 20,),
+                
                 CustomButton(
-                  onPress: (){
-                    if (_judulController.text.isEmpty || _kategori == null || _deskripsiController.text.isEmpty || _alamatController.text.isEmpty || _BudgetController.text.isEmpty || _selectedDate == null || _selectedTime == null) {
+                  onPress: ()async{
+                    if (_judulController.text.isEmpty || _kategori == null || _deskripsiController.text.isEmpty || _alamatController.text.isEmpty || _BudgetController.text.isEmpty || _selectedDate == null || startTime == null || endTime == null) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text("Lengkapi semua field terlebih dahulu!"))
                       );
                       return;
                     }
                     
-                    final tanggalStr = DateFormat('yyyy-MM-dd').format(_selectedDate!);
-                    final waktuStr = _selectedTime!.format(context);
+                    final gaji = double.tryParse(_BudgetController.text) ?? 0.0;
 
-                    jobs.create(userId!, _judulController.text, _kategori!, _deskripsiController.text, _alamatController.text, _BudgetController.text, Count, tanggalStr, waktuStr, isActive);
+                    if (geoPoint == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("Ambil lokasi terlebih dahulu!")),
+                      );
+                      return;
+                    }
+
+                    final DateTime tanggalStr = _selectedDate!;
+                    // final waktuStr = _selectedTime!.format(context);
+
+                    final waktuMulai = Timestamp.fromDate(DateTime(
+                      _selectedDate!.year,
+                      _selectedDate!.month,
+                      _selectedDate!.day,
+                      startTime!.hour,
+                      startTime!.minute
+                    ));
+
+                    final waktuSelesai = Timestamp.fromDate(DateTime(
+                      _selectedDate!.year,
+                      _selectedDate!.month,
+                      _selectedDate!.day,
+                      endTime!.hour,
+                      endTime!.minute
+                    ));
+
+                    final pekerjaan = JobModelFix(
+                      job_id: jobId, 
+                      employer_id: userId.toString(), 
+                      title: _judulController.text, 
+                      description: _deskripsiController.text, 
+                      category: _kategori!, 
+                      location: geoPoint!, 
+                      city : address,
+                      address: _alamatController.text, 
+                      wage: gaji, 
+                      max_applicants: Count,
+                      date_time: Timestamp.fromDate(tanggalStr),
+                      start_time: waktuMulai, 
+                      end_time: waktuSelesai, 
+                      requiredSkills: _skillcontroler.text.split(",").map((e) => e.trim()).where((e) => e.isNotEmpty).toList(), 
+                      status: "open", 
+                      worker_id_apply: workerApply, 
+                      selected_worker_id: null,
+                      createdAt: Timestamp.now(), 
+                      updatedAt: Timestamp.now()
+                    );
+
+                    await job.createJob(pekerjaan);
+
+
+                    // jobs.create(userId!, _judulController.text, _kategori!, _deskripsiController.text, _alamatController.text, _BudgetController.text, Count, tanggalStr, waktuStr, isActive);
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text("Job berhasil dikirim!")),
                     );

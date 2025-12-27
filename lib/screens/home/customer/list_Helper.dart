@@ -18,7 +18,6 @@ class _ListHelperState extends State<ListHelper> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Daftar Helper")),
       body: FutureBuilder(
         future: users.getAll(),
         builder: (context, snapshot) {
