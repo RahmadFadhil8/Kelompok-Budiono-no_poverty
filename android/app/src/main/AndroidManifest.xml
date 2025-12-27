@@ -18,6 +18,9 @@
     <uses-feature android:name="android.hardware.camera" android:required="false"/>
     <uses-feature android:name="android.hardware.camera.autofocus" android:required="false"/>
 
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+
+
     <application
         android:label="no_poverty"
         android:name="${applicationName}"
@@ -43,6 +46,10 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2"/>
+
+        <meta-data
+    android:name="com.google.android.gms.ads.APPLICATION_ID"
+    android:value="ca-app-pub-3940256099942544~3347511713"/>
     </application>
 
     <queries>

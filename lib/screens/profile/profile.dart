@@ -8,7 +8,7 @@ import 'package:no_poverty/screens/profile/edit_profile.dart';
 import 'package:no_poverty/services/auth_services.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart'; // ← TAMBAHAN INI SAJA
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -27,7 +27,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   MyAnalytics analytics = MyAnalytics();
   final AuthServices _authService = AuthServices();
 
-  // TAMBAHAN: Cek status verifikasi dari SharedPreferences
   Future<bool> _checkVerificationStatus() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool('isVerified') ?? false;
@@ -67,7 +66,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ======== PROFILE CARD ========
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -140,7 +138,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
             const SizedBox(height: 24),
 
-            // ======== AKUN SECTION ========
             const Text(
               "Akun",
               style: TextStyle(
