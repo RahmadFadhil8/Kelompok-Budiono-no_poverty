@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'services/notification_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,6 +15,8 @@ void main() async {
     anonKey: 'sb_publishable_CWlG8-5CWNSQ_cRQJFU8qw_XVoufF6V',
   );
   await ChatbotProvider().initialMsgAI();
+
+   await NotificationService.init();
 
   runApp(
     ChangeNotifierProvider(
@@ -96,6 +99,6 @@ class MyApp extends StatelessWidget {
       ),
       debugShowCheckedModeBanner: false,
       home: AppWrapper(),
-    );
+    ); 
   }
 }
