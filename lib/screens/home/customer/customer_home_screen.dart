@@ -15,7 +15,10 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
 class CustomerHomeScreen extends StatefulWidget {
-  const CustomerHomeScreen({super.key});
+  final bool enableAnalytics;
+  final bool isTest;
+  
+  const CustomerHomeScreen({super.key, this.enableAnalytics = true, this.isTest = false,});
 
   @override
   State<CustomerHomeScreen> createState() => _CustomerHomeScreenState();
@@ -24,7 +27,15 @@ class CustomerHomeScreen extends StatefulWidget {
 class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
   bool isWorkMode = false;
 
-  MyAnalytics analytics = MyAnalytics();
+  MyAnalytics? analytics;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.enableAnalytics) {
+      analytics = MyAnalytics();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -156,11 +167,13 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                         ),
                       ),
                       onPress: () async {
-                        await analytics.clikcbutton("buat job");
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => addJob()),
-                        );
+                        if (!widget.isTest) {  
+                          await analytics?.clikcbutton("buat job");
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => addJob()),
+                          );
+                        }
                       },
                     ),
                   ),
@@ -180,7 +193,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                         ),
                       ),
                       onPress: () async {
-                        await analytics.clikcbutton("cari helper");
+                        await analytics?.clikcbutton("cari helper");
                       },
                     ),
                   ),
@@ -191,7 +204,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
               SizedBox(height: 10),
               Row(children: [Text("Kategori Populer")]),
               SizedBox(height: 10),
-              KategotiList(),
+              widget.isTest? const SizedBox(): const KategotiList(),
           
               // judul Job Aktif
               SizedBox(height: 10),
@@ -201,7 +214,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                   Text("Job Akif"),
                   TextButton(
                     onPressed: () async {
-                      await analytics.clikcbutton("job aktif lainnya");
+                      await analytics?.clikcbutton("job aktif lainnya");
                     },
                     child: Text(
                       "Lainnya >",
@@ -214,7 +227,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
               // CardJob
               SizedBox(height: 16),
 
-              SizedBox(
+              widget.isTest? const SizedBox(height: 170,): const SizedBox(
                 height: 170,
                 child: ListJobActive(),
               ),
@@ -230,7 +243,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
           
               // Helper
               SizedBox(height: 12),
-              SizedBox(
+              widget.isTest? const SizedBox() : SizedBox(
                 height: MediaQuery.of(context).size.height * 0.4,
                 child: const ListHelper()
               ),
