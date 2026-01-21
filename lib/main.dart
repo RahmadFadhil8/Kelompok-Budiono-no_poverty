@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -14,6 +15,8 @@ import 'services/notification_services.dart';
 
 final GlobalKey<NavigatorState> navigatorKey =
     GlobalKey<NavigatorState>();
+
+    
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,6 +35,11 @@ void main() async {
   unawaited(MobileAds.instance.initialize());
 
   await ChatbotProvider().initialMsgAI();
+
+  await NotificationServices.initializeFcm(navigatorKey);
+
+  await FirebaseMessaging.instance.subscribeToTopic("debug");
+
 
   runApp(
     MultiProvider(

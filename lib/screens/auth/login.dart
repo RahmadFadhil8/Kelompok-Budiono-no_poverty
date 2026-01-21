@@ -13,7 +13,7 @@ class LoginScreen extends StatefulWidget {
 
   const LoginScreen({
     super.key,
-    this.authServices, 
+    this.authServices,
   });
 
   @override
@@ -25,7 +25,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _passwordController = TextEditingController();
 
   late final AuthServicesContract _authServices;
-  MyAnalytics? _analytics; 
+  MyAnalytics? _analytics;
 
   bool isLoggedIn = false;
   bool _isObscure = true;
@@ -34,10 +34,8 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-
     _authServices = widget.authServices ?? AuthServices();
-
-    checkLoginStatus();
+    _checkLoginStatus();
   }
 
   @override
@@ -47,7 +45,7 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  Future<void> checkLoginStatus() async {
+  Future<void> _checkLoginStatus() async {
     final prefs = await SharedPreferences.getInstance();
     final logged = prefs.getBool('isLoggedIn') ?? false;
 
@@ -76,31 +74,32 @@ class _LoginScreenState extends State<LoginScreen> {
       final user =
           await _authServices.signInWithEmailPassword(email, password);
 
-      if (user != null) {
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setBool('isLoggedIn', true);
-        await prefs.setString('userId', user.uid);
-        await prefs.setString('userEmail', user.email ?? '');
-
-        await analytics.userLogin(email);
-        await analytics.usertimeout();
-        await analytics.userId(user.uid);
-        await analytics.userpoperty(user.email);
-
-        _showSnackBar("Login berhasil", Colors.green);
-
-        if (mounted) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (_) => const MainBottomNavigation(),
-            ),
-          );
-        }
-      } else {
+      if (user == null) {
         _showSnackBar(
           "Login gagal. Periksa email dan password.",
           Colors.red,
+        );
+        return;
+      }
+
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('isLoggedIn', true);
+      await prefs.setString('userId', user.uid);
+      await prefs.setString('userEmail', user.email ?? '');
+
+      await analytics.userLogin(email);
+      await analytics.usertimeout();
+      await analytics.userId(user.uid);
+      await analytics.userpoperty(user.email);
+
+      _showSnackBar("Login berhasil", Colors.green);
+
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const MainBottomNavigation(),
+          ),
         );
       }
     } catch (e) {
@@ -117,10 +116,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _showSnackBar(String message, Color color) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: color,
-      ),
+      SnackBar(content: Text(message), backgroundColor: color),
     );
   }
 
@@ -132,7 +128,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
     return Scaffold(
       body: Container(
-        height: double.infinity,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [Color(0xFF001B48), Color(0xFF018ABE)],
@@ -214,6 +209,19 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: _loading
                               ? const CircularProgressIndicator()
                               : const Text("Login"),
+                        ),
+
+                        const SizedBox(height: 15),
+                        const Divider(),
+                        const SizedBox(height: 10),
+
+                        SocialLoginButtons(
+                          authServices: AuthServices(),
+                          onLoading: (value) {
+                            if (mounted) {
+                              setState(() => _loading = value);
+                            }
+                          },
                         ),
                       ],
                     ),
