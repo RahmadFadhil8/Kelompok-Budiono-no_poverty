@@ -3,14 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:no_poverty/main.dart'; 
+import 'package:no_poverty/main.dart';
 import 'package:no_poverty/screens/profile/profile.dart';
 
 class VerificationSuccessScreen extends StatefulWidget {
   const VerificationSuccessScreen({super.key});
 
   @override
-  State<VerificationSuccessScreen> createState() => _VerificationSuccessScreenState();
+  State<VerificationSuccessScreen> createState() =>
+      _VerificationSuccessScreenState();
 }
 
 class _VerificationSuccessScreenState extends State<VerificationSuccessScreen> {
@@ -22,20 +23,23 @@ class _VerificationSuccessScreenState extends State<VerificationSuccessScreen> {
     _loadAndShowAd();
   }
 
+  /// 🔹 Memuat dan menampilkan iklan rewarded
   void _loadAndShowAd() {
     RewardedAd.load(
-      adUnitId: 'ca-app-pub-3940256099942544/5224354917', 
+      adUnitId: 'ca-app-pub-3940256099942544/5224354917',
       request: const AdRequest(),
       rewardedAdLoadCallback: RewardedAdLoadCallback(
         onAdLoaded: (ad) {
           _rewardedAd = ad;
+
           _rewardedAd!.fullScreenContentCallback = FullScreenContentCallback(
             onAdDismissedFullScreenContent: (ad) {
-              print('Iklan ditutup (callback dismiss)');
+              print('Iklan ditutup oleh pengguna.');
               ad.dispose();
-              _showSuccessAndNavigate(); 
+              _showSuccessAndNavigate();
             },
             onAdFailedToShowFullScreenContent: (ad, error) {
+              print('Gagal menampilkan iklan: $error');
               ad.dispose();
               _showSuccessAndNavigate();
             },
@@ -43,22 +47,24 @@ class _VerificationSuccessScreenState extends State<VerificationSuccessScreen> {
 
           _rewardedAd!.show(
             onUserEarnedReward: (ad, reward) {
-              print('User dapat reward - langsung verifikasi sukses');
+              print('User mendapatkan reward — lanjut ke verifikasi sukses');
               ad.dispose();
-              _showSuccessAndNavigate(); 
+              _showSuccessAndNavigate();
             },
           );
+
           _rewardedAd = null;
         },
         onAdFailedToLoad: (error) {
-          print('Rewarded gagal load: $error');
-          _showSuccessAndNavigate(); 
+          print('Gagal memuat rewarded ad: $error');
+          _showSuccessAndNavigate();
         },
       ),
     );
   }
 
-  void _showSuccessAndNavigate() async {
+  /// 🔹 Menampilkan notifikasi dan navigasi ke halaman profil
+  Future<void> _showSuccessAndNavigate() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('isVerified', true);
     await prefs.setBool('verificationPending', false);
@@ -105,11 +111,16 @@ class _VerificationSuccessScreenState extends State<VerificationSuccessScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.movie, size: 100, color: Colors.blue),
+            const Icon(
+              Icons.movie,
+              size: 100,
+              color: Colors.blue,
+            ),
             const SizedBox(height: 20),
             const Text(
               "Tunggu sebentar, memuat iklan untuk akses lebih cepat...",
               style: TextStyle(fontSize: 20),
+              textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20),
             const CircularProgressIndicator(),

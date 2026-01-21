@@ -8,13 +8,14 @@ class AccountVerificationScreen extends StatefulWidget {
   const AccountVerificationScreen({super.key});
 
   @override
-  State<AccountVerificationScreen> createState() => _AccountVerificationScreenState();
+  State<AccountVerificationScreen> createState() =>
+      _AccountVerificationScreenState();
 }
 
 class _AccountVerificationScreenState extends State<AccountVerificationScreen> {
   File? _ktpImage;
   File? _selfieImage;
-  
+
   Future<void> _pickKtp() async {
     final XFile? image = await PermissionUtils.pickFromGallery();
     if (image != null) {
@@ -64,21 +65,27 @@ class _AccountVerificationScreenState extends State<AccountVerificationScreen> {
               padding: EdgeInsets.symmetric(horizontal: 16),
               child: Align(
                 alignment: Alignment.centerLeft,
-                child: Text("25% selesai", style: TextStyle(color: Colors.grey)),
+                child: Text(
+                  "25% selesai",
+                  style: TextStyle(color: Colors.grey),
+                ),
               ),
             ),
             const SizedBox(height: 32),
 
+            // --- Header ---
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Card(
                 elevation: 0,
                 color: const Color(0xFFF8F9FA),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: const Padding(
+                  padding: EdgeInsets.all(20),
                   child: Column(
-                    children: const [
+                    children: [
                       CircleAvatar(
                         radius: 30,
                         backgroundColor: Color(0xFFE3F2FD),
@@ -87,7 +94,10 @@ class _AccountVerificationScreenState extends State<AccountVerificationScreen> {
                       SizedBox(height: 16),
                       Text(
                         "KTP & Identitas",
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       SizedBox(height: 8),
                       Text(
@@ -100,14 +110,18 @@ class _AccountVerificationScreenState extends State<AccountVerificationScreen> {
               ),
             ),
 
-            const SizedBox(height: 40), 
+            const SizedBox(height: 40),
 
+            // --- Upload KTP ---
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text("Upload KTP", style: TextStyle(fontWeight: FontWeight.w500)),
+                  const Text(
+                    "Upload KTP",
+                    style: TextStyle(fontWeight: FontWeight.w500),
+                  ),
                   const SizedBox(height: 12),
                   GestureDetector(
                     onTap: _pickKtp,
@@ -115,7 +129,10 @@ class _AccountVerificationScreenState extends State<AccountVerificationScreen> {
                       height: 140,
                       width: double.infinity,
                       decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey.shade300, style: BorderStyle.solid),
+                        border: Border.all(
+                          color: Colors.grey.shade300,
+                          style: BorderStyle.solid,
+                        ),
                         borderRadius: BorderRadius.circular(12),
                         color: Colors.grey[50],
                       ),
@@ -123,14 +140,21 @@ class _AccountVerificationScreenState extends State<AccountVerificationScreen> {
                           ? Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: const [
-                                Icon(Icons.upload, size: 40, color: Colors.grey),
+                                Icon(Icons.upload,
+                                    size: 40, color: Colors.grey),
                                 SizedBox(height: 8),
-                                Text("Pilih foto KTP", style: TextStyle(color: Colors.grey)),
+                                Text(
+                                  "Pilih foto KTP",
+                                  style: TextStyle(color: Colors.grey),
+                                ),
                               ],
                             )
                           : ClipRRect(
                               borderRadius: BorderRadius.circular(12),
-                              child: Image.file(_ktpImage!, fit: BoxFit.cover),
+                              child: Image.file(
+                                _ktpImage!,
+                                fit: BoxFit.cover,
+                              ),
                             ),
                     ),
                   ),
@@ -140,12 +164,16 @@ class _AccountVerificationScreenState extends State<AccountVerificationScreen> {
 
             const SizedBox(height: 32),
 
+            // --- Selfie ---
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text("Foto Selfie dengan KTP", style: TextStyle(fontWeight: FontWeight.w500)),
+                  const Text(
+                    "Foto Selfie dengan KTP",
+                    style: TextStyle(fontWeight: FontWeight.w500),
+                  ),
                   const SizedBox(height: 12),
                   GestureDetector(
                     onTap: _takeSelfie,
@@ -161,14 +189,21 @@ class _AccountVerificationScreenState extends State<AccountVerificationScreen> {
                           ? Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: const [
-                                Icon(Icons.camera_alt, size: 40, color: Colors.grey),
+                                Icon(Icons.camera_alt,
+                                    size: 40, color: Colors.grey),
                                 SizedBox(height: 8),
-                                Text("Ambil foto selfie", style: TextStyle(color: Colors.grey)),
+                                Text(
+                                  "Ambil foto selfie",
+                                  style: TextStyle(color: Colors.grey),
+                                ),
                               ],
                             )
                           : ClipRRect(
                               borderRadius: BorderRadius.circular(12),
-                              child: Image.file(_selfieImage!, fit: BoxFit.cover),
+                              child: Image.file(
+                                _selfieImage!,
+                                fit: BoxFit.cover,
+                              ),
                             ),
                     ),
                   ),
@@ -178,6 +213,7 @@ class _AccountVerificationScreenState extends State<AccountVerificationScreen> {
 
             const SizedBox(height: 20),
 
+            // --- Tips ---
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 24),
               padding: const EdgeInsets.all(16),
@@ -186,10 +222,13 @@ class _AccountVerificationScreenState extends State<AccountVerificationScreen> {
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: const Color(0xFFFFD700)),
               ),
-              child: Column(
+              child: const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  Text("Tips Foto yang Baik", style: TextStyle(fontWeight: FontWeight.bold)),
+                children: [
+                  Text(
+                    "Tips Foto yang Baik",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                   SizedBox(height: 8),
                   Text("• Pastikan foto jelas dan tidak blur"),
                   Text("• KTP terlihat jelas di foto selfie"),
@@ -200,6 +239,7 @@ class _AccountVerificationScreenState extends State<AccountVerificationScreen> {
 
             const SizedBox(height: 30),
 
+            // --- Tombol Lanjut ---
             Padding(
               padding: const EdgeInsets.all(24),
               child: SizedBox(
@@ -207,24 +247,32 @@ class _AccountVerificationScreenState extends State<AccountVerificationScreen> {
                 height: 50,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: _canContinue ? Colors.blue : Colors.grey[300],
+                    backgroundColor:
+                        _canContinue ? Colors.blue : Colors.grey[300],
                     foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
                   ),
                   onPressed: _canContinue
                       ? () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const AccountVerificationStep2(),
+                              builder: (context) =>
+                                  const AccountVerificationStep2(),
                             ),
                           );
                         }
                       : null,
-                  child: const Text("Lanjut", style: TextStyle(fontSize: 16)),
+                  child: const Text(
+                    "Lanjut",
+                    style: TextStyle(fontSize: 16),
+                  ),
                 ),
               ),
             ),
+
             const SizedBox(height: 20),
           ],
         ),

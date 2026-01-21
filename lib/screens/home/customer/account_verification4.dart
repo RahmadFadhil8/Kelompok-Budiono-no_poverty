@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
-import 'verification_processing.dart'; 
+import 'verification_processing.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:no_poverty/main.dart'; 
+import 'package:no_poverty/main.dart';
 
 class AccountVerificationStep4 extends StatefulWidget {
   final bool isPremiumSelected;
 
-  const AccountVerificationStep4({super.key, required this.isPremiumSelected});
+  const AccountVerificationStep4({
+    super.key,
+    required this.isPremiumSelected,
+  });
 
   @override
-  State<AccountVerificationStep4> createState() => _AccountVerificationStep4State();
+  State<AccountVerificationStep4> createState() =>
+      _AccountVerificationStep4State();
 }
 
 class _AccountVerificationStep4State extends State<AccountVerificationStep4> {
@@ -24,7 +28,7 @@ class _AccountVerificationStep4State extends State<AccountVerificationStep4> {
         title: const Text("Verifikasi Akun"),
         actions: const [
           Padding(
-            padding: const EdgeInsets.only(right: 16),
+            padding: EdgeInsets.only(right: 16),
             child: Center(
               child: Text(
                 "Step 4/4",
@@ -43,20 +47,25 @@ class _AccountVerificationStep4State extends State<AccountVerificationStep4> {
             LinearProgressIndicator(value: 1.0, minHeight: 6),
             const SizedBox(height: 8),
             const Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: EdgeInsets.symmetric(horizontal: 16),
               child: Align(
                 alignment: Alignment.centerLeft,
-                child: Text("100% selesai", style: TextStyle(color: Colors.grey)),
+                child: Text(
+                  "100% selesai",
+                  style: TextStyle(color: Colors.grey),
+                ),
               ),
             ),
             const SizedBox(height: 40),
 
-            // Card Utama - Review
+            // --- Card Utama: Review ---
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Card(
                 elevation: 4,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
                 child: Padding(
                   padding: const EdgeInsets.all(32),
                   child: Column(
@@ -64,12 +73,20 @@ class _AccountVerificationStep4State extends State<AccountVerificationStep4> {
                       CircleAvatar(
                         radius: 40,
                         backgroundColor: Colors.blue.shade50,
-                        child: Icon(Icons.check_circle, size: 48, color: Colors.blue.shade700),
+                        child: Icon(
+                          Icons.check_circle,
+                          size: 48,
+                          color: Colors.blue.shade700,
+                        ),
                       ),
                       const SizedBox(height: 20),
                       const Text(
                         "Review",
-                        style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.blue),
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue,
+                        ),
                       ),
                       const SizedBox(height: 12),
                       const Text(
@@ -85,11 +102,13 @@ class _AccountVerificationStep4State extends State<AccountVerificationStep4> {
 
             const SizedBox(height: 40),
 
-            // Review Dokumen
+            // --- Review Dokumen ---
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Card(
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
                 child: Padding(
                   padding: const EdgeInsets.all(20),
                   child: Column(
@@ -98,21 +117,26 @@ class _AccountVerificationStep4State extends State<AccountVerificationStep4> {
                         alignment: Alignment.centerLeft,
                         child: Text(
                           "Review Dokumen",
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 16),
-
                       _buildStatusItem("KTP", true),
                       _buildStatusItem("Foto Selfie", true),
                       _buildStatusItem("SKCK", true),
                       _buildStatusItem("Bukti Kendaraan", true),
 
-                      // Background Check Premium — HANYA MUNCUL KALAU DIPILIH
+                      // --- Background Check Premium ---
                       if (widget.isPremiumSelected)
                         Container(
                           margin: const EdgeInsets.only(top: 8),
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
                           decoration: BoxDecoration(
                             color: Colors.amber.shade50,
                             borderRadius: BorderRadius.circular(30),
@@ -120,16 +144,25 @@ class _AccountVerificationStep4State extends State<AccountVerificationStep4> {
                           ),
                           child: Row(
                             children: [
-                              Icon(Icons.verified, color: Colors.amber.shade700, size: 20),
+                              Icon(
+                                Icons.verified,
+                                color: Colors.amber.shade700,
+                                size: 20,
+                              ),
                               const SizedBox(width: 12),
                               const Text(
                                 "Background Check Premium",
-                                style: TextStyle(fontWeight: FontWeight.w600),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                               const Spacer(),
                               Text(
                                 "Rp 50.000",
-                                style: TextStyle(color: Colors.amber.shade700, fontWeight: FontWeight.bold),
+                                style: TextStyle(
+                                  color: Colors.amber.shade700,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ],
                           ),
@@ -142,7 +175,7 @@ class _AccountVerificationStep4State extends State<AccountVerificationStep4> {
 
             const SizedBox(height: 24),
 
-            // Info Estimasi Waktu
+            // --- Info Estimasi Waktu ---
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 24),
               padding: const EdgeInsets.all(16),
@@ -156,7 +189,8 @@ class _AccountVerificationStep4State extends State<AccountVerificationStep4> {
                   SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      "Estimasi Waktu: 1-3 hari kerja untuk verifikasi lengkap. Anda akan mendapat notifikasi setelah proses selesai.",
+                      "Estimasi Waktu: 1-3 hari kerja untuk verifikasi lengkap. "
+                      "Anda akan mendapat notifikasi setelah proses selesai.",
                       style: TextStyle(fontSize: 13),
                     ),
                   ),
@@ -166,7 +200,7 @@ class _AccountVerificationStep4State extends State<AccountVerificationStep4> {
 
             const SizedBox(height: 40),
 
-            // Tombol Kembali & Submit
+            // --- Tombol Kembali & Submit ---
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Row(
@@ -177,7 +211,9 @@ class _AccountVerificationStep4State extends State<AccountVerificationStep4> {
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         side: BorderSide(color: Colors.grey.shade400),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
                         foregroundColor: Colors.black,
                       ),
                       child: const Text("Kembali"),
@@ -187,18 +223,21 @@ class _AccountVerificationStep4State extends State<AccountVerificationStep4> {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () async {
-                        // === TAMBAHAN: NOTIFIKASI KONFIRMASI SUBMIT ===
-                        const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+                        // 🔔 Notifikasi Submit
+                        const AndroidNotificationDetails androidDetails =
+                            AndroidNotificationDetails(
                           'submit_confirmation',
                           'Submit Verifikasi',
-                          channelDescription: 'Dokumen verifikasi telah dikirim',
+                          channelDescription:
+                              'Dokumen verifikasi telah dikirim',
                           importance: Importance.high,
                           priority: Priority.high,
                           playSound: true,
                           enableVibration: true,
                         );
 
-                        const NotificationDetails notificationDetails = NotificationDetails(android: androidDetails);
+                        const NotificationDetails notificationDetails =
+                            NotificationDetails(android: androidDetails);
 
                         await notificationsPlugin.show(
                           1002,
@@ -206,19 +245,30 @@ class _AccountVerificationStep4State extends State<AccountVerificationStep4> {
                           'Kami akan review dalam 1-3 hari kerja. Terima kasih atas kesabaranmu!',
                           notificationDetails,
                         );
-     
+
                         Navigator.pushAndRemoveUntil(
                           context,
-                          MaterialPageRoute(builder: (_) => const VerificationProcessingScreen()),
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                const VerificationProcessingScreen(),
+                          ),
                           (route) => false,
                         );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue,
                         padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
                       ),
-                      child: const Text("Submit Verifikasi", style: TextStyle(color: Colors.white, fontSize: 16)),
+                      child: const Text(
+                        "Submit Verifikasi",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -232,6 +282,7 @@ class _AccountVerificationStep4State extends State<AccountVerificationStep4> {
     );
   }
 
+  // --- Item Status Dokumen ---
   Widget _buildStatusItem(String title, bool isReady) {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
@@ -242,13 +293,17 @@ class _AccountVerificationStep4State extends State<AccountVerificationStep4> {
       ),
       child: Row(
         children: [
-          Icon(Icons.check_circle, color: Colors.green.shade400, size: 20),
+          Icon(Icons.check_circle,
+              color: Colors.green.shade400, size: 20),
           const SizedBox(width: 12),
           Text(title),
           const Spacer(),
           Text(
             "Ready",
-            style: TextStyle(color: Colors.green.shade600, fontWeight: FontWeight.w600),
+            style: TextStyle(
+              color: Colors.green.shade600,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ],
       ),

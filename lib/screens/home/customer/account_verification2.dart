@@ -8,7 +8,8 @@ class AccountVerificationStep2 extends StatefulWidget {
   const AccountVerificationStep2({super.key});
 
   @override
-  State<AccountVerificationStep2> createState() => _AccountVerificationStep2State();
+  State<AccountVerificationStep2> createState() =>
+      _AccountVerificationStep2State();
 }
 
 class _AccountVerificationStep2State extends State<AccountVerificationStep2> {
@@ -57,16 +58,22 @@ class _AccountVerificationStep2State extends State<AccountVerificationStep2> {
               padding: EdgeInsets.symmetric(horizontal: 16),
               child: Align(
                 alignment: Alignment.centerLeft,
-                child: Text("50% selesai", style: TextStyle(color: Colors.grey)),
+                child: Text(
+                  "50% selesai",
+                  style: TextStyle(color: Colors.grey),
+                ),
               ),
             ),
             const SizedBox(height: 40),
 
+            // --- Header SKCK Card ---
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Card(
                 elevation: 4,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
                 child: Padding(
                   padding: const EdgeInsets.all(32),
                   child: Column(
@@ -74,12 +81,20 @@ class _AccountVerificationStep2State extends State<AccountVerificationStep2> {
                       CircleAvatar(
                         radius: 40,
                         backgroundColor: Colors.blue.shade50,
-                        child: Icon(Icons.description, size: 48, color: Colors.blue.shade700),
+                        child: Icon(
+                          Icons.description,
+                          size: 48,
+                          color: Colors.blue.shade700,
+                        ),
                       ),
                       const SizedBox(height: 20),
                       const Text(
                         "SKCK",
-                        style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.blue),
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue,
+                        ),
                       ),
                       const SizedBox(height: 12),
                       const Text(
@@ -95,12 +110,16 @@ class _AccountVerificationStep2State extends State<AccountVerificationStep2> {
 
             const SizedBox(height: 40),
 
+            // --- Upload SKCK ---
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text("Upload SKCK", style: TextStyle(fontWeight: FontWeight.w500)),
+                  const Text(
+                    "Upload SKCK",
+                    style: TextStyle(fontWeight: FontWeight.w500),
+                  ),
                   const SizedBox(height: 12),
                   GestureDetector(
                     onTap: _pickSkck,
@@ -108,7 +127,10 @@ class _AccountVerificationStep2State extends State<AccountVerificationStep2> {
                       height: 180,
                       width: double.infinity,
                       decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey.shade300, width: 2),
+                        border: Border.all(
+                          color: Colors.grey.shade300,
+                          width: 2,
+                        ),
                         borderRadius: BorderRadius.circular(16),
                         color: Colors.grey[50],
                       ),
@@ -116,14 +138,21 @@ class _AccountVerificationStep2State extends State<AccountVerificationStep2> {
                           ? Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: const [
-                                Icon(Icons.description_outlined, size: 50, color: Colors.grey),
+                                Icon(Icons.description_outlined,
+                                    size: 50, color: Colors.grey),
                                 SizedBox(height: 12),
-                                Text("Upload SKCK (PDF/JPG)", style: TextStyle(color: Colors.grey)),
+                                Text(
+                                  "Upload SKCK (PDF/JPG)",
+                                  style: TextStyle(color: Colors.grey),
+                                ),
                               ],
                             )
                           : ClipRRect(
                               borderRadius: BorderRadius.circular(16),
-                              child: Image.file(_skckImage!, fit: BoxFit.cover),
+                              child: Image.file(
+                                _skckImage!,
+                                fit: BoxFit.cover,
+                              ),
                             ),
                     ),
                   ),
@@ -133,6 +162,7 @@ class _AccountVerificationStep2State extends State<AccountVerificationStep2> {
 
             const SizedBox(height: 30),
 
+            // --- Info Box ---
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 24),
               padding: const EdgeInsets.all(16),
@@ -147,7 +177,8 @@ class _AccountVerificationStep2State extends State<AccountVerificationStep2> {
                   SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      "Info: SKCK diperlukan untuk memastikan keamanan semua pengguna platform. Dokumen ini akan dijaga kerahasiaannya.",
+                      "Info: SKCK diperlukan untuk memastikan keamanan semua pengguna platform. "
+                      "Dokumen ini akan dijaga kerahasiaannya.",
                       style: TextStyle(fontSize: 13),
                     ),
                   ),
@@ -157,6 +188,7 @@ class _AccountVerificationStep2State extends State<AccountVerificationStep2> {
 
             const SizedBox(height: 40),
 
+            // --- Tombol Navigasi ---
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Row(
@@ -167,7 +199,9 @@ class _AccountVerificationStep2State extends State<AccountVerificationStep2> {
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         side: BorderSide(color: Colors.grey.shade400),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
                         foregroundColor: Colors.black,
                       ),
                       child: const Text("Kembali"),
@@ -181,17 +215,24 @@ class _AccountVerificationStep2State extends State<AccountVerificationStep2> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => const AccountVerificationStep3(),
+                                  builder: (context) =>
+                                      const AccountVerificationStep3(),
                                 ),
                               );
                             }
                           : null,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: _canContinue ? Colors.blue : Colors.grey[300],
+                        backgroundColor:
+                            _canContinue ? Colors.blue : Colors.grey[300],
                         padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
                       ),
-                      child: const Text("Lanjut", style: TextStyle(color: Colors.white)),
+                      child: const Text(
+                        "Lanjut",
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ),
                   ),
                 ],
