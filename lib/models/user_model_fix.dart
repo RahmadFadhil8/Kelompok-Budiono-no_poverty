@@ -6,7 +6,7 @@ class UserModelFix {
   final String email;
   final String phone;
   final String bio;
-  final String role; // "worker" | "employer" | "both"
+  final String role;
   final bool verified;
 
   final String ktpUrl;

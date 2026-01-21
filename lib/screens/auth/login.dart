@@ -68,10 +68,10 @@ class _LoginScreenState extends State<LoginScreen> {
         await prefs.setString('userId', user.uid);
         await prefs.setString('userEmail', user.email ?? '');
 
-        await analytics.userLogin(email); // ini implementasinya
-        await analytics.usertimeout(); // ini implementasinya
-        await analytics.userId(user.uid); // ini implementasinya
-        await analytics.userpoperty(user.email); // ini implementasinya
+        await analytics.userLogin(email); 
+        await analytics.usertimeout(); 
+        await analytics.userId(user.uid); 
+        await analytics.userpoperty(user.email); 
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -219,70 +219,79 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   child: Column(
                     children: [
-                      TextField(
-                        controller: _userController,
-                        keyboardType: TextInputType.emailAddress,
-                        decoration: InputDecoration(
-                          hintText: "Email",
-                          prefixIcon: const Icon(Icons.email),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(18),
+                      Semantics(
+                        label: "textfield email",
+                        child: TextField(
+                          controller: _userController,
+                          keyboardType: TextInputType.emailAddress,
+                          decoration: InputDecoration(
+                            hintText: "Email",
+                            prefixIcon: const Icon(Icons.email),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(18),
+                            ),
                           ),
                         ),
                       ),
                       const SizedBox(height: 18),
 
-                      TextField(
-                        controller: _passwordController,
-                        obscureText: _isObscure,
-                        decoration: InputDecoration(
-                          hintText: "Password",
-                          prefixIcon: const Icon(Icons.lock),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _isObscure
-                                  ? Icons.visibility_off
-                                  : Icons.visibility,
+                      Semantics(
+                        label: "textfield password, isi minimal 6 karakter",
+                        child: TextField(
+                          controller: _passwordController,
+                          obscureText: _isObscure,
+                          decoration: InputDecoration(
+                            hintText: "Password",
+                            prefixIcon: const Icon(Icons.lock),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _isObscure
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                              ),
+                              onPressed:
+                                  () => setState(() {
+                                    _isObscure = !_isObscure;
+                                  }),
                             ),
-                            onPressed:
-                                () => setState(() {
-                                  _isObscure = !_isObscure;
-                                }),
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(18),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(18),
+                            ),
                           ),
                         ),
                       ),
                       const SizedBox(height: 30),
 
-                      ElevatedButton(
-                        onPressed: _loading ? null : loginUser,
-                        style: ElevatedButton.styleFrom(
-                          minimumSize: const Size(double.infinity, 50),
-                          backgroundColor: const Color(0xFF02457A),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
+                      Semantics(
+                        label: "Tombol login",
+                        child: ElevatedButton(
+                          onPressed: _loading ? null : loginUser,
+                          style: ElevatedButton.styleFrom(
+                            minimumSize: const Size(double.infinity, 50),
+                            backgroundColor: const Color(0xFF02457A),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
                           ),
+                          child:
+                              _loading
+                                  ? const SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                  : const Text(
+                                    "Login",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                         ),
-                        child:
-                            _loading
-                                ? const SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(
-                                    color: Colors.white,
-                                    strokeWidth: 2,
-                                  ),
-                                )
-                                : const Text(
-                                  "Login",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
                       ),
 
                       const SizedBox(height: 15),
@@ -292,89 +301,95 @@ class _LoginScreenState extends State<LoginScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          _socialButton(
-                            iconUrl:
-                                'https://cdn-icons-png.flaticon.com/128/281/281764.png',
-                            onTap: () async {
-                              try {
-                                final result =
-                                    await _authServices.signInWithGoogle();
-                                if (result == null) {
+                          Semantics(
+                            label: "Login menggunakan akun Google",
+                            child: _socialButton(
+                              iconUrl:
+                                  'https://cdn-icons-png.flaticon.com/128/281/281764.png',
+                              onTap: () async {
+                                try {
+                                  final result =
+                                      await _authServices.signInWithGoogle();
+                                  if (result == null) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text("Login dibatalkan"),
+                                      ),
+                                    );
+                                    return;
+                                  }
+                                  final isNew =
+                                      result.additionalUserInfo?.isNewUser ??
+                                      false;
+                            
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text("Login dibatalkan"),
+                                    SnackBar(
+                                      content: Text(
+                                        isNew
+                                            ? "Akun baru bersihal dibuat!"
+                                            : "Berhasil login!",
+                                      ),
+                                      backgroundColor: Colors.green,
                                     ),
                                   );
-                                  return;
-                                }
-                                final isNew =
-                                    result.additionalUserInfo?.isNewUser ??
-                                    false;
-
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      isNew
-                                          ? "Akun baru bersihal dibuat!"
-                                          : "Berhasil login!",
-                                    ),
-                                    backgroundColor: Colors.green,
-                                  ),
-                                );
-
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder:
-                                        (context) => MainBottomNavigation(),
-                                  ),
-                                );
-                              } catch (e) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text("Login gagal: $e")),
-                                );
-                              }
-                            },
-                          ),
-                          const SizedBox(width: 10),
-                          _socialButton(
-                            iconUrl:
-                                'https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png',
-                            onTap: () async {
-                              setState(() => _loading = true);
-                              try {
-                                await _authServices.signInWithGitHub();
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text("Login GitHub berhasil!"),
-                                    backgroundColor: Colors.green,
-                                  ),
-                                );
-                                if (mounted) {
-                                  final prefs =
-                                      await SharedPreferences.getInstance();
-                                  await prefs.setBool('isLoggedIn', true);
+                            
                                   Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
                                       builder:
-                                          (_) => const MainBottomNavigation(),
+                                          (context) => MainBottomNavigation(),
                                     ),
                                   );
+                                } catch (e) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text("Login gagal: $e")),
+                                  );
                                 }
-                              } catch (e) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      "Login GitHub gagal: ${e.toString()}",
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Semantics(
+                            label: "Login menggunakan akun Github",
+                            child: _socialButton(
+                              iconUrl:
+                                  'https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png',
+                              onTap: () async {
+                                setState(() => _loading = true);
+                                try {
+                                  await _authServices.signInWithGitHub();
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text("Login GitHub berhasil!"),
+                                      backgroundColor: Colors.green,
                                     ),
-                                    backgroundColor: Colors.red,
-                                  ),
-                                );
-                              } finally {
-                                setState(() => _loading = false);
-                              }
-                            },
+                                  );
+                                  if (mounted) {
+                                    final prefs =
+                                        await SharedPreferences.getInstance();
+                                    await prefs.setBool('isLoggedIn', true);
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder:
+                                            (_) => const MainBottomNavigation(),
+                                      ),
+                                    );
+                                  }
+                                } catch (e) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        "Login GitHub gagal: ${e.toString()}",
+                                      ),
+                                      backgroundColor: Colors.red,
+                                    ),
+                                  );
+                                } finally {
+                                  setState(() => _loading = false);
+                                }
+                              },
+                            ),
                           ),
                         ],
                       ),
