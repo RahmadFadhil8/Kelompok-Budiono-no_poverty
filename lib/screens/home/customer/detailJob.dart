@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:no_poverty/services/job_services_firestore.dart';
 import 'package:no_poverty/widgets/sub_title1.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DetailJob extends StatefulWidget {
   final String JobId;
@@ -13,6 +14,22 @@ class DetailJob extends StatefulWidget {
 }
 
 class _DetailJobState extends State<DetailJob> {
+
+String? currentUserId;
+
+@override
+void initState() {
+  super.initState();
+  _getCurrentUserId();
+}
+
+Future<void> _getCurrentUserId() async {
+  final prefs = await SharedPreferences.getInstance();
+  setState(() {
+    currentUserId = prefs.getString("userId");
+  });
+}
+
 
   JobService jobs = JobService();
 
@@ -43,6 +60,7 @@ class _DetailJobState extends State<DetailJob> {
           }
 
           final job = snapshot.data!;
+          final bool isOwner = job.employer_id == currentUserId;
           return Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -192,12 +210,14 @@ class _DetailJobState extends State<DetailJob> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                       ),
-                      side: const BorderSide(color: Colors.blue),
+                      side: BorderSide(color: isOwner ? Colors.grey : Colors.blue,),
                     ),
-                    onPressed: () {},
-                    child: const Text(
-                      "Apply",
-                      style: TextStyle(color: Colors.blue),
+                    onPressed: isOwner ? null : (){
+
+                    },
+                    child: Text(
+                      isOwner ? "Anda pemilik job ini" : "Apply",
+                      style: TextStyle(color: isOwner ? Colors.grey : Colors.blue,),
                     ),
                   ),
                 ),

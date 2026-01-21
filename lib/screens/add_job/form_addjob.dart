@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:intl/intl.dart';
@@ -417,13 +418,31 @@ class _FormaddJobState extends State<FormaddJob> {
                         SizedBox(height: 12,),
                         TextFormField(
                           controller: _BudgetController,
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                          ],
                           decoration: const InputDecoration(
                             hintText: '0',
                             prefixIcon: Icon(Icons.monetization_on_outlined),
                             border: OutlineInputBorder(),
                           ),
-                          validator: (value) =>
-                            value!.isEmpty ? 'Budget wajib di isi' : null,
+                          validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Budget wajib diisi';
+                              }
+
+                              final parsed = int.tryParse(value);
+                              if (parsed == null) {
+                                return 'Budget harus berupa angka';
+                              }
+
+                              if (parsed <= 0) {
+                                return 'Budget harus lebih dari 0';
+                              }
+
+                              return null;
+                          }
                         ),
 
                         // Row(
@@ -457,9 +476,16 @@ class _FormaddJobState extends State<FormaddJob> {
                     
                     final gaji = double.tryParse(_BudgetController.text) ?? 0.0;
 
-                    if (geoPoint == null) {
+                    if (gaji == null) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text("Ambil lokasi terlebih dahulu!")),
+                        const SnackBar(content: Text("Budget harus berupa angka")),
+                      );
+                      return;
+                    }
+
+                    if (gaji <= 0) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Budget harus lebih dari 0")),
                       );
                       return;
                     }

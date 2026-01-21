@@ -8,10 +8,16 @@ class JobService {
     await jobs.doc(job.job_id).set(job.toMap());
   }
 
-  Future<List<JobModelFix>> getallJob() async {
-    final Data = await jobs.get();
-
-    return Data.docs.map((doc) => JobModelFix.fromMap(doc.id, doc.data() as Map<String, dynamic>)).toList();
+  Stream<List<JobModelFix>> getallJob() {
+    return jobs.snapshots().map(
+      (snapshot) {
+        return snapshot.docs.map(
+          (doc) {
+            return JobModelFix.fromMap(doc.id, doc.data() as Map<String, dynamic>,);
+          },
+        ).toList();
+      },
+    );
   }
 
   Future<JobModelFix?> getByid (String id) async {
