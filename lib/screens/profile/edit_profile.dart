@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +6,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:no_poverty/Permission/handler.dart';
 import 'package:no_poverty/models/user_model_fix.dart';
 import 'package:no_poverty/services/user_profile_services.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class EditProfile extends StatefulWidget {
   final User user;

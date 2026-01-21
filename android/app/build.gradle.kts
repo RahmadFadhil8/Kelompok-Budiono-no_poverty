@@ -41,20 +41,22 @@ dependencies {
 
     constraints {
         implementation("androidx.activity:activity") {
-            version { strictly("1.8.2") }
+            version { strictly("1.9.0") }
         }
         implementation("androidx.activity:activity-ktx") {
-            version { strictly("1.8.2") }
+            version { strictly("1.9.0") }
         }
+
         implementation("androidx.activity:activity-compose") {
             version { strictly("1.8.2") }
         }
         implementation("androidx.core:core") {
-            version { strictly("1.12.0") }
+            version { strictly("1.13.1") }
         }
         implementation("androidx.core:core-ktx") {
-            version { strictly("1.12.0") }
+            version { strictly("1.13.1") }
         }
+
         implementation("androidx.browser:browser") {
             version { strictly("1.7.0") }
         }

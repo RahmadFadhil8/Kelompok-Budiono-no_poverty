@@ -27,7 +27,6 @@ void main() async {
     anonKey: 'sb_publishable_CWlG8-5CWNSQ_cRQJFU8qw_XVoufF6V',
   );
 
-  // 🔴 INI WAJIB
   await NotificationServices.initialize(navigatorKey);
 
   unawaited(MobileAds.instance.initialize());
@@ -54,11 +53,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      navigatorKey: navigatorKey, // 🔴 INI KUNCI
+      navigatorKey: navigatorKey, 
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
 
-      // THEME KAMU — TIDAK DIUBAH
       theme: ThemeData(
         brightness: Brightness.light,
         scaffoldBackgroundColor: Colors.white,
