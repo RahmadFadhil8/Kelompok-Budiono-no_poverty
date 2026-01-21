@@ -9,7 +9,7 @@ import 'package:no_poverty/screens/profile/edit_profile.dart';
 import 'package:no_poverty/services/auth_services.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart'; 
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
