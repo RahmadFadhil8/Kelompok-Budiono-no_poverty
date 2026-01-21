@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
@@ -10,7 +11,8 @@ import 'package:no_poverty/widgets/sub_title1.dart';
 import 'package:no_poverty/widgets/title1.dart';
 
 class listJobTersedia extends StatefulWidget {
-  const listJobTersedia({super.key});
+  final bool isTest;
+  const listJobTersedia({super.key, this.isTest = false,});
 
   @override
   State<listJobTersedia> createState() => _listJobTersediaState();
@@ -22,6 +24,17 @@ class _listJobTersediaState extends State<listJobTersedia> {
 
   @override
   Widget build(BuildContext context) {
+      if (widget.isTest) {
+    return const Center(
+      child: Text("Mode Test - Firebase dimatikan"),
+    );
+  }
+
+   if (Firebase.apps.isEmpty) {
+    return const Center(
+      child: CircularProgressIndicator(),
+    );
+  }
     return Scaffold(
       body: StreamBuilder<List<Map<String, dynamic>>>(
         stream: _applicationService.getAvailableJobs(),

@@ -5,14 +5,32 @@ import 'package:no_poverty/screens/home/work/list_job_tersedia.dart';
 import 'package:no_poverty/widgets/custom_card.dart';
 
 class WorkHomeScreen extends StatefulWidget {
-  const WorkHomeScreen({super.key});
+  final bool enableAnalytics; 
+  final bool isTest;
+
+  const WorkHomeScreen({super.key, this.enableAnalytics = true, this.isTest = false});
+  
 
   @override
   State<WorkHomeScreen> createState() => _WorkHomeScreenState();
 }
 
 class _WorkHomeScreenState extends State<WorkHomeScreen> {
-  MyAnalytics analytics = MyAnalytics();
+  MyAnalytics? analytics;
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (!widget.isTest && widget.enableAnalytics) {
+      analytics = MyAnalytics();
+    }
+  }
+
+  void trackClick(String event) {
+    analytics?.clikcbutton(event);
+  
+}
 
   @override
   Widget build(BuildContext context) {
@@ -208,7 +226,7 @@ class _WorkHomeScreenState extends State<WorkHomeScreen> {
                 Text("Jadwal Hari ini"),
                 TextButton(
                   onPressed: () async {
-                    await analytics.clikcbutton("Jadwal Hari ini");
+                    trackClick("Jadwal Hari ini");
                   },
                   child: Text(
                     "Lainnya >",
@@ -217,7 +235,7 @@ class _WorkHomeScreenState extends State<WorkHomeScreen> {
                 ),
               ],
             ),
-            SizedBox(height: 200, child: JadwalHarian()),
+            SizedBox(height: 200, child: JadwalHarian(isTest: widget.isTest, enableAnalytics: false,)),
             const SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -225,7 +243,7 @@ class _WorkHomeScreenState extends State<WorkHomeScreen> {
                 Text("Job Tersedia"),
                 TextButton(
                   onPressed: () async {
-                    await analytics.clikcbutton("job tersedia");
+                    trackClick("job tersedia");
                   },
                   child: Text(
                     "Lainnya >",
@@ -235,7 +253,7 @@ class _WorkHomeScreenState extends State<WorkHomeScreen> {
               ],
             ),
 
-            SizedBox(height: 200, child: listJobTersedia()),
+            SizedBox(height: 200, child: listJobTersedia(isTest: widget.isTest,)),
           ],
         ),
       ),
