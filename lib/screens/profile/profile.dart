@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:no_poverty/Analytics/analytics_helper.dart';
@@ -8,7 +9,7 @@ import 'package:no_poverty/screens/profile/edit_profile.dart';
 import 'package:no_poverty/services/auth_services.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart'; // ← TAMBAHAN INI SAJA
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -27,7 +28,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   MyAnalytics analytics = MyAnalytics();
   final AuthServices _authService = AuthServices();
 
-  // TAMBAHAN: Cek status verifikasi dari SharedPreferences
   Future<bool> _checkVerificationStatus() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool('isVerified') ?? false;
@@ -41,7 +41,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final user = _authService.currentUser!;
+        final user = FirebaseAuth.instance.currentUser!;
     final userData = context.watch<UserModelFix?>();
     if (userData == null) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
@@ -52,10 +52,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black87),
-          onPressed: () => Navigator.pop(context),
-        ),
+        // leading: IconButton(
+        //   icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black87),
+        //   onPressed: () => Navigator.pop(context),
+        // ),
         title: const Text(
           "Pengaturan",
           style: TextStyle(color: Colors.black87, fontWeight: FontWeight.w600),
@@ -67,7 +67,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ======== PROFILE CARD ========
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -85,7 +84,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 children: [
                   CircleAvatar(
                     radius: 35,
-                    backgroundImage: NetworkImage(userData!.imageUrl),
+                    backgroundImage: NetworkImage(userData.imageUrl),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
@@ -99,7 +98,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             fontSize: 18,
                           ),
                         ),
-                        Text(user.email!, style: TextStyle(color: Colors.grey)),
+                        Text(user.email!, style: TextStyle(color: Colors.grey, fontSize: 12)),
                         SizedBox(height: 4),
                         Row(
                           children: [
@@ -140,7 +139,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
             const SizedBox(height: 24),
 
-            // ======== AKUN SECTION ========
             const Text(
               "Akun",
               style: TextStyle(
@@ -157,7 +155,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               onTap: () {},
             ),
 
-            // STATUS VERIFIKASI — OTOMATIS GANTI JADI "Verified" KALAU SUDAH SELESAI
             FutureBuilder<bool>(
               future: _checkVerificationStatus(),
               builder: (context, snapshot) {
@@ -196,7 +193,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
             const SizedBox(height: 24),
 
-            // ======== NOTIFIKASI SECTION ========
             const Text(
               "Notifikasi",
               style: TextStyle(
@@ -266,7 +262,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
             const SizedBox(height: 32),
 
-            // ======== LOGOUT BUTTON ========
             Center(
               child: ElevatedButton.icon(
                 onPressed: () async {
