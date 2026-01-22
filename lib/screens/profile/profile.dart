@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:no_poverty/Analytics/analytics_helper.dart';
@@ -40,7 +41,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final user = _authService.currentUser!;
+        final user = FirebaseAuth.instance.currentUser!;
     final userData = context.watch<UserModelFix?>();
     if (userData == null) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
@@ -83,7 +84,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 children: [
                   CircleAvatar(
                     radius: 35,
-                    backgroundImage: NetworkImage(userData!.imageUrl),
+                    backgroundImage: NetworkImage(userData.imageUrl),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
@@ -97,7 +98,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             fontSize: 18,
                           ),
                         ),
-                        Text(user.email!, style: TextStyle(color: Colors.grey)),
+                        Text(user.email!, style: TextStyle(color: Colors.grey, fontSize: 12)),
                         SizedBox(height: 4),
                         Row(
                           children: [
@@ -154,7 +155,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               onTap: () {},
             ),
 
-            // STATUS VERIFIKASI — OTOMATIS GANTI JADI "Verified" KALAU SUDAH SELESAI
             FutureBuilder<bool>(
               future: _checkVerificationStatus(),
               builder: (context, snapshot) {
@@ -193,7 +193,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
             const SizedBox(height: 24),
 
-            // ======== NOTIFIKASI SECTION ========
             const Text(
               "Notifikasi",
               style: TextStyle(
@@ -263,7 +262,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
             const SizedBox(height: 32),
 
-            // ======== LOGOUT BUTTON ========
             Center(
               child: ElevatedButton.icon(
                 onPressed: () async {

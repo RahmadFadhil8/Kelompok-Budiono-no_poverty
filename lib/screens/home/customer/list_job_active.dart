@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
-import 'package:no_poverty/Permission/handler.dart';
 import 'package:no_poverty/screens/home/customer/detailJob.dart';
 import 'package:no_poverty/services/job_services_firestore.dart';
 import 'package:no_poverty/widgets/custom_card.dart';
