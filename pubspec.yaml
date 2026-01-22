@@ -33,6 +33,7 @@ dependencies:
   awesome_notifications: ^0.10.1
   google_mobile_ads: ^7.0.0
 
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
