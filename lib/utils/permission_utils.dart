@@ -5,7 +5,12 @@ import 'package:permission_handler/permission_handler.dart';
 
 class PermissionUtils {
   /// GALERI → MUNCUL DIALOG IZIN SAMA PERSIS KAMERA
+  
+  
+
   static Future<XFile?> pickFromGallery() async {
+    final status = await Permission.photos.request();
+    if (!status.isGranted) return null;
   return await ImagePicker().pickImage(
     source: ImageSource.gallery,
   );
