@@ -75,26 +75,19 @@ class NotificationServices {
     final messaging = FirebaseMessaging.instance;
 
     await messaging.requestPermission();
-
-    // TOKEN
     final token = await messaging.getToken();
     debugPrint("FCM TOKEN: $token");
 
-    // LISTEN TOKEN ROTATION
     FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
       debugPrint("FCM TOKEN UPDATED: $newToken");
-      // TODO: kirim ke backend
     });
 
-    // FOREGROUND
     FirebaseMessaging.onMessage.listen((message) {
       debugPrint("FCM FOREGROUND: ${message.notification?.title}");
     });
 
-    // BACKGROUND CLICK
     FirebaseMessaging.onMessageOpenedApp.listen((message) {
       debugPrint("FCM CLICKED");
-      // navKey.currentState?.push(...)
     });
   }
 }
