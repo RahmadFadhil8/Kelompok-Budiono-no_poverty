@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:no_poverty/models/job_model_fix_firestore.dart';
 import 'package:no_poverty/services/job_services_firestore.dart';
+import 'package:no_poverty/services/notification_services.dart';
 import 'package:no_poverty/services/transaction_services_firestore.dart';
 import 'package:no_poverty/widgets/sub_title1.dart';
 import 'package:no_poverty/screens/home/customer/transaction_succes_screen.dart';
@@ -35,7 +36,7 @@ class _DetailJobState extends State<DetailJob> {
       final transactionId =
           await TransactionService().createJobTransaction(job, workerId);
 
-      await NotificationService.showNotification(
+      await NotificationServices.showNotification(
       title: "Lamaran Berhasil",
       body: "Kamu berhasil melamar pekerjaan ${job.title}",
     );

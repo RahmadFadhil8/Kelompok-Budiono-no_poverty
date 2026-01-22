@@ -1,13 +1,9 @@
 import 'dart:async';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:no_poverty/app_wrapper.dart';
-import 'package:no_poverty/models/user_model_fix.dart';
-import 'package:no_poverty/provider/chatbot_provider.dart';
-import 'package:no_poverty/screens/profile/profile.dart';
 import 'package:no_poverty/services/notification_service.dart';
-import 'package:no_poverty/services/user_profile_services.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -30,7 +26,6 @@ final FlutterLocalNotificationsPlugin notificationsPlugin =
 final GlobalKey<NavigatorState> navigatorKey =
     GlobalKey<NavigatorState>();
 
-final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await NotificationService.initialize();

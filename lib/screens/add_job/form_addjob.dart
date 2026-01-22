@@ -463,6 +463,15 @@ class _FormaddJobState extends State<FormaddJob> {
                 
                 CustomButton(
                   onPress: ()async{
+
+                    if (geoPoint == null) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(content: Text("Lokasi belum tersedia, tunggu sebentar")),
+  );
+  return;
+}
+
+
                     if (_judulController.text.isEmpty || _kategori == null || _deskripsiController.text.isEmpty || _alamatController.text.isEmpty || _BudgetController.text.isEmpty || _selectedDate == null || startTime == null || endTime == null) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text("Lengkapi semua field terlebih dahulu!"))
