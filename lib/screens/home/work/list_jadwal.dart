@@ -9,7 +9,8 @@ import 'package:no_poverty/widgets/sub_title1.dart';
 import 'package:no_poverty/widgets/title1.dart';
 
 class JadwalHarian extends StatefulWidget {
-  const JadwalHarian({super.key});
+  final bool isTest;
+  const JadwalHarian({super.key, this.isTest = false, required bool enableAnalytics,});
 
   @override
   State<JadwalHarian> createState() => _JadwalHarianState();
@@ -19,6 +20,12 @@ class _JadwalHarianState extends State<JadwalHarian> {
 
   @override
   Widget build(BuildContext context) {
+
+    if (widget.isTest) {
+    return const Center(
+      child: Text("Mode Test - Firebase tidak dipanggil"),
+    );
+  }
     return Scaffold(
       body: StreamBuilder<List<Map<String, dynamic>>>(
         stream: JobApplicationsService().getAppliedJobs(),

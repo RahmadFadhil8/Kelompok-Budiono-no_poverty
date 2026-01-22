@@ -1,12 +1,16 @@
 import 'dart:async';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:no_poverty/app_wrapper.dart';
+import 'package:no_poverty/models/user_model_fix.dart';
+import 'package:no_poverty/provider/chatbot_provider.dart';
+import 'package:no_poverty/screens/profile/profile.dart';
+import 'package:no_poverty/services/notification_service.dart';
+import 'package:no_poverty/services/user_profile_services.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import 'firebase_options.dart';
 import 'app_wrapper.dart';
@@ -25,13 +29,14 @@ final FlutterLocalNotificationsPlugin notificationsPlugin =
 final GlobalKey<NavigatorState> navigatorKey =
     GlobalKey<NavigatorState>();
 
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-
+  await NotificationService.initialize();
+  NotificationService.setListeners();
+  MobileAds.instance.initialize();
+  await NotificationService.requestPermission();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await Supabase.initialize(
     url: 'https://rxrdxiluiipvixhmaxms.supabase.co',
     anonKey: 'sb_publishable_CWlG8-5CWNSQ_cRQJFU8qw_XVoufF6V',
@@ -90,7 +95,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      navigatorKey: navigatorKey, 
+      navigatorKey: navigatorKey,
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
 
