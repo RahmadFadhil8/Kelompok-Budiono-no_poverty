@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:no_poverty/Analytics/analytics_helper.dart';
+import 'package:no_poverty/screens/home/work/list_jadwal.dart';
+import 'package:no_poverty/screens/home/work/list_job_tersedia.dart';
 import 'package:no_poverty/widgets/custom_card.dart';
 
 class WorkHomeScreen extends StatefulWidget {
@@ -18,7 +20,6 @@ class _WorkHomeScreenState extends State<WorkHomeScreen> {
     final cardWidth = (size.width - 36) / 2;
 
     return Scaffold(
-      
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(12),
         child: Column(
@@ -74,10 +75,7 @@ class _WorkHomeScreenState extends State<WorkHomeScreen> {
                   SizedBox(height: 6),
                   Text(
                     "Bulan ini",
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 14,
-                    ),
+                    style: TextStyle(color: Colors.white70, fontSize: 14),
                   ),
                 ],
               ),
@@ -115,10 +113,7 @@ class _WorkHomeScreenState extends State<WorkHomeScreen> {
                           color: Colors.black87,
                         ),
                       ),
-                      Text(
-                        "Rata-rata",
-                        style: TextStyle(color: Colors.grey),
-                      ),
+                      Text("Rata-rata", style: TextStyle(color: Colors.grey)),
                     ],
                   ),
                 ),
@@ -129,7 +124,11 @@ class _WorkHomeScreenState extends State<WorkHomeScreen> {
                     children: const [
                       Row(
                         children: [
-                          Icon(Icons.check_circle, color: Colors.green, size: 26),
+                          Icon(
+                            Icons.check_circle,
+                            color: Colors.green,
+                            size: 26,
+                          ),
                           SizedBox(width: 6),
                           Text(
                             "Completed",
@@ -149,10 +148,7 @@ class _WorkHomeScreenState extends State<WorkHomeScreen> {
                           color: Colors.black87,
                         ),
                       ),
-                      Text(
-                        "Total jobs",
-                        style: TextStyle(color: Colors.grey),
-                      ),
+                      Text("Total jobs", style: TextStyle(color: Colors.grey)),
                     ],
                   ),
                 ),
@@ -205,6 +201,41 @@ class _WorkHomeScreenState extends State<WorkHomeScreen> {
                 ),
               ],
             ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("Jadwal Hari ini"),
+                TextButton(
+                  onPressed: () async {
+                    await analytics.clikcbutton("Jadwal Hari ini");
+                  },
+                  child: Text(
+                    "Lainnya >",
+                    style: TextStyle(color: Colors.black),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 200, child: JadwalHarian()),
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("Job Tersedia"),
+                TextButton(
+                  onPressed: () async {
+                    await analytics.clikcbutton("job tersedia");
+                  },
+                  child: Text(
+                    "Lainnya >",
+                    style: TextStyle(color: Colors.black),
+                  ),
+                ),
+              ],
+            ),
+
+            SizedBox(height: 200, child: listJobTersedia()),
           ],
         ),
       ),

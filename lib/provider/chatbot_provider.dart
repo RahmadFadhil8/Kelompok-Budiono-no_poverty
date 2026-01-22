@@ -33,12 +33,9 @@ Mulai dari sekarang, jawab semua pertanyaan dengan peran dan gaya seperti di ata
   Future<void> getMsgAI(String msg) async {
     try {
       _messages.add(MessageModel(text: "Sedang mengetik...", isMe: false));
-      print("send msg from google gemini");
-      print("waiting response from google gemini");
       var res = await GeminiApiServices().getAIResponse(msg);
       _messages.removeLast();
       _messages.add(res);
-      print("success get response from gemini");
       notifyListeners();
     } catch (e) {
       if (_messages.isNotEmpty && _messages.last.text == "Sedang mengetik...") {

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'verification_processing.dart'; // ← SATU-SATUNYA TAMBAHAN
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:no_poverty/services/user_profile_services.dart';
+import 'package:no_poverty/models/user_model_fix.dart';
+import 'package:no_poverty/screens/main_bottom_navigation.dart';
 
 class AccountVerificationStep4 extends StatefulWidget {
   final bool isPremiumSelected;
@@ -7,12 +10,60 @@ class AccountVerificationStep4 extends StatefulWidget {
   const AccountVerificationStep4({super.key, required this.isPremiumSelected});
 
   @override
-  State<AccountVerificationStep4> createState() => _AccountVerificationStep4State();
+  State<AccountVerificationStep4> createState() =>
+      _AccountVerificationStep4State();
 }
 
 class _AccountVerificationStep4State extends State<AccountVerificationStep4> {
+  bool _isLoading = false;
+
+  Future<void> _submitVerification() async {
+    setState(() => _isLoading = true);
+
+    try {
+      final user = FirebaseAuth.instance.currentUser!;
+
+      final data = {"verified": true};
+
+      await UserProfileServices()
+          .editUserProfile(UserModelFix.fromMap(user.uid, data));
+
+      if (!mounted) return;
+
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (_) => const MainBottomNavigation()),
+        (route) => false,
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Gagal submit verifikasi: $e")),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        _buildMainUI(),
+
+        if (_isLoading)
+          Container(
+            color: Colors.black.withOpacity(0.45),
+            child: const Center(
+              child: CircularProgressIndicator(color: Colors.white),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildMainUI() {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -35,6 +86,7 @@ class _AccountVerificationStep4State extends State<AccountVerificationStep4> {
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
       ),
+
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -47,9 +99,9 @@ class _AccountVerificationStep4State extends State<AccountVerificationStep4> {
                 child: Text("100% selesai", style: TextStyle(color: Colors.grey)),
               ),
             ),
+
             const SizedBox(height: 40),
 
-            // Card Utama - Review
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Card(
@@ -83,7 +135,6 @@ class _AccountVerificationStep4State extends State<AccountVerificationStep4> {
 
             const SizedBox(height: 40),
 
-            // Review Dokumen
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Card(
@@ -102,11 +153,8 @@ class _AccountVerificationStep4State extends State<AccountVerificationStep4> {
                       const SizedBox(height: 16),
 
                       _buildStatusItem("KTP", true),
-                      _buildStatusItem("Foto Selfie", true),
                       _buildStatusItem("SKCK", true),
-                      _buildStatusItem("Bukti Kendaraan", true),
 
-                      // Background Check Premium — HANYA MUNCUL KALAU DIPILIH
                       if (widget.isPremiumSelected)
                         Container(
                           margin: const EdgeInsets.only(top: 8),
@@ -140,7 +188,6 @@ class _AccountVerificationStep4State extends State<AccountVerificationStep4> {
 
             const SizedBox(height: 24),
 
-            // Info Estimasi Waktu
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 24),
               padding: const EdgeInsets.all(16),
@@ -154,7 +201,7 @@ class _AccountVerificationStep4State extends State<AccountVerificationStep4> {
                   SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      "Estimasi Waktu: 1-3 hari kerja untuk verifikasi lengkap. Anda akan mendapat notifikasi setelah proses selesai.",
+                      "Estimasi waktu 1-3 hari kerja untuk verifikasi lengkap.",
                       style: TextStyle(fontSize: 13),
                     ),
                   ),
@@ -164,7 +211,6 @@ class _AccountVerificationStep4State extends State<AccountVerificationStep4> {
 
             const SizedBox(height: 40),
 
-            // Tombol Kembali & Submit
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Row(
@@ -184,14 +230,7 @@ class _AccountVerificationStep4State extends State<AccountVerificationStep4> {
                   const SizedBox(width: 16),
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () {
-                        // SATU-SATUNYA PERUBAHAN FUNGSIONAL — KE HALAMAN PROSES
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(builder: (_) => const VerificationProcessingScreen()),
-                          (route) => false,
-                        );
-                      },
+                      onPressed: _submitVerification,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue,
                         padding: const EdgeInsets.symmetric(vertical: 16),

@@ -5,11 +5,12 @@ class UserModelFix {
   final String name;
   final String email;
   final String phone;
-  final String role; // "worker" | "employer" | "both"
+  final String bio;
+  final String role;
   final bool verified;
 
   final String ktpUrl;
-  final String selfieUrl;
+  final String imageUrl;
   final String? skckUrl;
 
   final GeoPoint location;
@@ -30,10 +31,11 @@ class UserModelFix {
     required this.name,
     required this.email,
     required this.phone,
+    required this.bio,
     required this.role,
     required this.verified,
     required this.ktpUrl,
-    required this.selfieUrl,
+    required this.imageUrl,
     this.skckUrl,
     required this.location,
     required this.skills,
@@ -55,10 +57,11 @@ class UserModelFix {
       name: data['name'] ?? '',
       email: data['email'] ?? '',
       phone: data['phone'] ?? '',
+      bio: data['bio'] ?? '',
       role: data['role'] ?? 'worker',
       verified: data['verified'] ?? false,
       ktpUrl: data['ktp_url'] ?? '',
-      selfieUrl: data['selfie_url'] ?? '',
+      imageUrl: data['image_url'] ?? '',
       skckUrl: data['skck_url'],
       location: data['location'] ?? const GeoPoint(0, 0),
       skills: List<String>.from(data['skills'] ?? []),
@@ -73,72 +76,62 @@ class UserModelFix {
     );
   }
 
-  // -------------------------
-  // TO MAP (Model → Firestore)
-  // -------------------------
-  Map<String, dynamic> toMap() {
-    return {
-      'name': name,
-      'email': email,
-      'phone': phone,
-      'role': role,
-      'verified': verified,
-      'ktp_url': ktpUrl,
-      'selfie_url': selfieUrl,
-      'skck_url': skckUrl,
-      'location': location,
-      'skills': skills,
-      'total_jobs_completed': totalJobsCompleted,
-      'total_rating': totalRating,
-      'rating_count': ratingCount,
-      'reliability_score': reliabilityScore,
-      'certifications': certifications,
-      'created_at': createdAt,
-      'updated_at': updatedAt,
-    };
+  Map<String, dynamic> toUpdateMap() {
+  final data = <String, dynamic>{};
+
+  if (name.isNotEmpty) data['name'] = name;
+  if (email.isNotEmpty) data['email'] = email;
+  if (phone.isNotEmpty) data['phone'] = phone;
+  if (bio.isNotEmpty) data['bio'] = bio;
+
+  data['role'] = role; 
+  data['verified'] = verified;
+
+  if (ktpUrl.isNotEmpty) data['ktp_url'] = ktpUrl;
+  if (imageUrl.isNotEmpty) data['image_url'] = imageUrl;
+  if (skckUrl != null) data['skck_url'] = skckUrl;
+
+  data['location'] = location;
+  if (skills.isNotEmpty) data['skills'] = skills;
+
+  data['total_jobs_completed'] = totalJobsCompleted;
+  data['total_rating'] = totalRating;
+  data['rating_count'] = ratingCount;
+  data['reliability_score'] = reliabilityScore;
+
+  if (certifications.isNotEmpty) {
+    data['certifications'] = certifications;
   }
 
-  // -------------------------
-  // COPY WITH
-  // -------------------------
-  UserModelFix copyWith({
-    String? name,
-    String? email,
-    String? phone,
-    String? role,
-    bool? verified,
-    String? ktpUrl,
-    String? selfieUrl,
-    String? skckUrl,
-    GeoPoint? location,
-    List<String>? skills,
-    int? totalJobsCompleted,
-    int? totalRating,
-    int? ratingCount,
-    double? reliabilityScore,
-    List<String>? certifications,
-    Timestamp? createdAt,
-    Timestamp? updatedAt,
-  }) {
+  data['updated_at'] = Timestamp.now();
+
+  return data;
+}
+
+
+  factory UserModelFix.empty(String id) {
     return UserModelFix(
       id: id,
-      name: name ?? this.name,
-      email: email ?? this.email,
-      phone: phone ?? this.phone,
-      role: role ?? this.role,
-      verified: verified ?? this.verified,
-      ktpUrl: ktpUrl ?? this.ktpUrl,
-      selfieUrl: selfieUrl ?? this.selfieUrl,
-      skckUrl: skckUrl ?? this.skckUrl,
-      location: location ?? this.location,
-      skills: skills ?? this.skills,
-      totalJobsCompleted: totalJobsCompleted ?? this.totalJobsCompleted,
-      totalRating: totalRating ?? this.totalRating,
-      ratingCount: ratingCount ?? this.ratingCount,
-      reliabilityScore: reliabilityScore ?? this.reliabilityScore,
-      certifications: certifications ?? this.certifications,
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
+      name: "",
+      email: "",
+      phone: "",
+      bio: "",
+      role: "worker",
+      verified: false,
+      ktpUrl: "",
+      imageUrl: "",
+      skckUrl: null,
+      location: const GeoPoint(0, 0),
+      skills: const [],
+      totalJobsCompleted: 0,
+      totalRating: 0,
+      ratingCount: 0,
+      reliabilityScore: 0.0,
+      certifications: const [],
+      createdAt: Timestamp.now(),
+      updatedAt: Timestamp.now(),
     );
   }
+
+  
 }

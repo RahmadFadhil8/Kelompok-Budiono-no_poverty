@@ -1,8 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:no_poverty/services/auth_services_contract.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-class AuthServices {
+class AuthServices implements AuthServicesContract {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
@@ -87,7 +88,6 @@ class AuthServices {
       prefs.setBool("isLoggedIn", true);
       return userCred;
     } catch (e) {
-      print("Google SignIn Error: $e");
       rethrow;
     }
   }

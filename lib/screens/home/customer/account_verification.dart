@@ -1,59 +1,85 @@
 import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'account_verification2.dart'; // ← IMPORT STEP 2
+import 'package:no_poverty/models/user_model_fix.dart';
+import 'package:no_poverty/services/user_profile_services.dart';
+import 'package:no_poverty/utils/permission_utils.dart';
+import 'account_verification2.dart';
 
 class AccountVerificationScreen extends StatefulWidget {
   const AccountVerificationScreen({super.key});
 
   @override
-  State<AccountVerificationScreen> createState() => _AccountVerificationScreenState();
+  State<AccountVerificationScreen> createState() =>
+      _AccountVerificationScreenState();
 }
 
-class _AccountVerificationScreenState extends State<AccountVerificationScreen> {
+class _AccountVerificationScreenState
+    extends State<AccountVerificationScreen> {
   File? _ktpImage;
-  File? _selfieImage;
-
-  final ImagePicker _picker = ImagePicker();
+  bool _isLoading = false;
 
   Future<void> _pickKtp() async {
-    final status = await Permission.photos.request();
-    if (!status.isGranted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Izin akses galeri diperlukan")),
-      );
-      return;
-    }
-
-    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    final XFile? image = await PermissionUtils.pickFromGallery();
     if (image != null) {
       setState(() => _ktpImage = File(image.path));
     }
   }
 
-  Future<void> _takeSelfie() async {
-    final status = await Permission.camera.request();
-    if (!status.isGranted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Izin kamera diperlukan")),
-      );
-      return;
-    }
+  bool get _canContinue => _ktpImage != null && !_isLoading;
 
-    final XFile? image = await _picker.pickImage(
-      source: ImageSource.camera,
-      preferredCameraDevice: CameraDevice.front,
+  Future<void> _submit() async {
+  setState(() => _isLoading = true);
+
+  try {
+    final user = FirebaseAuth.instance.currentUser!;
+
+    final urlKtp = await UserProfileServices()
+        .uploadUserImage(user.uid, _ktpImage!);
+
+    final data = {"ktp_url": urlKtp};
+
+    await UserProfileServices()
+        .editUserProfile(UserModelFix.fromMap(user.uid, data));
+
+    if (!mounted) return;
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const AccountVerificationStep2()),
     );
-    if (image != null) {
-      setState(() => _selfieImage = File(image.path));
+  } catch (e) {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Gagal upload: $e")),
+      );
     }
+  } finally {
+    if (mounted) setState(() => _isLoading = false);
   }
+}
 
-  bool get _canContinue => _ktpImage != null && _selfieImage != null;
 
   @override
   Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        _buildMainUI(),
+
+        if (_isLoading)
+          Container(
+            color: Colors.black.withOpacity(0.45),
+            child: const Center(
+              child: CircularProgressIndicator(color: Colors.white),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildMainUI() {
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -76,6 +102,7 @@ class _AccountVerificationScreenState extends State<AccountVerificationScreen> {
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
       ),
+
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -88,6 +115,7 @@ class _AccountVerificationScreenState extends State<AccountVerificationScreen> {
                 child: Text("25% selesai", style: TextStyle(color: Colors.grey)),
               ),
             ),
+
             const SizedBox(height: 32),
 
             Padding(
@@ -95,7 +123,9 @@ class _AccountVerificationScreenState extends State<AccountVerificationScreen> {
               child: Card(
                 elevation: 0,
                 color: const Color(0xFFF8F9FA),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
                 child: Padding(
                   padding: const EdgeInsets.all(20),
                   child: Column(
@@ -108,13 +138,11 @@ class _AccountVerificationScreenState extends State<AccountVerificationScreen> {
                       SizedBox(height: 16),
                       Text(
                         "KTP & Identitas",
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       SizedBox(height: 8),
-                      Text(
-                        "Upload KTP dan foto selfie",
-                        style: TextStyle(color: Colors.grey),
-                      ),
+                      Text("Upload KTP", style: TextStyle(color: Colors.grey)),
                     ],
                   ),
                 ),
@@ -128,15 +156,20 @@ class _AccountVerificationScreenState extends State<AccountVerificationScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text("Upload KTP", style: TextStyle(fontWeight: FontWeight.w500)),
+                  const Text("Upload KTP",
+                      style: TextStyle(fontWeight: FontWeight.w500)),
                   const SizedBox(height: 12),
+
                   GestureDetector(
-                    onTap: _pickKtp,
+                    onTap: _isLoading ? null : _pickKtp,
                     child: Container(
                       height: 140,
                       width: double.infinity,
                       decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey.shade300, style: BorderStyle.solid),
+                        border: Border.all(
+                          color: Colors.grey.shade300,
+                          style: BorderStyle.solid,
+                        ),
                         borderRadius: BorderRadius.circular(12),
                         color: Colors.grey[50],
                       ),
@@ -146,50 +179,16 @@ class _AccountVerificationScreenState extends State<AccountVerificationScreen> {
                               children: const [
                                 Icon(Icons.upload, size: 40, color: Colors.grey),
                                 SizedBox(height: 8),
-                                Text("Pilih foto KTP", style: TextStyle(color: Colors.grey)),
+                                Text("Pilih foto KTP",
+                                    style: TextStyle(color: Colors.grey)),
                               ],
                             )
                           : ClipRRect(
                               borderRadius: BorderRadius.circular(12),
-                              child: Image.file(_ktpImage!, fit: BoxFit.cover),
-                            ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 32),
-
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text("Foto Selfie dengan KTP", style: TextStyle(fontWeight: FontWeight.w500)),
-                  const SizedBox(height: 12),
-                  GestureDetector(
-                    onTap: _takeSelfie,
-                    child: Container(
-                      height: 180,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey.shade300),
-                        borderRadius: BorderRadius.circular(12),
-                        color: Colors.grey[50],
-                      ),
-                      child: _selfieImage == null
-                          ? Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
-                                Icon(Icons.camera_alt, size: 40, color: Colors.grey),
-                                SizedBox(height: 8),
-                                Text("Ambil foto selfie", style: TextStyle(color: Colors.grey)),
-                              ],
-                            )
-                          : ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: Image.file(_selfieImage!, fit: BoxFit.cover),
+                              child: Image.file(
+                                _ktpImage!,
+                                fit: BoxFit.cover,
+                              ),
                             ),
                     ),
                   ),
@@ -210,7 +209,8 @@ class _AccountVerificationScreenState extends State<AccountVerificationScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: const [
-                  Text("Tips Foto yang Baik", style: TextStyle(fontWeight: FontWeight.bold)),
+                  Text("Tips Foto yang Baik",
+                      style: TextStyle(fontWeight: FontWeight.bold)),
                   SizedBox(height: 8),
                   Text("• Pastikan foto jelas dan tidak blur"),
                   Text("• KTP terlihat jelas di foto selfie"),
@@ -228,24 +228,18 @@ class _AccountVerificationScreenState extends State<AccountVerificationScreen> {
                 height: 50,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: _canContinue ? Colors.blue : Colors.grey[300],
+                    backgroundColor:
+                        _canContinue ? Colors.blue : Colors.grey[300],
                     foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30)),
                   ),
-                  onPressed: _canContinue
-                      ? () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const AccountVerificationStep2(),
-                            ),
-                          );
-                        }
-                      : null,
+                  onPressed: _canContinue ? _submit : null,
                   child: const Text("Lanjut", style: TextStyle(fontSize: 16)),
                 ),
               ),
             ),
+
             const SizedBox(height: 20),
           ],
         ),

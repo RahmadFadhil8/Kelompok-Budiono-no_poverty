@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:no_poverty/Analytics/analytics_helper.dart';
-import 'package:no_poverty/Database/database_Service.dart';
+import 'package:no_poverty/models/user_model_fix.dart';
 import 'package:no_poverty/screens/add_job/add_job.dart';
 import 'package:no_poverty/screens/home/customer/account_verification.dart';
 import 'package:no_poverty/screens/home/customer/list_Helper.dart';
@@ -8,11 +8,8 @@ import 'package:no_poverty/screens/home/customer/list_job_active.dart';
 import 'package:no_poverty/screens/home/customer/list_ketegori.dart';
 import 'package:no_poverty/widgets/custom_Button.dart';
 import 'package:no_poverty/widgets/custom_card.dart';
-import 'package:no_poverty/widgets/sub_title1.dart';
 import 'package:no_poverty/widgets/title1.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart';
+import 'package:provider/provider.dart';
 
 class CustomerHomeScreen extends StatefulWidget {
   final bool enableAnalytics;
@@ -39,17 +36,23 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+        final userData = context.watch<UserModelFix?>();
+    if (userData == null) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: Column(
             children: [
-              CustomCard(
+              Container(
+                child:userData.verified ==false? CustomCard(
                 isShadow: false,
                 borderColor: Colors.deepOrange,
                 cardColor: Colors.orangeAccent,
-                childContainer: Row(
+                childContainer:  Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Column(
@@ -60,7 +63,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                           style: TextStyle(fontSize: 20),
                         ),
                         const SizedBox(height: 4),
-                        const Text("Lengkapi verifikasi untuk akses penuh"),
+                        const Text("Lengkapi verifikasi untuk akses penuh", style: TextStyle(fontSize: 12),),
                       ],
                     ),
                     CustomButton(
@@ -77,7 +80,8 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                       },
                     ),
                   ],
-                ),
+                )
+              ):Container()
               ),
               const SizedBox(height: 20),
           

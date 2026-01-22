@@ -24,10 +24,8 @@ class _SearchScreenState extends State<SearchScreen> {
         searchQuery = query;
       });
 
-      print("ini hasil pencarian:${query}");
       if (query.isNotEmpty) {
         analytics.userpencarian(query); //ini implementasi
-        print("ini hasil pencarian:${query}");
       }
     },);
   }

@@ -60,18 +60,20 @@ class _KategotiListState extends State<KategotiList> {
                   final kategori = data[index];
                   return CustomButton(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 2,
-                        vertical: 12,
-                      ),
-                      child: Column(
-                        children: [
-                          Icon(kategori['icon'], size: 24, color: Colors.white,),
-                          SizedBox(height: 2),
-                          Title1(title: kategori['nama'], color: Colors.white),
-                        ],
-                      ),
-                    ),
+  padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 6),
+  child: Column(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: [
+      Icon(kategori['icon'], size: 20, color: Colors.white),
+      SizedBox(height: 2),
+      Text(
+        kategori['nama'],
+        style: TextStyle(fontSize: 10, color: Colors.white),
+      ),
+    ],
+  ),
+),
+
                     onPress: () {
                       analytics?.clikcbutton("kategori_${kategori['nama']}");
                     },
