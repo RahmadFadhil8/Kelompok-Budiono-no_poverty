@@ -1,46 +1,61 @@
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:flutter/material.dart';
+import 'package:no_poverty/main.dart';
+import 'package:no_poverty/screens/home/customer/detailJob.dart';
 
 class NotificationService {
-  static final FlutterLocalNotificationsPlugin _notificationsPlugin =
-      FlutterLocalNotificationsPlugin();
 
-  static Future<void> init() async {
-    const AndroidInitializationSettings androidInit =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+  static Future<void>  initialize() async {
+    await AwesomeNotifications().initialize(null, [
+      NotificationChannel(
+        channelKey: "basic_channel", 
+        channelName: "Basic Notification", 
+        defaultColor: Colors.lightBlueAccent,
+        channelShowBadge: true,
+        channelDescription: "Notification with Action", 
+        importance: NotificationImportance.High),
+    ]);
+  }
 
-    const InitializationSettings initSettings =
-        InitializationSettings(android: androidInit);
-
-    await _notificationsPlugin.initialize(initSettings);
-
-    // 🔥 ANDROID 13+ WAJIB REQUEST PERMISSION MANUAL
-    if (await Permission.notification.isDenied) {
-      await Permission.notification.request();
+  static Future<void> requestPermission() async{
+    bool isAllowed = await AwesomeNotifications().isNotificationAllowed();
+    if (!isAllowed){
+      await AwesomeNotifications().requestPermissionToSendNotifications();
     }
   }
 
-  static Future<void> showNotification({
-    required String title,
-    required String body,
-  }) async {
-    const AndroidNotificationDetails androidDetails =
-        AndroidNotificationDetails(
-      'apply_channel',
-      'Apply Notification',
-      channelDescription: 'Notifikasi saat apply pekerjaan',
-      importance: Importance.max,
-      priority: Priority.high,
-    );
-
-    const NotificationDetails notificationDetails =
-        NotificationDetails(android: androidDetails);
-
-    await _notificationsPlugin.show(
-      0,
-      title,
-      body,
-      notificationDetails,
-    );
+  static void setListeners(){
+    AwesomeNotifications().setListeners(onActionReceivedMethod: onActionReceived,);
   }
+
+  static Future<void> showDetailJobApplied({
+    required String jobId,
+  }) async {
+    await AwesomeNotifications().createNotification(content: 
+    NotificationContent(
+      id: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+      channelKey: "basic_channel", 
+      title: "Job berhasil dilamar",
+      body: "Klik detail untuk melihat informasi job",
+      payload: {"jobId": jobId},
+
+    ),
+    actionButtons: [
+      NotificationActionButton(
+        key: "Detail" , 
+        label: "Detail", color: Colors.indigo)
+    ]
+  );
+  }
+
+  static Future<void> onActionReceived( ReceivedAction action)async {
+    final jobId = action.payload?["jobId"];
+
+    if (action.buttonKeyPressed == "Detail" && jobId != null) {
+      navigatorKey.currentState?.push(
+        MaterialPageRoute(builder: (_) => DetailJob(JobId: jobId)));
+    }
+  }
+
+
 }

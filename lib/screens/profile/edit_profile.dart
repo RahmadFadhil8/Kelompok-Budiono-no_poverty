@@ -1,8 +1,13 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:no_poverty/Permission/handler.dart';
 import 'package:no_poverty/models/user_model_fix.dart';
 import 'package:no_poverty/services/user_profile_services.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class EditProfile extends StatefulWidget {
   final User user;
@@ -22,7 +27,10 @@ class _EditProfileState extends State<EditProfile> {
   var skills = [];
 
   final userService = UserProfileServices();
+  UserModelFix? userData;
   bool isLoading = true;
+
+  String urlImgProfile = "";
 
   @override
   void initState() {
@@ -32,6 +40,7 @@ class _EditProfileState extends State<EditProfile> {
 
   Future<void> loadData() async {
     final user = await userService.getUserProfileOnce();
+
     final lat = user.location.latitude;
     final lng = user.location.longitude;
 
@@ -41,14 +50,42 @@ class _EditProfileState extends State<EditProfile> {
     locationC.text = "$lat,$lng";
     bioC.text = user.bio;
     skills = user.skills;
+    setState(() {
+      userData = user;
+      isLoading = false;
+    });
+  }
 
-    setState(() => isLoading = false);
+  Future<void> imageSelect() async {
+    final status = await Handler_Permission().requestGalleryPermission();
+    if (status) {
+      setState(() {
+        isLoading = true;
+      });
+      final image = await ImagePicker().pickImage(source: ImageSource.gallery);
+      final _urlImgProfile = await UserProfileServices().uploadUserImage(
+        widget.user.uid,
+        File(image!.path),
+      );
+      setState(() {
+        urlImgProfile = _urlImgProfile!;
+        onSave(
+          UserModelFix.fromMap(widget.user.uid, {"image_url": urlImgProfile}),
+        );
+        isLoading = false;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return Center(child: CircularProgressIndicator());
+    }
     return Scaffold(
-      appBar: AppBar(title: const Text("Edit Profile Template"), elevation: 0),
+      backgroundColor: Colors.grey[100],
+
+      appBar: AppBar(title: const Text("Edit Profile"), elevation: 0),
       body: Stack(
         children: [
           ListView(
@@ -57,19 +94,24 @@ class _EditProfileState extends State<EditProfile> {
               Center(
                 child: Column(
                   children: [
-                    const CircleAvatar(
-                      radius: 50,
+                    CircleAvatar(
+                      radius: 70,
                       backgroundImage: NetworkImage(
-                        "https://rxrdxiluiipvixhmaxms.supabase.co/storage/v1/object/sign/jobWaroengStorage/IMG_20240501_235806_448.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9hNThmOTQxZi02ZTY2LTQxYzYtOTkyYS01NzFhM2U0YjRkN2YiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJqb2JXYXJvZW5nU3RvcmFnZS9JTUdfMjAyNDA1MDFfMjM1ODA2XzQ0OC5qcGciLCJpYXQiOjE3NjQ5MjM4NDEsImV4cCI6MTc2NTUyODY0MX0.SxPISVa9Y5KJxgOiUoFi9c8re8CEruo65_BO5WQE1J8",
+                        urlImgProfile.isNotEmpty
+                            ? urlImgProfile
+                            : (userData!.imageUrl ??
+                                "https://picsum.photos/id/237/200/300"),
                       ),
                     ),
                     const SizedBox(height: 10),
-                    // Edit Foto button (dummy)
+
                     ElevatedButton.icon(
                       style: ButtonStyle(
                         backgroundColor: MaterialStatePropertyAll(Colors.blue),
                       ),
-                      onPressed: _onEditPhoto,
+                      onPressed: () {
+                        imageSelect();
+                      },
                       icon: const Icon(Icons.edit),
                       label: const Text("Edit Foto"),
                     ),
@@ -91,7 +133,6 @@ class _EditProfileState extends State<EditProfile> {
               ),
               const SizedBox(height: 8),
 
-              // Skill section: add button + chips
               Row(
                 children: [
                   OutlinedButton.icon(
@@ -197,14 +238,6 @@ class _EditProfileState extends State<EditProfile> {
         context,
       ).showSnackBar(const SnackBar(content: Text("Perubahan tersimpan")));
     });
-  }
-
-  void _onEditPhoto() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("Edit Foto (dummy) - tambahkan image_picker di sini"),
-      ),
-    );
   }
 
   void _showAddSkillDialog() {

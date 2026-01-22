@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:intl/intl.dart';
-import 'package:no_poverty/Permission/handler.dart';
+import 'package:no_poverty/models/job_model_fix_firestore.dart';
 import 'package:no_poverty/screens/home/customer/detailJob.dart';
 import 'package:no_poverty/services/job_services_firestore.dart';
 import 'package:no_poverty/widgets/custom_card.dart';
@@ -18,12 +19,50 @@ class ListJobActive extends StatefulWidget {
 
 class _ListJobActiveState extends State<ListJobActive> {
   JobService jobs = JobService();
+
+  // <============Iklan Interstitial============>
+
+  InterstitialAd? _interstitialAd;
+  String Interstitialid = "ca-app-pub-3940256099942544/1033173712";
+
+  @override
+  void initState() {
+    _loadInterstitialAd();
+    super.initState();
+  }
+
+
+  void _loadInterstitialAd() {
+    InterstitialAd.load( 
+      adUnitId: Interstitialid, 
+      adLoadCallback: InterstitialAdLoadCallback(
+        onAdLoaded: (ad) {
+          _interstitialAd = ad;
+          ad.fullScreenContentCallback = FullScreenContentCallback(
+            onAdDismissedFullScreenContent: (ad) {
+              ad.dispose();
+              _loadInterstitialAd();
+              
+            },
+            onAdFailedToShowFullScreenContent: (ad, error) {
+              ad.dispose();
+              _loadInterstitialAd();
+            },
+          );
+        }, 
+        onAdFailedToLoad: (error) {
+          print("Filed to load ad:${error.message}");
+        }),
+      request: AdRequest(),
+    );
+  }
+  // <================================================>
   
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body:FutureBuilder(
-        future: jobs.getallJob(), 
+      body:StreamBuilder<List<JobModelFix>>(
+        stream: jobs.getallJob(), 
         builder: (context, snapshot) {
           // === LOADING STATE ===
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -133,6 +172,7 @@ class _ListJobActiveState extends State<ListJobActive> {
                                 side: const BorderSide(color: Colors.grey),
                               ),
                               onPressed: () {
+                                _interstitialAd?.show();
                                 Navigator.push(
                                 context,
                                 MaterialPageRoute(builder: (context) => DetailJob(JobId: job.job_id,)),

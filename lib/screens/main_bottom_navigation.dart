@@ -8,6 +8,7 @@ import 'package:no_poverty/screens/home/work/work_home_screen.dart';
 import 'package:no_poverty/screens/notifikasi/notifikasi.dart';
 import 'package:no_poverty/screens/profile/profile.dart';
 import 'package:no_poverty/screens/search/search_screen.dart';
+import 'package:no_poverty/services/iklan_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MainBottomNavigation extends StatefulWidget {
@@ -39,6 +40,7 @@ class _MainBottomNavigationState extends State<MainBottomNavigation> {
   int _selectedScreen = 0;
 
   final MyAnalytics analytics = MyAnalytics();
+  final admobService admobservice = admobService();
 
   @override
   void initState() {
@@ -46,6 +48,7 @@ class _MainBottomNavigationState extends State<MainBottomNavigation> {
     _initPrefs().then((_) {
       analytics.startTracking(screenName(_selectedScreen));
     });
+    admobservice.loadInterstitialAd();
   }
 
   Future<void> _initPrefs() async {
@@ -102,9 +105,13 @@ class _MainBottomNavigationState extends State<MainBottomNavigation> {
                       borderWidth: 5.0,
                       height: 55,
                       onChanged: (value) async {
-                        setState(() => isWorkMode = value);
+                        setState(() {
+                          isWorkMode = value;
+                          _selectedScreen = 0;
+                        });
                         await prefs!.setBool("isWorkMode", value);
                         await analytics.changeMode(value);
+                        admobservice.showInterstitialAd();
                       },
                       styleBuilder:
                           (value) => ToggleStyle(

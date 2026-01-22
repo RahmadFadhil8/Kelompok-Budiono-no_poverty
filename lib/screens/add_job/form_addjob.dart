@@ -1,12 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:intl/intl.dart';
-import 'package:no_poverty/Database/database_Service.dart';
 import 'package:no_poverty/Permission/handler.dart';
 import 'package:no_poverty/models/job_model_fix_firestore.dart';
-import 'package:no_poverty/services/job_api_services.dart';
 import 'package:no_poverty/services/job_services_firestore.dart';
+import 'package:no_poverty/services/notification_services.dart';
 import 'package:no_poverty/widgets/custom_Button.dart';
 import 'package:no_poverty/widgets/title1.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -25,6 +26,37 @@ class _FormaddJobState extends State<FormaddJob> {
   String? userId;
 
   final permission = Handler_Permission();
+
+  // <============Iklan Interstitial============>
+
+  InterstitialAd? _interstitialAd;
+  String Interstitialid = "ca-app-pub-3940256099942544/1033173712";
+
+  void _loadInterstitialAd() {
+    InterstitialAd.load( 
+      adUnitId: Interstitialid, 
+      adLoadCallback: InterstitialAdLoadCallback(
+        onAdLoaded: (ad) {
+          _interstitialAd = ad;
+          ad.fullScreenContentCallback = FullScreenContentCallback(
+            onAdDismissedFullScreenContent: (ad) {
+              ad.dispose();
+              _loadInterstitialAd();
+              
+            },
+            onAdFailedToShowFullScreenContent: (ad, error) {
+              ad.dispose();
+              _loadInterstitialAd();
+            },
+          );
+        }, 
+        onAdFailedToLoad: (error) {
+          print("Filed to load ad:${error.message}");
+        }),
+      request: AdRequest(),
+    );
+  }
+  // <================================================>
 
   void getMylocation() async {
     try {
@@ -46,6 +78,7 @@ class _FormaddJobState extends State<FormaddJob> {
 
   @override
   void initState() { 
+    _loadInterstitialAd();
     super.initState();
     takeId();
     getMylocation();
@@ -57,9 +90,7 @@ class _FormaddJobState extends State<FormaddJob> {
       setState(() {
         userId = storedId;
       });
-      print("User ID dari SharedPreferences: $userId");
     } else {
-      print("User ID belum tersimpan di SharedPreferences");
     }
   }
 
@@ -383,13 +414,31 @@ class _FormaddJobState extends State<FormaddJob> {
                         SizedBox(height: 12,),
                         TextFormField(
                           controller: _BudgetController,
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                          ],
                           decoration: const InputDecoration(
                             hintText: '0',
                             prefixIcon: Icon(Icons.monetization_on_outlined),
                             border: OutlineInputBorder(),
                           ),
-                          validator: (value) =>
-                            value!.isEmpty ? 'Budget wajib di isi' : null,
+                          validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Budget wajib diisi';
+                              }
+
+                              final parsed = int.tryParse(value);
+                              if (parsed == null) {
+                                return 'Budget harus berupa angka';
+                              }
+
+                              if (parsed <= 0) {
+                                return 'Budget harus lebih dari 0';
+                              }
+
+                              return null;
+                          }
                         ),
 
                         // Row(
@@ -423,9 +472,16 @@ class _FormaddJobState extends State<FormaddJob> {
                     
                     final gaji = double.tryParse(_BudgetController.text) ?? 0.0;
 
-                    if (geoPoint == null) {
+                    if (gaji == null) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text("Ambil lokasi terlebih dahulu!")),
+                        const SnackBar(content: Text("Budget harus berupa angka")),
+                      );
+                      return;
+                    }
+
+                    if (gaji <= 0) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Budget harus lebih dari 0")),
                       );
                       return;
                     }
@@ -471,13 +527,33 @@ class _FormaddJobState extends State<FormaddJob> {
                       updatedAt: Timestamp.now()
                     );
 
-                    await job.createJob(pekerjaan);
+                    try {  
+                      await job.createJob(pekerjaan);
 
+                      await NotificationServices.showNotification(
+                        title: "Job Berhasil dibuat",
+                        body: "Pekerjaan ${ _judulController.text} telah dipublikasi",
+                        payload: {
+                          "navigate":  "true",
+                        },
+                      );
+
+                      if (!mounted) return;
+
+                      _interstitialAd?.show();
+                      Navigator.pop(context);
+
+                    } catch (e, s) {
+                      debugPrint("Error Create JOB: $e");
+                      debugPrintStack(stackTrace: s);  
+                      if (!mounted) return;
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("Gagal membuat job")),
+                      );                    
+                    }
 
                     // jobs.create(userId!, _judulController.text, _kategori!, _deskripsiController.text, _alamatController.text, _BudgetController.text, Count, tanggalStr, waktuStr, isActive);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("Job berhasil dikirim!")),
-                    );
                   }, 
                   child: Text("Publish Job")
                 ),

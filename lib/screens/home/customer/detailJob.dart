@@ -84,8 +84,8 @@ class _DetailJobState extends State<DetailJob> {
             padding: const EdgeInsets.all(16),
             child: ListView(
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       job.title,

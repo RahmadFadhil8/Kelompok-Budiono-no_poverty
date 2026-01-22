@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:no_poverty/Analytics/analytics_helper.dart';
+import 'package:no_poverty/models/user_model_fix.dart';
 import 'package:no_poverty/screens/add_job/add_job.dart';
 import 'package:no_poverty/screens/home/customer/account_verification.dart';
 import 'package:no_poverty/screens/home/customer/list_Helper.dart';
@@ -7,11 +8,14 @@ import 'package:no_poverty/screens/home/customer/list_job_active.dart';
 import 'package:no_poverty/screens/home/customer/list_ketegori.dart';
 import 'package:no_poverty/widgets/custom_Button.dart';
 import 'package:no_poverty/widgets/custom_card.dart';
-import 'package:no_poverty/widgets/sub_title1.dart';
 import 'package:no_poverty/widgets/title1.dart';
+import 'package:provider/provider.dart';
 
 class CustomerHomeScreen extends StatefulWidget {
-  const CustomerHomeScreen({super.key});
+  final bool enableAnalytics;
+  final bool isTest;
+  
+  const CustomerHomeScreen({super.key, this.enableAnalytics = true, this.isTest = false,});
 
   @override
   State<CustomerHomeScreen> createState() => _CustomerHomeScreenState();
@@ -20,21 +24,35 @@ class CustomerHomeScreen extends StatefulWidget {
 class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
   bool isWorkMode = false;
 
-  MyAnalytics analytics = MyAnalytics();
+  MyAnalytics? analytics;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.enableAnalytics) {
+      analytics = MyAnalytics();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+        final userData = context.watch<UserModelFix?>();
+    if (userData == null) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: Column(
             children: [
-              CustomCard(
+              Container(
+                child:userData.verified ==false? CustomCard(
                 isShadow: false,
                 borderColor: Colors.deepOrange,
                 cardColor: Colors.orangeAccent,
-                childContainer: Row(
+                childContainer:  Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Column(
@@ -45,7 +63,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                           style: TextStyle(fontSize: 20),
                         ),
                         const SizedBox(height: 4),
-                        const Text("Lengkapi verifikasi untuk akses penuh"),
+                        const Text("Lengkapi verifikasi untuk akses penuh", style: TextStyle(fontSize: 12),),
                       ],
                     ),
                     CustomButton(
@@ -62,7 +80,8 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                       },
                     ),
                   ],
-                ),
+                )
+              ):Container()
               ),
               const SizedBox(height: 20),
           
@@ -152,11 +171,13 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                         ),
                       ),
                       onPress: () async {
-                        await analytics.clikcbutton("buat job");
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => addJob()),
-                        );
+                        if (!widget.isTest) {  
+                          await analytics?.clikcbutton("buat job");
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => addJob()),
+                          );
+                        }
                       },
                     ),
                   ),
@@ -176,7 +197,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                         ),
                       ),
                       onPress: () async {
-                        await analytics.clikcbutton("cari helper");
+                        await analytics?.clikcbutton("cari helper");
                       },
                     ),
                   ),
@@ -187,7 +208,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
               SizedBox(height: 10),
               Row(children: [Text("Kategori Populer")]),
               SizedBox(height: 10),
-              KategotiList(),
+              widget.isTest? const SizedBox(): const KategotiList(),
           
               // judul Job Aktif
               SizedBox(height: 10),
@@ -197,7 +218,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                   Text("Job Akif"),
                   TextButton(
                     onPressed: () async {
-                      await analytics.clikcbutton("job aktif lainnya");
+                      await analytics?.clikcbutton("job aktif lainnya");
                     },
                     child: Text(
                       "Lainnya >",
@@ -210,7 +231,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
               // CardJob
               SizedBox(height: 16),
 
-              SizedBox(
+              widget.isTest? const SizedBox(height: 170,): const SizedBox(
                 height: 170,
                 child: ListJobActive(),
               ),
@@ -226,7 +247,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
           
               // Helper
               SizedBox(height: 12),
-              SizedBox(
+              widget.isTest? const SizedBox() : SizedBox(
                 height: MediaQuery.of(context).size.height * 0.4,
                 child: const ListHelper()
               ),
