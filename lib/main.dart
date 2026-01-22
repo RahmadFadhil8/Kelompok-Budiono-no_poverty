@@ -11,6 +11,7 @@ import 'package:no_poverty/services/user_profile_services.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'services/notification_service.dart';
 
 import 'firebase_options.dart';
 import 'app_wrapper.dart';
@@ -160,6 +161,6 @@ class MyApp extends StatelessWidget {
       ),
 
       home: AppWrapper(),
-    );
+    ); 
   }
 }

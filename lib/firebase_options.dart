@@ -89,5 +89,4 @@ class DefaultFirebaseOptions {
     storageBucket: 'jobwaroeng-a78c9.firebasestorage.app',
     measurementId: 'G-23179S3Y4E',
   );
-
 }
