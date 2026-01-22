@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:no_poverty/app_wrapper.dart';
@@ -39,6 +40,11 @@ void main() async {
   unawaited(MobileAds.instance.initialize());
 
   await ChatbotProvider().initialMsgAI();
+
+  await NotificationServices.initializeFcm(navigatorKey);
+
+  await FirebaseMessaging.instance.subscribeToTopic("debug");
+
 
   runApp(
     MultiProvider(

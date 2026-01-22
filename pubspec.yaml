@@ -30,14 +30,20 @@ dependencies:
   image_picker: ^1.1.2         
   permission_handler: ^11.3.1   
   supabase_flutter: ^2.10.3
-  awesome_notifications: ^0.10.1
   google_mobile_ads: ^7.0.0
-
-
+  flutter_local_notifications: ^17.1.2
+  firebase_messaging: 15.2.10
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.13.1
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/icon.png"
 
 flutter:
   uses-material-design: true

@@ -30,8 +30,8 @@ class UserProfileServices {
     return UserModelFix.fromMap(user!.uid, data);
   }
 
-void editUserProfile(UserModelFix data) {
-  db.collection("users").doc(user!.uid).set(
+Future <void> editUserProfile(UserModelFix data) async{
+  await db.collection("users").doc(user!.uid).set(
     data.toUpdateMap(),
     SetOptions(merge: true),
   );
