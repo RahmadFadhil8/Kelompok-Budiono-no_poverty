@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:no_poverty/Analytics/analytics_helper.dart';
-import 'package:no_poverty/models/user_model_fix.dart';
 import 'package:no_poverty/screens/add_job/add_job.dart';
 import 'package:no_poverty/screens/home/customer/account_verification.dart';
 import 'package:no_poverty/screens/home/customer/list_Helper.dart';
@@ -8,14 +7,13 @@ import 'package:no_poverty/screens/home/customer/list_job_active.dart';
 import 'package:no_poverty/screens/home/customer/list_ketegori.dart';
 import 'package:no_poverty/widgets/custom_Button.dart';
 import 'package:no_poverty/widgets/custom_card.dart';
+import 'package:no_poverty/widgets/sub_title1.dart';
 import 'package:no_poverty/widgets/title1.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:no_poverty/main.dart'; 
 
 class CustomerHomeScreen extends StatefulWidget {
-  final bool enableAnalytics;
-  final bool isTest;
-  
-  const CustomerHomeScreen({super.key, this.enableAnalytics = true, this.isTest = false,});
+  const CustomerHomeScreen({super.key});
 
   @override
   State<CustomerHomeScreen> createState() => _CustomerHomeScreenState();
@@ -24,35 +22,21 @@ class CustomerHomeScreen extends StatefulWidget {
 class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
   bool isWorkMode = false;
 
-  MyAnalytics? analytics;
-
-  @override
-  void initState() {
-    super.initState();
-    if (widget.enableAnalytics) {
-      analytics = MyAnalytics();
-    }
-  }
+  MyAnalytics analytics = MyAnalytics();
 
   @override
   Widget build(BuildContext context) {
-        final userData = context.watch<UserModelFix?>();
-    if (userData == null) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
-    }
-
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: Column(
             children: [
-              Container(
-                child:userData.verified ==false? CustomCard(
+              CustomCard(
                 isShadow: false,
                 borderColor: Colors.deepOrange,
                 cardColor: Colors.orangeAccent,
-                childContainer:  Row(
+                childContainer: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Column(
@@ -63,14 +47,43 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                           style: TextStyle(fontSize: 20),
                         ),
                         const SizedBox(height: 4),
-                        const Text("Lengkapi verifikasi untuk akses penuh", style: TextStyle(fontSize: 12),),
+                        const Text("Lengkapi verifikasi untuk akses penuh"),
                       ],
                     ),
                     CustomButton(
                       backgroundColor: Colors.orange,
                       foregroundColor: Colors.white,
                       child: Text("Mulai"),
-                      onPress: () {
+                      onPress: () async {
+                        final AndroidFlutterLocalNotificationsPlugin? androidImplementation =
+                            notificationsPlugin.resolvePlatformSpecificImplementation<
+                                AndroidFlutterLocalNotificationsPlugin>();
+
+                        final bool? granted = await androidImplementation?.requestNotificationsPermission();
+
+                        if (granted == true || granted == null) {
+                          const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+                            'verification_start',
+                            'Verifikasi Akun',
+                            channelDescription: 'Notifikasi saat memulai proses verifikasi akun',
+                            importance: Importance.high,
+                            priority: Priority.high,
+                            playSound: true,
+                            enableVibration: true,
+                            icon: '@mipmap/ic_launcher',
+                          );
+
+                          const NotificationDetails notificationDetails =
+                              NotificationDetails(android: androidDetails);
+
+                          await notificationsPlugin.show(
+                            1001,
+                            'Yuk Lengkapi Verifikasi Akunmu! 👤',
+                            'Siapkan KTP, selfie, dan dokumen lain ya. Prosesnya cepat dan mudah!',
+                            notificationDetails,
+                          );
+                        }
+
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -80,8 +93,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                       },
                     ),
                   ],
-                )
-              ):Container()
+                ),
               ),
               const SizedBox(height: 20),
           
@@ -171,13 +183,11 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                         ),
                       ),
                       onPress: () async {
-                        if (!widget.isTest) {  
-                          await analytics?.clikcbutton("buat job");
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => addJob()),
-                          );
-                        }
+                        await analytics.clikcbutton("buat job");
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => addJob()),
+                        );
                       },
                     ),
                   ),
@@ -197,7 +207,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                         ),
                       ),
                       onPress: () async {
-                        await analytics?.clikcbutton("cari helper");
+                        await analytics.clikcbutton("cari helper");
                       },
                     ),
                   ),
@@ -208,7 +218,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
               SizedBox(height: 10),
               Row(children: [Text("Kategori Populer")]),
               SizedBox(height: 10),
-              widget.isTest? const SizedBox(): const KategotiList(),
+              KategotiList(),
           
               // judul Job Aktif
               SizedBox(height: 10),
@@ -218,7 +228,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                   Text("Job Akif"),
                   TextButton(
                     onPressed: () async {
-                      await analytics?.clikcbutton("job aktif lainnya");
+                      await analytics.clikcbutton("job aktif lainnya");
                     },
                     child: Text(
                       "Lainnya >",
@@ -231,7 +241,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
               // CardJob
               SizedBox(height: 16),
 
-              widget.isTest? const SizedBox(height: 170,): const SizedBox(
+              SizedBox(
                 height: 170,
                 child: ListJobActive(),
               ),
@@ -247,7 +257,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
           
               // Helper
               SizedBox(height: 12),
-              widget.isTest? const SizedBox() : SizedBox(
+              SizedBox(
                 height: MediaQuery.of(context).size.height * 0.4,
                 child: const ListHelper()
               ),

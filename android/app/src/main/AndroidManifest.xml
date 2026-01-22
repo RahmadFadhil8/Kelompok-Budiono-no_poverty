@@ -24,11 +24,20 @@
     <application
         android:label="no_poverty"
         android:name="${applicationName}"
+<<<<<<< HEAD
+        android:icon="@mipmap/ic_launcher">
+
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-8260041591339282~2567793249"/>
+
+=======
         android:icon="@mipmap/ic_launcher"
         android:largeHeap="true"
         android:hardwareAccelerated="true"
 
         >
+>>>>>>> d4fed5c020b9bac104d68a3d3628d8241769e5a3
         <activity
     android:name=".MainActivity"
     android:exported="true"
