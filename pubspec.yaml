@@ -33,6 +33,7 @@ dependencies:
   google_mobile_ads: ^7.0.0
   flutter_local_notifications: ^17.1.2
   firebase_messaging: 15.2.10
+  awesome_notifications: ^0.10.1
   
 dev_dependencies:
   flutter_test:

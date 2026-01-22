@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:no_poverty/services/job_services_firestore.dart';
 import 'package:no_poverty/widgets/sub_title1.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DetailJob extends StatefulWidget {
   final String JobId;
@@ -13,6 +14,22 @@ class DetailJob extends StatefulWidget {
 }
 
 class _DetailJobState extends State<DetailJob> {
+
+String? currentUserId;
+
+@override
+void initState() {
+  super.initState();
+  _getCurrentUserId();
+}
+
+Future<void> _getCurrentUserId() async {
+  final prefs = await SharedPreferences.getInstance();
+  setState(() {
+    currentUserId = prefs.getString("userId");
+  });
+}
+
 
   JobService jobs = JobService();
 
@@ -43,41 +60,47 @@ class _DetailJobState extends State<DetailJob> {
           }
 
           final job = snapshot.data!;
+          final bool isOwner = job.employer_id == currentUserId;
           return Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
-              // mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      job.title,
-                      style: const TextStyle(
-                        fontSize: 22, 
-                        fontWeight: FontWeight.bold
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.green),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: SubTitle1(
-                        title: job.status,
-                        size: 12,
-                        color: Colors.green,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          job.title,
+                          style: const TextStyle(
+                            fontSize: 22, 
+                            fontWeight: FontWeight.bold
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.green.withOpacity(0.1),
+                            border: Border.all(color: Colors.green),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: SubTitle1(
+                            title: job.status.toUpperCase(),
+                            size: 12,
+                            color: Colors.green,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
                 SizedBox(height: 10,),
-
+            
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -103,53 +126,53 @@ class _DetailJobState extends State<DetailJob> {
                 ),
                 
                 const SizedBox(height: 20),
-
+            
                 Text("Deskripsi:", 
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
-
+            
                 SizedBox(height: 8),
-
+            
                 Text(job.description),
-
+            
                 const SizedBox(height: 20),
-
+            
                 Text("Kategori:", 
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
-
+            
                 SizedBox(height: 8),
-
+            
                 Text(job.category),
-
+            
                 const SizedBox(height: 20),
-
+            
                 Text("Alamat:", 
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
-
+            
                 SizedBox(height: 8),
-
+            
                 Text(job.address),
-
+            
                 const SizedBox(height: 20),
-
+            
                 Text("Helper yang dibutuhkan:", 
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
-
+            
                 SizedBox(height: 8),
-
+            
                 Text("${job.max_applicants.toString()} orang"),
-
+            
                 const SizedBox(height: 20),
-
+            
                 Text("Waktu Mulai Kerja dan berakhir", 
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
-
+            
                 SizedBox(height: 8),
-
+            
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -157,47 +180,49 @@ class _DetailJobState extends State<DetailJob> {
                     Text("${formatWaktu.format(job.end_time.toDate())} Berakhir"),
                   ],
                 ),
-
+            
                 const SizedBox(height: 20),
-
+            
                 Text("Skill yang dibutuhkan:", 
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
-
+            
                 SizedBox(height: 8),
-
+            
                 Text("${job.requiredSkills.join(", ")}"),
-
+            
                 const SizedBox(height: 20),
-
+            
                 Text("worker yang apply:", 
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
-
+            
                 SizedBox(height: 8),
-
+            
                 Text(job.worker_id_apply.isEmpty ? "Belum ada worker yang apply" : job.worker_id_apply.join(", ")),
-
+            
                 const SizedBox(height: 20),
-
+            
                 Text("Upah: Rp ${job.wage.toStringAsFixed(0)}",
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-
+            
                 const SizedBox(height: 20),
-
+            
                 Center(
                   child: OutlinedButton(
                     style: OutlinedButton.styleFrom(
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                       ),
-                      side: const BorderSide(color: Colors.blue),
+                      side: BorderSide(color: isOwner ? Colors.grey : Colors.blue,),
                     ),
-                    onPressed: () {},
-                    child: const Text(
-                      "Apply",
-                      style: TextStyle(color: Colors.blue),
+                    onPressed: isOwner ? null : (){
+            
+                    },
+                    child: Text(
+                      isOwner ? "Anda pemilik job ini" : "Apply",
+                      style: TextStyle(color: isOwner ? Colors.grey : Colors.blue,),
                     ),
                   ),
                 ),
