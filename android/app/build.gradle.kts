@@ -28,6 +28,19 @@ android {
         versionName = flutter.versionName
     }
 
+    compileOptions {
+        // ✅ WAJIB
+        isCoreLibraryDesugaringEnabled = true
+
+        // Java 17 BOLEH, tidak masalah
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+
     buildTypes {
         release {
             signingConfig = signingConfigs.getByName("debug")

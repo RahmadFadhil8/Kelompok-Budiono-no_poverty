@@ -1,13 +1,13 @@
 import 'dart:async';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:no_poverty/services/notification_service.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-
-import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'services/notification_service.dart';
 
 import 'firebase_options.dart';
 import 'app_wrapper.dart';
@@ -156,6 +156,6 @@ class MyApp extends StatelessWidget {
       ),
 
       home: AppWrapper(),
-    );
+    ); 
   }
 }
