@@ -31,6 +31,7 @@ Mulai dari sekarang, jawab semua pertanyaan dengan peran dan gaya seperti di ata
   List<MessageModel> get messages => _messages;
 
   Future<void> getMsgAI(String msg) async {
+    print(msg);
     try {
       _messages.add(MessageModel(text: "Sedang mengetik...", isMe: false));
       var res = await GeminiApiServices().getAIResponse(msg);
@@ -57,6 +58,7 @@ Mulai dari sekarang, jawab semua pertanyaan dengan peran dan gaya seperti di ata
     try {
       var res = await GeminiApiServices().getAIResponse(_initialMsg);
       _messages.add(res);
+    print(res);
       notifyListeners();
     } catch (e) {
       _messages.add(
