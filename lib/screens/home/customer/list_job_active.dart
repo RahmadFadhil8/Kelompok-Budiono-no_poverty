@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:intl/intl.dart';
+import 'package:no_poverty/models/job_model_fix_firestore.dart';
 import 'package:no_poverty/screens/home/customer/detailJob.dart';
 import 'package:no_poverty/services/job_services_firestore.dart';
 import 'package:no_poverty/widgets/custom_card.dart';
