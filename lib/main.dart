@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import 'firebase_options.dart';
@@ -13,10 +15,15 @@ import 'models/user_model_fix.dart';
 import 'services/user_profile_services.dart';
 import 'services/notification_services.dart';
 
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
+
+final FlutterLocalNotificationsPlugin notificationsPlugin =
+    FlutterLocalNotificationsPlugin();
+
+  
 final GlobalKey<NavigatorState> navigatorKey =
     GlobalKey<NavigatorState>();
-
-    
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,6 +47,25 @@ void main() async {
   await NotificationServices.initializeFcm(navigatorKey);
 
   await FirebaseMessaging.instance.subscribeToTopic("debug");
+
+    tz.initializeTimeZones();
+  
+  const AndroidInitializationSettings androidInit =
+      AndroidInitializationSettings('@mipmap/ic_launcher');
+  
+  const DarwinInitializationSettings iOSInit = DarwinInitializationSettings(
+    requestAlertPermission: false,
+    requestBadgePermission: false,
+    requestSoundPermission: false,
+  );
+  
+  const InitializationSettings initSettings = InitializationSettings(
+    android: androidInit,
+    iOS: iOSInit,
+  );
+
+  await notificationsPlugin.initialize(initSettings);
+
 
 
   runApp(

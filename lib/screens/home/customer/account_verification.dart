@@ -1,9 +1,6 @@
 import 'dart:io';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:no_poverty/models/user_model_fix.dart';
-import 'package:no_poverty/services/user_profile_services.dart';
 import 'package:no_poverty/utils/permission_utils.dart';
 import 'account_verification2.dart';
 
@@ -15,10 +12,9 @@ class AccountVerificationScreen extends StatefulWidget {
       _AccountVerificationScreenState();
 }
 
-class _AccountVerificationScreenState
-    extends State<AccountVerificationScreen> {
+class _AccountVerificationScreenState extends State<AccountVerificationScreen> {
   File? _ktpImage;
-  bool _isLoading = false;
+  File? _selfieImage;
 
   Future<void> _pickKtp() async {
     final XFile? image = await PermissionUtils.pickFromGallery();
@@ -27,59 +23,17 @@ class _AccountVerificationScreenState
     }
   }
 
-  bool get _canContinue => _ktpImage != null && !_isLoading;
-
-  Future<void> _submit() async {
-  setState(() => _isLoading = true);
-
-  try {
-    final user = FirebaseAuth.instance.currentUser!;
-
-    final urlKtp = await UserProfileServices()
-        .uploadUserImage(user.uid, _ktpImage!);
-
-    final data = {"ktp_url": urlKtp};
-
-    await UserProfileServices()
-        .editUserProfile(UserModelFix.fromMap(user.uid, data));
-
-    if (!mounted) return;
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const AccountVerificationStep2()),
-    );
-  } catch (e) {
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Gagal upload: $e")),
-      );
+  Future<void> _takeSelfie() async {
+    final XFile? image = await PermissionUtils.pickFromCamera();
+    if (image != null) {
+      setState(() => _selfieImage = File(image.path));
     }
-  } finally {
-    if (mounted) setState(() => _isLoading = false);
   }
-}
 
+  bool get _canContinue => _ktpImage != null && _selfieImage != null;
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        _buildMainUI(),
-
-        if (_isLoading)
-          Container(
-            color: Colors.black.withOpacity(0.45),
-            child: const Center(
-              child: CircularProgressIndicator(color: Colors.white),
-            ),
-          ),
-      ],
-    );
-  }
-
-  Widget _buildMainUI() {
-
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -102,7 +56,6 @@ class _AccountVerificationScreenState
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
       ),
-
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -112,12 +65,15 @@ class _AccountVerificationScreenState
               padding: EdgeInsets.symmetric(horizontal: 16),
               child: Align(
                 alignment: Alignment.centerLeft,
-                child: Text("25% selesai", style: TextStyle(color: Colors.grey)),
+                child: Text(
+                  "25% selesai",
+                  style: TextStyle(color: Colors.grey),
+                ),
               ),
             ),
-
             const SizedBox(height: 32),
 
+            // --- Header ---
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Card(
@@ -126,10 +82,10 @@ class _AccountVerificationScreenState
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
+                child: const Padding(
+                  padding: EdgeInsets.all(20),
                   child: Column(
-                    children: const [
+                    children: [
                       CircleAvatar(
                         radius: 30,
                         backgroundColor: Color(0xFFE3F2FD),
@@ -139,10 +95,15 @@ class _AccountVerificationScreenState
                       Text(
                         "KTP & Identitas",
                         style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       SizedBox(height: 8),
-                      Text("Upload KTP", style: TextStyle(color: Colors.grey)),
+                      Text(
+                        "Upload KTP dan foto selfie",
+                        style: TextStyle(color: Colors.grey),
+                      ),
                     ],
                   ),
                 ),
@@ -151,17 +112,19 @@ class _AccountVerificationScreenState
 
             const SizedBox(height: 40),
 
+            // --- Upload KTP ---
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text("Upload KTP",
-                      style: TextStyle(fontWeight: FontWeight.w500)),
+                  const Text(
+                    "Upload KTP",
+                    style: TextStyle(fontWeight: FontWeight.w500),
+                  ),
                   const SizedBox(height: 12),
-
                   GestureDetector(
-                    onTap: _isLoading ? null : _pickKtp,
+                    onTap: _pickKtp,
                     child: Container(
                       height: 140,
                       width: double.infinity,
@@ -177,10 +140,13 @@ class _AccountVerificationScreenState
                           ? Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: const [
-                                Icon(Icons.upload, size: 40, color: Colors.grey),
+                                Icon(Icons.upload,
+                                    size: 40, color: Colors.grey),
                                 SizedBox(height: 8),
-                                Text("Pilih foto KTP",
-                                    style: TextStyle(color: Colors.grey)),
+                                Text(
+                                  "Pilih foto KTP",
+                                  style: TextStyle(color: Colors.grey),
+                                ),
                               ],
                             )
                           : ClipRRect(
@@ -196,8 +162,58 @@ class _AccountVerificationScreenState
               ),
             ),
 
+            const SizedBox(height: 32),
+
+            // --- Selfie ---
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Foto Selfie dengan KTP",
+                    style: TextStyle(fontWeight: FontWeight.w500),
+                  ),
+                  const SizedBox(height: 12),
+                  GestureDetector(
+                    onTap: _takeSelfie,
+                    child: Container(
+                      height: 180,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey.shade300),
+                        borderRadius: BorderRadius.circular(12),
+                        color: Colors.grey[50],
+                      ),
+                      child: _selfieImage == null
+                          ? Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: const [
+                                Icon(Icons.camera_alt,
+                                    size: 40, color: Colors.grey),
+                                SizedBox(height: 8),
+                                Text(
+                                  "Ambil foto selfie",
+                                  style: TextStyle(color: Colors.grey),
+                                ),
+                              ],
+                            )
+                          : ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: Image.file(
+                                _selfieImage!,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
             const SizedBox(height: 20),
 
+            // --- Tips ---
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 24),
               padding: const EdgeInsets.all(16),
@@ -206,11 +222,13 @@ class _AccountVerificationScreenState
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: const Color(0xFFFFD700)),
               ),
-              child: Column(
+              child: const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  Text("Tips Foto yang Baik",
-                      style: TextStyle(fontWeight: FontWeight.bold)),
+                children: [
+                  Text(
+                    "Tips Foto yang Baik",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                   SizedBox(height: 8),
                   Text("• Pastikan foto jelas dan tidak blur"),
                   Text("• KTP terlihat jelas di foto selfie"),
@@ -221,6 +239,7 @@ class _AccountVerificationScreenState
 
             const SizedBox(height: 30),
 
+            // --- Tombol Lanjut ---
             Padding(
               padding: const EdgeInsets.all(24),
               child: SizedBox(
@@ -232,10 +251,24 @@ class _AccountVerificationScreenState
                         _canContinue ? Colors.blue : Colors.grey[300],
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30)),
+                      borderRadius: BorderRadius.circular(30),
+                    ),
                   ),
-                  onPressed: _canContinue ? _submit : null,
-                  child: const Text("Lanjut", style: TextStyle(fontSize: 16)),
+                  onPressed: _canContinue
+                      ? () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  const AccountVerificationStep2(),
+                            ),
+                          );
+                        }
+                      : null,
+                  child: const Text(
+                    "Lanjut",
+                    style: TextStyle(fontSize: 16),
+                  ),
                 ),
               ),
             ),
