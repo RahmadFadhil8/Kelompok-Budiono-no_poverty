@@ -1,5 +1,7 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:no_poverty/main.dart';
 import 'package:no_poverty/screens/profile/profile.dart';
 
@@ -96,14 +98,9 @@ class NotificationServices {
         );
       }
     }
-}
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:no_poverty/screens/profile/profile.dart';
 
-class NotificationServices {
-  static final FlutterLocalNotificationsPlugin _plugin =
+
+    static final FlutterLocalNotificationsPlugin _plugin =
       FlutterLocalNotificationsPlugin();
 
   static GlobalKey<NavigatorState>? _navigatorKey;

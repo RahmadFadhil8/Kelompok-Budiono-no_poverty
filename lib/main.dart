@@ -30,6 +30,7 @@ void main() async {
     anonKey: 'sb_publishable_CWlG8-5CWNSQ_cRQJFU8qw_XVoufF6V',
   );
 
+  await NotificationServices.initializeNotification();
   await NotificationServices.initialize(navigatorKey);
 
   unawaited(MobileAds.instance.initialize());
